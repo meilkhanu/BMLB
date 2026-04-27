@@ -1,0 +1,287 @@
+---
+import { SITE_CONFIG } from '../config.ts';
+import SunIcon from '../components/icons/SunIcon.astro';
+import MoonIcon from '../components/icons/MoonIcon.astro';
+import SearchIcon from '../components/icons/SearchIcon.astro';
+import UserIcon from '../components/icons/UserIcon.astro';
+import HamburgerIcon from '../components/icons/HamburgerIcon.astro';
+import CalendarIcon from '../components/icons/CalendarIcon.astro';
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>{SITE_CONFIG.siteName}</title>
+</head>
+<body class="bg-[#FAFAFA] dark:bg-[#0F0F0F]">
+	<!-- 模块1：导航栏 -->
+	<nav id="site-nav" class="site-nav fixed top-0 left-0 w-full h-16 z-50 transition-all duration-300 ease-out">
+		<div class="flex justify-between items-center px-6 h-full">
+			<!-- 左侧站点名 -->
+			<a href="/" class="text-xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]">
+				{SITE_CONFIG.siteName}
+			</a>
+
+			<!-- 中间导航（PC only） -->
+			<div class="hidden md:flex items-center gap-6">
+				<a href="/" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] border-b-2 border-[#8B7CB3] pb-1">主页</a>
+				<a href="/archive" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999]">归档</a>
+				<a href="/about" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999]">关于</a>
+				<a href="/now" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999]">/now</a>
+				<a href="/colophon" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999]">/colophon</a>
+			</div>
+
+			<!-- 右侧图标区 -->
+			<div class="flex items-center gap-4">
+				<button onclick="toggleDarkMode()" class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
+					<span id="theme-sun"><SunIcon /></span>
+					<span id="theme-moon" class="hidden"><MoonIcon /></span>
+				</button>
+				<button class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
+					<SearchIcon />
+				</button>
+				<button class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
+					<UserIcon />
+				</button>
+				<button onclick="toggleMobileMenu()" class="md:hidden flex bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
+					<HamburgerIcon />
+				</button>
+			</div>
+		</div>
+	</nav>
+
+	<!-- 模块2：Hero区 -->
+    <section class="relative w-full h-[70vh] min-h-[400px] overflow-hidden hero-bg">
+    </section>
+
+	<!-- 模块3：个人锚点区 -->
+	<div class="max-w-[1200px] mx-auto px-4 md:px-6">
+		<!-- 顶部行：头像 + Tab栏 -->
+		<div class="flex gap-6 items-end relative z-10">
+			<!-- 3.1 头像 -->
+			<div class="w-[160px] h-[160px] rounded-[24px] bg-[#E8913A] -mt-[80px] flex-shrink-0 overflow-hidden relative">
+				<img
+					src={SITE_CONFIG.images.avatar}
+					alt="头像"
+					class="w-full h-full object-cover"
+					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+				/>
+				<div class="absolute inset-0 hidden items-center justify-center text-white font-bold">
+					贝谟
+				</div>
+			</div>
+
+			<!-- 3.2 PC Tab 长条栏 -->
+			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-2xl bg-[#F0F0F0] dark:bg-[#1A1A1A]">
+				<span class="text-sm text-[#999] dark:text-[#666] border-r border-[#E0E0E0] dark:border-[#2A2A2A] pr-4 mr-4">分类</span>
+				<div class="flex gap-6">
+					{SITE_CONFIG.categories.map((cat, idx) => (
+						<button
+							data-tab={cat.id}
+							class={`text-sm transition-colors duration-200 ${idx === 0 ? 'text-[#1A1A1A] dark:text-[#EAEAEA] border-b-2 border-[#8B7CB3] pb-1' : 'text-[#999] dark:text-[#666] hover:text-[#666] dark:hover:text-[#999]'}`}
+						>
+							{cat.name}
+						</button>
+					))}
+				</div>
+				<div class="ml-auto flex items-center gap-2 text-sm text-[#999]">
+					<CalendarIcon />
+					<span>2026-4-26 21:48</span>
+				</div>
+			</div>
+
+			<!-- 3.3 移动端 Tab 胶囊栏 -->
+			<div class="flex md:hidden flex-1 h-12 items-center px-4 rounded-full bg-white/20 dark:bg-black/30 backdrop-blur-md overflow-hidden">
+				<div class="flex gap-4 overflow-x-auto hide-scrollbar w-full">
+					{SITE_CONFIG.categories.map((cat, idx) => (
+						<button
+							data-tab={cat.id}
+							class={`text-sm flex-shrink-0 transition-colors duration-200 ${idx === 0 ? 'text-[#1A1A1A] dark:text-[#EAEAEA] border-b-2 border-[#8B7CB3] pb-1' : 'text-[#999] dark:text-[#666] hover:text-[#666] dark:hover:text-[#999]'}`}
+						>
+							{cat.name}
+						</button>
+					))}
+				</div>
+			</div>
+		</div>
+
+		<!-- 内容行 -->
+		<div class="mt-6 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
+			<!-- 3.4 左侧盒子区（PC only） -->
+			<div class="hidden md:flex flex-col gap-4">
+				<div id="sidebar-box-1" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">日历占位</div>
+				<div id="sidebar-box-2" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">标签云占位</div>
+				<div id="sidebar-box-3" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">状态占位</div>
+			</div>
+
+			<!-- 3.4 右侧主容器区 -->
+			<div id="tab-panel-container" class="rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] min-h-[400px] p-4 md:p-6">
+				<!-- 札记面板（默认显示） -->
+				<div class="panel-notes">
+					<article class="border-b border-[#E0E0E0] dark:border-[#2A2A2A] pb-4 mb-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">春夜读书记</h3>
+						<p class="text-xs text-[#999] mt-1">2026-04-20</p>
+						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">雨后的夜晚特别适合翻阅那些积灰的旧书。书架最底层的《追忆似水年华》已经躺了三年，今晚终于决定给它一个机会，看看能否在普鲁斯特的长句中找到某种慰藉。</p>
+					</article>
+					<article class="border-b border-[#E0E0E0] dark:border-[#2A2A2A] pb-4 mb-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">咖啡与代码</h3>
+						<p class="text-xs text-[#999] mt-1">2026-04-15</p>
+						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">凌晨三点的咖啡馆，只有我和一台老旧的意式咖啡机。屏幕上的光标在闪烁，Bug 却像幽灵一样躲藏在某个角落，不肯现身。</p>
+					</article>
+					<article class="hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">城市漫步笔记</h3>
+						<p class="text-xs text-[#999] mt-1">2026-04-10</p>
+						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">从老城区走到江边，途经七家闭店的面包房和一家新开的花店。城市的肌理在步行中变得清晰，那些被车速忽略的细节一一浮现。</p>
+					</article>
+				</div>
+
+				<!-- 其余面板（默认隐藏） -->
+				<div class="panel-critique" style="display: none;">
+					<p class="text-sm text-[#999]">时评簿面板占位</p>
+				</div>
+				<div class="panel-stack" style="display: none;">
+					<p class="text-sm text-[#999]">车间面板占位</p>
+				</div>
+				<div class="panel-body" style="display: none;">
+					<p class="text-sm text-[#999]">体感面板占位</p>
+				</div>
+				<div class="panel-transit" style="display: none;">
+					<p class="text-sm text-[#999]">行记面板占位</p>
+				</div>
+				<div class="panel-archive" style="display: none;">
+					<p class="text-sm text-[#999]">底片面版占位</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 模块4：页脚 -->
+	<footer class="w-full bg-[#111111] py-12 px-6 mt-12">
+		<div class="flex flex-col items-center gap-1 text-xs text-[#888] leading-relaxed">
+			<div>
+				<span>© 2026 {SITE_CONFIG.siteName}</span>
+				<span class="mx-2">/</span>
+				<a href="/rss" class="hover:text-[#CCC] transition-colors no-underline">RSS</a>
+				<span class="mx-2">/</span>
+				<a href="/sitemap" class="hover:text-[#CCC] transition-colors no-underline">Sitemap</a>
+				<span class="mx-2">/</span>
+				<a href="/colophon" class="hover:text-[#CCC] transition-colors no-underline">/colophon</a>
+			</div>
+			<div>本站已运行 <span id="site-runtime">X个月 X天</span></div>
+			<div>Powered by Astro & Cloudflare Pages / 萌ICP备XXXXX号</div>
+		</div>
+	</footer>
+
+	<script is:inline>
+		function toggleDarkMode() {
+			document.documentElement.classList.toggle('dark');
+			const isDark = document.documentElement.classList.contains('dark');
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+			updateThemeIcon(isDark);
+		}
+
+		function updateThemeIcon(isDark) {
+			const sun = document.getElementById('theme-sun');
+			const moon = document.getElementById('theme-moon');
+			if (sun && moon) {
+				if (isDark) {
+					sun.classList.add('hidden');
+					moon.classList.remove('hidden');
+				} else {
+					sun.classList.remove('hidden');
+					moon.classList.add('hidden');
+				}
+			}
+		}
+
+		// 初始化暗色模式
+		const savedTheme = localStorage.getItem('theme');
+		if (savedTheme === 'dark') {
+			document.documentElement.classList.add('dark');
+			updateThemeIcon(true);
+		} else {
+			updateThemeIcon(false);
+		}
+
+		function toggleMobileMenu() {
+			console.log('menu');
+		}
+
+		// Tab 切换
+		const tabButtons = document.querySelectorAll('[data-tab]');
+		const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
+
+		tabButtons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				const tabId = btn.dataset.tab;
+
+				// 重置所有按钮样式
+				tabButtons.forEach(b => {
+					b.classList.remove('text-[#1A1A1A]', 'dark:text-[#EAEAEA]', 'border-b-2', 'border-[#8B7CB3]', 'pb-1');
+					b.classList.add('text-[#999]', 'dark:text-[#666]');
+				});
+
+				// 激活当前按钮
+				btn.classList.remove('text-[#999]', 'dark:text-[#666]');
+				btn.classList.add('text-[#1A1A1A]', 'dark:text-[#EAEAEA]', 'border-b-2', 'border-[#8B7CB3]', 'pb-1');
+
+				// 隐藏所有面板
+				panelClasses.forEach(cls => {
+					const panel = document.querySelector('.' + cls);
+					if (panel) panel.style.display = 'none';
+				});
+
+				// 显示目标面板
+				const target = document.querySelector('.panel-' + tabId);
+				if (target) target.style.display = 'block';
+			});
+		});
+
+		// 导航栏滚动效果
+		const nav = document.getElementById('site-nav');
+		function handleScroll() {
+			if (window.scrollY > 100) {
+				nav.classList.add('scrolled');
+			} else {
+				nav.classList.remove('scrolled');
+			}
+		}
+		window.addEventListener('scroll', handleScroll);
+		handleScroll();
+	</script>
+</body>
+</html>
+
+<style is:global>
+	body {
+		font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+	}
+	.site-nav {
+		background-color: transparent;
+	}
+	.site-nav.scrolled {
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		background-color: rgba(250, 250, 250, 0.9);
+		box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+	}
+	.dark .site-nav.scrolled {
+		background-color: rgba(15, 15, 15, 0.9);
+	}
+	.hide-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.hide-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.hero-bg {
+	    background: linear-gradient(135deg, #4A5D8A 0%, #8B7CB3 65%, #FAFAFA 100%);
+    }
+    html.dark .hero-bg {
+	    background: linear-gradient(135deg, #4A5D8A 0%, #8B7CB3 65%, #0F0F0F 100%);
+    }
+</style>
