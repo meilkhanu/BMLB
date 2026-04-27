@@ -54,15 +54,18 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 	</nav>
 
 	<!-- 模块2：Hero区 -->
-    <section class="relative w-full h-[70vh] min-h-[400px] overflow-hidden hero-bg">
-    </section>
+	<section class="relative w-full h-[35vh] overflow-hidden">
+		<img src="/images/hero-bg.jpg" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_30%]" />
+		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
+		<div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FAFAFA] to-transparent dark:from-[#0F0F0F]"></div>
+	</section>
 
 	<!-- 模块3：个人锚点区 -->
 	<div class="max-w-[1200px] mx-auto px-4 md:px-6">
 		<!-- 顶部行：头像 + Tab栏 -->
-		<div class="flex gap-6 items-end relative z-10">
+		<div class="flex md:grid md:grid-cols-[160px_1fr] gap-4 md:gap-6 items-end relative z-10">
 			<!-- 3.1 头像 -->
-			<div class="w-[160px] h-[160px] rounded-[24px] bg-[#E8913A] -mt-[80px] flex-shrink-0 overflow-hidden relative">
+			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] -mt-[80px] ring-4 ring-white flex-shrink-0 overflow-hidden relative">
 				<img
 					src={SITE_CONFIG.images.avatar}
 					alt="头像"
@@ -278,10 +281,5 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 	.hide-scrollbar::-webkit-scrollbar {
 		display: none;
 	}
-	.hero-bg {
-	    background: linear-gradient(135deg, #4A5D8A 0%, #8B7CB3 65%, #FAFAFA 100%);
-    }
-    html.dark .hero-bg {
-	    background: linear-gradient(135deg, #4A5D8A 0%, #8B7CB3 65%, #0F0F0F 100%);
-    }
+
 </style>

@@ -3,7 +3,7 @@ export const SITE_CONFIG = {
   siteStartDate: "2026-04-26",
   images: {
     hero: "/images/hero-bg.jpg",
-    avatar: "/images/avatar.png",
+    avatar: "/images/avatar.jpg",
   },
   categories: [
     { id: "notes", name: "札记", color: "#8B7CB3" },
