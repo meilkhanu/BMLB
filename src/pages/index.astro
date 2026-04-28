@@ -92,7 +92,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 				</div>
 				<div class="ml-auto flex items-center gap-2 text-sm text-[#999]">
 					<CalendarIcon />
-					<span>2026-4-26 21:48</span>
+					<span id="tab-datetime">2026-4-26 21:48</span>
 				</div>
 			</div>
 
@@ -115,29 +115,99 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		<div class="mt-6 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
 			<!-- 3.4 左侧盒子区（PC only） -->
 			<div class="hidden md:flex flex-col gap-4">
-				<div id="sidebar-box-1" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">日历占位</div>
-				<div id="sidebar-box-2" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">标签云占位</div>
-				<div id="sidebar-box-3" class="w-full h-40 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center text-sm text-[#999]">状态占位</div>
+				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4 flex flex-col">
+					<div class="flex justify-between items-center mb-2">
+						<span id="calendar-title" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]"></span>
+						<div class="flex gap-2">
+							<button onclick="console.log('prev month')" class="text-xs text-[#999] hover:text-[#666] bg-transparent border-none cursor-pointer">&lt;</button>
+							<button onclick="console.log('next month')" class="text-xs text-[#999] hover:text-[#666] bg-transparent border-none cursor-pointer">&gt;</button>
+						</div>
+					</div>
+					<div class="flex justify-between mb-1">
+						<span class="text-xs text-[#999] w-full text-center">一</span>
+						<span class="text-xs text-[#999] w-full text-center">二</span>
+						<span class="text-xs text-[#999] w-full text-center">三</span>
+						<span class="text-xs text-[#999] w-full text-center">四</span>
+						<span class="text-xs text-[#999] w-full text-center">五</span>
+						<span class="text-xs text-[#999] w-full text-center">六</span>
+						<span class="text-xs text-[#999] w-full text-center">日</span>
+					</div>
+					<div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1"></div>
+					<div class="border-t border-[#E0E0E0] dark:border-[#2A2A2A] mt-2 pt-2 flex justify-between items-center">
+						<span class="text-xs text-[#999]">Welcome</span>
+						<span class="text-xs text-[#999]">4-20</span>
+					</div>
+				</div>
+				<div id="sidebar-box-2" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4">
+					<div class="flex items-center gap-2 mb-3">
+						<span class="text-xs text-[#999]">♪</span>
+						<span class="text-xs font-medium text-[#999]">音乐</span>
+					</div>
+					<div class="flex gap-3">
+						<div class="w-16 h-16 rounded-lg bg-[#E0E0E0] dark:bg-[#2A2A2A] flex items-center justify-center flex-shrink-0">
+							<span class="text-xs text-[#999]">🎵</span>
+						</div>
+						<div class="flex flex-col justify-center flex-1 min-w-0">
+							<p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] truncate">浮遊大陸アルジェス -In the Sky-</p>
+							<p class="text-xs text-[#999] mt-1 truncate">Falcom Sound Team J.D.K.</p>
+							<p class="text-xs text-[#999] mt-1">0:00 / 3:10</p>
+						</div>
+					</div>
+					<div class="mt-3 w-full h-1 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden">
+						<div class="h-full bg-[#8B7CB3] rounded-full w-0"></div>
+					</div>
+					<div class="mt-3 flex justify-between items-center">
+						<button onclick="console.log('loop')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">↻</button>
+						<button onclick="console.log('prev')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">◁</button>
+						<button onclick="togglePlay()" class="text-xs text-white bg-[#8B7CB3] hover:bg-[#7A6BA2] w-8 h-8 rounded-full flex items-center justify-center border-none cursor-pointer">⏵</button>
+						<button onclick="console.log('next')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">▷</button>
+						<button onclick="console.log('list')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">☰</button>
+					</div>
+				</div>
+				<div id="sidebar-box-3" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4">
+					<div class="flex items-center gap-2 mb-3">
+						<div class="w-2 h-2 rounded-full bg-[#7CB38B]"></div>
+						<span class="text-xs font-medium text-[#7CB38B]">运行中</span>
+					</div>
+					<div class="grid grid-cols-2 gap-3">
+						<div>
+							<div class="text-xs text-[#999]">运行</div>
+							<div id="stat-runtime" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">--</div>
+						</div>
+						<div>
+							<div class="text-xs text-[#999]">最后活动</div>
+							<div id="stat-last-active" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">刚刚</div>
+						</div>
+						<div>
+							<div class="text-xs text-[#999]">分类</div>
+							<div id="stat-categories" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{SITE_CONFIG.categories.length}个</div>
+						</div>
+						<div>
+							<div class="text-xs text-[#999]">文章</div>
+							<div id="stat-posts" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">3篇</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<!-- 3.4 右侧主容器区 -->
 			<div id="tab-panel-container" class="rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] min-h-[400px] p-4 md:p-6">
 				<!-- 札记面板（默认显示） -->
 				<div class="panel-notes">
-					<article class="border-b border-[#E0E0E0] dark:border-[#2A2A2A] pb-4 mb-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">春夜读书记</h3>
-						<p class="text-xs text-[#999] mt-1">2026-04-20</p>
-						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">雨后的夜晚特别适合翻阅那些积灰的旧书。书架最底层的《追忆似水年华》已经躺了三年，今晚终于决定给它一个机会，看看能否在普鲁斯特的长句中找到某种慰藉。</p>
+					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 mb-4 flex flex-col md:flex-row gap-4">
+						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">春夜读书记</h3>
+						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-20</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">1,280字</span></div>
+						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">雨后的夜晚特别适合翻阅那些积灰的旧书。书架最底层的《追忆似水年华》已经躺了三年，今晚终于决定给它一个机会，看看能否在普鲁斯特的长句中找到某种慰藉。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
 					</article>
-					<article class="border-b border-[#E0E0E0] dark:border-[#2A2A2A] pb-4 mb-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">咖啡与代码</h3>
-						<p class="text-xs text-[#999] mt-1">2026-04-15</p>
-						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">凌晨三点的咖啡馆，只有我和一台老旧的意式咖啡机。屏幕上的光标在闪烁，Bug 却像幽灵一样躲藏在某个角落，不肯现身。</p>
+					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 mb-4 flex flex-col md:flex-row gap-4">
+						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">咖啡与代码</h3>
+						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-15</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">856字</span></div>
+						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">凌晨三点的咖啡馆，只有我和一台老旧的意式咖啡机。屏幕上的光标在闪烁，Bug 却像幽灵一样躲藏在某个角落，不肯现身。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
 					</article>
-					<article class="hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-						<h3 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">城市漫步笔记</h3>
-						<p class="text-xs text-[#999] mt-1">2026-04-10</p>
-						<p class="text-sm text-[#666] dark:text-[#888] mt-2 line-clamp-2">从老城区走到江边，途经七家闭店的面包房和一家新开的花店。城市的肌理在步行中变得清晰，那些被车速忽略的细节一一浮现。</p>
+					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col md:flex-row gap-4">
+						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">城市漫步笔记</h3>
+						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-10</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">1,042字</span></div>
+						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">从老城区走到江边，途经七家闭店的面包房和一家新开的花店。城市的肌理在步行中变得清晰，那些被车速忽略的细节一一浮现。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
 					</article>
 				</div>
 
@@ -173,7 +243,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 				<span class="mx-2">/</span>
 				<a href="/colophon" class="hover:text-[#CCC] transition-colors no-underline">/colophon</a>
 			</div>
-			<div>本站已运行 <span id="site-runtime">X个月 X天</span></div>
+			<div>本站已运行 <span id="site-runtime">--</span></div>
 			<div>Powered by Astro & Cloudflare Pages / 萌ICP备XXXXX号</div>
 		</div>
 	</footer>
@@ -254,6 +324,87 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		}
 		window.addEventListener('scroll', handleScroll);
 		handleScroll();
+
+		function updateDateTime() {
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = now.getMonth() + 1;
+			const day = now.getDate();
+			const hours = String(now.getHours()).padStart(2, '0');
+			const minutes = String(now.getMinutes()).padStart(2, '0');
+			const el = document.getElementById('tab-datetime');
+			if (el) el.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
+		}
+		updateDateTime();
+		setInterval(updateDateTime, 60000);
+
+		function renderCalendar(year, month) {
+			const titleEl = document.getElementById('calendar-title');
+			const gridEl = document.getElementById('calendar-grid');
+			if (!titleEl || !gridEl) return;
+
+			titleEl.textContent = `${year}年 ${month + 1}月`;
+
+			const today = new Date();
+			const daysInMonth = new Date(year, month + 1, 0).getDate();
+			const firstDay = new Date(year, month, 1).getDay();
+			const startOffset = (firstDay + 6) % 7;
+			const prevMonthDays = new Date(year, month, 0).getDate();
+
+			let html = '';
+
+			for (let i = startOffset - 1; i >= 0; i--) {
+				const d = prevMonthDays - i;
+				html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
+			}
+
+			for (let d = 1; d <= daysInMonth; d++) {
+				const isToday = year === today.getFullYear() && month === today.getMonth() && d === today.getDate();
+				if (isToday) {
+					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full border border-[#8B7CB3] text-[#8B7CB3] font-medium">${d}</div>`;
+				} else {
+					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#666] dark:text-[#999]">${d}</div>`;
+				}
+			}
+
+			const totalCells = startOffset + daysInMonth;
+			const rows = totalCells <= 35 ? 35 : 42;
+			const remaining = rows - totalCells;
+			for (let d = 1; d <= remaining; d++) {
+				html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
+			}
+
+			gridEl.innerHTML = html;
+		}
+
+		renderCalendar(new Date().getFullYear(), new Date().getMonth());
+
+		function togglePlay() {
+			console.log('play');
+		}
+
+		const siteStart = new Date('2026-04-26');
+		const now = new Date();
+		const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
+		const runtimeEl = document.getElementById('stat-runtime');
+		if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
+
+		function updateRuntime() {
+			const start = new Date('2026-04-26T00:00:00');
+			const now = new Date();
+			const diff = now - start;
+			const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+			const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+			const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			let parts = [];
+			if (months > 0) parts.push(months + '个月');
+			if (days > 0) parts.push(days + '天');
+			if (hours > 0 || (months === 0 && days === 0)) parts.push(hours + '小时');
+			const el = document.getElementById('site-runtime');
+			if (el) el.textContent = '本站已运行 ' + parts.join('');
+		}
+		updateRuntime();
+		setInterval(updateRuntime, 1000);
 	</script>
 </body>
 </html>
