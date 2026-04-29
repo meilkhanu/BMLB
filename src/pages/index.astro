@@ -35,29 +35,67 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			</div>
 
 			<!-- 右侧图标区 -->
-			<div class="flex items-center gap-4">
-				<button onclick="toggleDarkMode()" class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
-					<span id="theme-sun"><SunIcon /></span>
-					<span id="theme-moon" class="hidden"><MoonIcon /></span>
-				</button>
-				<button class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
+			<div class="flex items-center gap-1 md:gap-2">
+				<div class="flex items-center focus-within:bg-black/5 focus-within:dark:bg-white/10 rounded-full transition-all duration-300">
+				<button onclick="document.getElementById('search-input').focus()" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0">
 					<SearchIcon />
 				</button>
-				<button class="bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
-					<UserIcon />
+				<input type="text" id="search-input" placeholder="Search..." class="w-0 focus:w-28 md:focus:w-40 bg-transparent border-none outline-none text-sm text-[#1A1A1A] dark:text-[#EAEAEA] placeholder-[#999] transition-all duration-300 px-0 focus:px-2 focus:mr-2" /></div>
+				<button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0">
+				<span id="theme-sun"><SunIcon /></span>
+				<span id="theme-moon" class="hidden"><MoonIcon /></span>
 				</button>
-				<button onclick="toggleMobileMenu()" class="md:hidden flex bg-transparent border-none cursor-pointer p-0 text-[#1A1A1A] dark:text-[#EAEAEA]">
-					<HamburgerIcon />
+				<a href="/user" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0">
+					<UserIcon />
+				</a>
+				<button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0">
+				<HamburgerIcon />
 				</button>
 			</div>
 		</div>
 	</nav>
 
+	<!-- 移动端Hamburger菜单 -->
+	<div id="mobile-menu" class="fixed inset-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col pt-24 pb-12 px-8">
+  		<div class="flex flex-col gap-6 mt-8">
+    		<a href="/" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]">主页</a>
+    		<a href="/archive" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 50ms;">归档</a>
+    		<a href="/about" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 100ms;">关于</a>
+    		<a href="/now" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 150ms;">/now</a>
+    		<a href="/colophon" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 200ms;">/colophon</a>
+  		</div>
+  	<div class="mt-auto border-t border-[#1A1A1A]/10 dark:border-white/10 pt-6 flex justify-between items-center opacity-0 translate-x-12 transition-all duration-500 delay-300" id="mobile-menu-footer">
+    	<span class="text-xs font-bold text-[#8B7CB3] tracking-widest uppercase">贝谟拉比 BMLB</span>
+    <div class="flex gap-4">
+      	<a href="#" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3]">
+        	<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          	<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm-1-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 7h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-2v-6h2v1.5c.5-1.5 2.5-1.5 2.5 1.5V17z"/>
+        	</svg>
+      	</a>
+      	<a href="#" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3]">
+        	<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          	<path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5C20.84 12.58 16.8 2 12 2zm-1.5 16h-2v-8h2v8zm-1-9.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm6.5 9.5h-2v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2V18h-2v-8h2v1.5c.5-1.5 2.5-2.5 4-1.5 1.5 1 1.5 3 1.5 4.5V18z"/>
+        </svg>
+      	</a>
+    </div>
+  	</div>
+</div>
+
 	<!-- 模块2：Hero区 -->
-	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden">
+	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden border-[#EAEAEA] dark:border-[#1A1A1A]">
 		<img src="/images/hero-bg.jpg" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_40%]" />
 		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
-		<div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FAFAFA] to-transparent dark:from-[#0F0F0F]"></div>
+		<div class="absolute -bottom-[1px] left-0 w-full h-[40px] md:h-[70px] overflow-hidden z-10 pointer-events-none">
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-1" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<path d="M0,40 C150,100 350,100 500,40 C650,-20 850,-20 1000,40 C1150,100 1350,100 1500,40 C1650,-20 1850,-20 2000,40 V100 H0 Z" class="opacity-30 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+			</svg>
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-2" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<path d="M0,60 C150,20 350,20 500,60 C650,100 850,100 1000,60 C1150,20 1350,20 1500,60 C1650,100 1850,100 2000,60 V100 H0 Z" class="opacity-60 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+			</svg>
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-3" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<path d="M0,70 C150,120 350,120 500,70 C650,20 850,20 1000,70 C1150,120 1350,120 1500,70 C1650,20 1850,20 2000,70 V100 H0 Z" class="fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+			</svg>
+		</div>
 	</section>
 
 	<!-- 模块3：个人锚点区 -->
@@ -65,11 +103,11 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		<!-- 顶部行：头像 + Tab栏 -->
 		<div class="flex md:grid md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-4 md:gap-6 items-end relative z-10">
 			<!-- 3.1 头像 -->
-			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] md:-mt-[130px] xl:-mt-[140px] ring-4 ring-white flex-shrink-0 overflow-hidden relative">
+			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] md:-mt-[130px] xl:-mt-[140px] ring-4 ring-white dark:ring-[#0F0F0F] flex-shrink-0 overflow-hidden relative cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 group">
 				<img
 					src={SITE_CONFIG.images.avatar}
 					alt="头像"
-					class="w-full h-full object-cover"
+					class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
 					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 				/>
 				<div class="absolute inset-0 hidden items-center justify-center text-white font-bold">
@@ -78,31 +116,35 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			</div>
 
 			<!-- 3.2 PC Tab 长条栏 -->
-			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-2xl bg-[#F0F0F0] dark:bg-[#1A1A1A]">
-				<span class="text-sm text-[#999] dark:text-[#666] border-r border-[#E0E0E0] dark:border-[#2A2A2A] pr-4 mr-4">分类</span>
-				<div class="flex gap-6">
+			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-2xl bg-[#F0F0F0] dark:bg-[#1A1A1A] shadow-sm hover:shadow-md transition-all duration-300">
+				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-[#E0E0E0] dark:border-[#2A2A2A] pr-4 mr-4">分类</span>
+				<div class="relative flex gap-2 z-0">
+					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-xl bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
-							class={`text-sm transition-colors duration-200 ${idx === 0 ? 'text-[#1A1A1A] dark:text-[#EAEAEA] border-b-2 border-[#8B7CB3] pb-1' : 'text-[#999] dark:text-[#666] hover:text-[#666] dark:hover:text-[#999]'}`}
+							data-active={idx === 0 ? 'true' : 'false'}
+							class="relative z-10 px-4 py-1.5 text-sm font-medium transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
 						>
 							{cat.name}
 						</button>
 					))}
 				</div>
-				<div class="ml-auto flex items-center gap-2 text-sm text-[#999]">
+				<div class="ml-auto flex items-center gap-2 text-sm font-medium text-[#999]">
 					<CalendarIcon />
-					<span id="tab-datetime">2026-4-26 21:48</span>
+					<span id="tab-datetime">--/--</span>
 				</div>
 			</div>
 
 			<!-- 3.3 移动端 Tab 胶囊栏 -->
-			<div class="flex md:hidden flex-1 h-12 items-center px-4 rounded-full bg-white/20 dark:bg-black/30 backdrop-blur-md overflow-hidden">
-				<div class="flex gap-4 overflow-x-auto hide-scrollbar w-full">
+			<div class="flex md:hidden flex-1 h-12 items-center px-2 rounded-full bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5 overflow-hidden">
+				<div class="relative flex gap-1 overflow-x-auto hide-scrollbar w-full items-center z-0">
+					<div id="mobile-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-[#8B7CB3] shadow-md transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
-							class={`text-sm flex-shrink-0 transition-colors duration-200 ${idx === 0 ? 'text-[#1A1A1A] dark:text-[#EAEAEA] border-b-2 border-[#8B7CB3] pb-1' : 'text-[#999] dark:text-[#666] hover:text-[#666] dark:hover:text-[#999]'}`}
+							data-active={idx === 0 ? 'true' : 'false'}
+							class="relative z-10 px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors duration-300 outline-none select-none active:scale-95 text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] data-[active=true]:text-white"
 						>
 							{cat.name}
 						</button>
@@ -115,125 +157,272 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		<div class="mt-6 grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-6">
 			<!-- 3.4 左侧盒子区（PC only） -->
 			<div class="hidden md:flex flex-col gap-4">
-				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4 flex flex-col">
-					<div class="flex justify-between items-center mb-2">
-						<span id="calendar-title" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]"></span>
-						<div class="flex gap-2">
-							<button onclick="console.log('prev month')" class="text-xs text-[#999] hover:text-[#666] bg-transparent border-none cursor-pointer">&lt;</button>
-							<button onclick="console.log('next month')" class="text-xs text-[#999] hover:text-[#666] bg-transparent border-none cursor-pointer">&gt;</button>
+				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+					<div class="flex justify-between items-center mb-4">
+						<span id="calendar-title" class="text-xs font-bold text-[#8B7CB3] tracking-widest"></span>
+						<div class="flex gap-1">
+							<button onclick="console.log('prev month')" class="text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer transition-colors p-1 flex items-center justify-center">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+							</button>
+							<button onclick="console.log('next month')" class="text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer transition-colors p-1 flex items-center justify-center">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+							</button>
 						</div>
 					</div>
-					<div class="flex justify-between mb-1">
-						<span class="text-xs text-[#999] w-full text-center">一</span>
-						<span class="text-xs text-[#999] w-full text-center">二</span>
-						<span class="text-xs text-[#999] w-full text-center">三</span>
-						<span class="text-xs text-[#999] w-full text-center">四</span>
-						<span class="text-xs text-[#999] w-full text-center">五</span>
-						<span class="text-xs text-[#999] w-full text-center">六</span>
-						<span class="text-xs text-[#999] w-full text-center">日</span>
+
+					<div class="flex justify-between mb-2 px-1">
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">一</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">二</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">三</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">四</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">五</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">六</span>
+						<span class="text-[10px] font-medium text-[#999] w-full text-center">日</span>
 					</div>
-					<div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1"></div>
-					<div class="border-t border-[#E0E0E0] dark:border-[#2A2A2A] mt-2 pt-2 flex justify-between items-center">
-						<span class="text-xs text-[#999]">Welcome</span>
-						<span class="text-xs text-[#999]">4-20</span>
+
+					<div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1 px-1"></div>
+
+					<div class="border-t border-[#E0E0E0] dark:border-[#2A2A2A] mt-3 pt-3 flex justify-between items-center px-1">
+						<div class="flex items-center gap-1.5 text-[#1A1A1A] dark:text-[#EAEAEA]">
+							<svg class="w-3.5 h-3.5 text-[#8B7CB3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							<span class="text-[10px] font-bold">Today</span>
+						</div>
+						<span id="calendar-footer-date" class="text-[10px] font-mono font-medium text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-0.5 rounded-md">--/--</span>
 					</div>
 				</div>
-				<div id="sidebar-box-2" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4">
-					<div class="flex items-center gap-2 mb-3">
-						<span class="text-xs text-[#999]">♪</span>
-						<span class="text-xs font-medium text-[#999]">音乐</span>
-					</div>
-					<div class="flex gap-3">
-						<div class="w-16 h-16 rounded-lg bg-[#E0E0E0] dark:bg-[#2A2A2A] flex items-center justify-center flex-shrink-0">
-							<span class="text-xs text-[#999]">🎵</span>
+				<div id="sidebar-box-2" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+					<div class="flex items-center justify-between mb-4">
+						<div class="flex items-center gap-2">
+							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
 						</div>
-						<div class="flex flex-col justify-center flex-1 min-w-0">
-							<p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] truncate">浮遊大陸アルジェス -In the Sky-</p>
-							<p class="text-xs text-[#999] mt-1 truncate">Falcom Sound Team J.D.K.</p>
-							<p class="text-xs text-[#999] mt-1">0:00 / 3:10</p>
+						<div class="flex items-end gap-[2px] h-3">
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay: 0.2s"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay: 0.4s"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[80%] animate-pulse" style="animation-delay: 0.1s"></div>
 						</div>
 					</div>
-					<div class="mt-3 w-full h-1 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden">
-						<div class="h-full bg-[#8B7CB3] rounded-full w-0"></div>
+
+					<div class="flex gap-3 items-center">
+						<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] shadow-inner group cursor-pointer">
+							<div class="absolute inset-0 flex items-center justify-center text-white/60 group-hover:scale-110 group-hover:text-white transition-all duration-500">
+								<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
+							</div>
+						</div>
+						
+						<div class="flex-1 min-w-0 flex flex-col justify-center">
+							<h4 class="text-[15px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate tracking-tight">浮遊大陸アルジェス</h4>
+							<p class="text-xs text-[#666] dark:text-[#999] mt-0.5 truncate">Falcom Sound Team J.D.K.</p>
+						</div>
 					</div>
-					<div class="mt-3 flex justify-between items-center">
-						<button onclick="console.log('loop')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">↻</button>
-						<button onclick="console.log('prev')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">◁</button>
-						<button onclick="togglePlay()" class="text-xs text-white bg-[#8B7CB3] hover:bg-[#7A6BA2] w-8 h-8 rounded-full flex items-center justify-center border-none cursor-pointer">⏵</button>
-						<button onclick="console.log('next')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">▷</button>
-						<button onclick="console.log('list')" class="text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer">☰</button>
+
+					<div class="mt-4 flex flex-col gap-1.5">
+						<div class="relative w-full h-1.5 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden cursor-pointer group/progress">
+							<div class="absolute top-0 left-0 h-full bg-[#8B7CB3] w-[35%] rounded-full group-hover/progress:bg-[#7A6BA2] transition-colors relative">
+								<div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow opacity-0 group-hover/progress:opacity-100 transition-opacity"></div>
+							</div>
+						</div>
+						<div class="flex justify-between items-center text-[10px] font-medium text-[#999] font-mono">
+							<span>1:06</span>
+							<span>3:10</span>
+						</div>
+					</div>
+
+					<div class="mt-1 flex justify-between items-center px-1">
+						<button onclick="console.log('loop')" class="text-[#999] hover:text-[#8B7CB3] transition-colors">
+							<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+						</button>
+						
+						<div class="flex items-center gap-4">
+							<button onclick="console.log('prev')" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
+								<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+							</button>
+							
+							<button onclick="togglePlay()" class="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A1A] dark:bg-[#EAEAEA] text-white dark:text-[#1A1A1A] hover:bg-[#8B7CB3] dark:hover:bg-[#8B7CB3] hover:scale-105 active:scale-95 transition-all shadow-md">
+								<svg class="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+							</button>
+							
+							<button onclick="console.log('next')" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
+								<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+							</button>
+						</div>
+
+						<button onclick="console.log('list')" class="text-[#999] hover:text-[#8B7CB3] transition-colors">
+							<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+						</button>
 					</div>
 				</div>
-				<div id="sidebar-box-3" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4">
-					<div class="flex items-center gap-2 mb-3">
-						<div class="w-2 h-2 rounded-full bg-[#7CB38B]"></div>
-						<span class="text-xs font-medium text-[#7CB38B]">运行中</span>
+				<div id="sidebar-box-3" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+					<div class="flex items-center justify-between mb-4">
+						<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">System Status</span>
+						<div class="flex items-center gap-1.5">
+							<span class="relative flex h-2 w-2">
+								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
+								<span class="relative inline-flex rounded-full h-2 w-2 bg-[#7CB38B]"></span>
+							</span>
+							<span class="text-[10px] font-bold text-[#7CB38B] tracking-wide">运行中</span>
+						</div>
 					</div>
+
 					<div class="grid grid-cols-2 gap-3">
-						<div>
-							<div class="text-xs text-[#999]">运行</div>
-							<div id="stat-runtime" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">--</div>
+						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							</div>
+							<div id="stat-runtime" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">--</div>
+							<div class="text-[10px] text-[#999] mt-0.5">运行时间</div>
 						</div>
-						<div>
-							<div class="text-xs text-[#999]">最后活动</div>
-							<div id="stat-last-active" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">刚刚</div>
+
+						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+							</div>
+							<div id="stat-last-active" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">刚刚</div>
+							<div class="text-[10px] text-[#999] mt-0.5">最后活动</div>
 						</div>
-						<div>
-							<div class="text-xs text-[#999]">分类</div>
-							<div id="stat-categories" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{SITE_CONFIG.categories.length}个</div>
+
+						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+							</div>
+							<div id="stat-categories" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">{SITE_CONFIG.categories.length}个</div>
+							<div class="text-[10px] text-[#999] mt-0.5">站点分类</div>
 						</div>
-						<div>
-							<div class="text-xs text-[#999]">文章</div>
-							<div id="stat-posts" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">3篇</div>
+
+						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+							</div>
+							<div id="stat-posts" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">3篇</div>
+							<div class="text-[10px] text-[#999] mt-0.5">已发文章</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<!-- 3.4 右侧主容器区 -->
-			<div id="tab-panel-container" class="rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] min-h-[400px] p-4 md:p-6">
-				<!-- 札记面板（默认显示） -->
+			<div id="tab-panel-container" class="flex-1 min-h-[400px] w-full mt-4 md:mt-0">
+				
 				<div class="panel-notes">
-					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 mb-4 flex flex-col md:flex-row gap-4">
-						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">春夜读书记</h3>
-						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-20</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">1,280字</span></div>
-						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">雨后的夜晚特别适合翻阅那些积灰的旧书。书架最底层的《追忆似水年华》已经躺了三年，今晚终于决定给它一个机会，看看能否在普鲁斯特的长句中找到某种慰藉。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
+					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
+						<div class="flex-1 flex flex-col justify-center">
+							<div class="flex items-center gap-3 mb-3">
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">Research</span>
+								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+									2026-03-20
+								</span>
+							</div>
+							
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">半封闭景观水体碳酸盐系统与碳汇观测日志</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">历时一年针对厦门龙舟池的物理采样与数据建模终于告一段落。本文记录了这14个月里关于水体碳汇计算的关键参数，以及模型建立初期踩过的一些坑。</p>
+							
+							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+								Read Article 
+								<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+							</div>
+						</div>
+						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							</div>
+						</div>
 					</article>
-					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 mb-4 flex flex-col md:flex-row gap-4">
-						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">咖啡与代码</h3>
-						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-15</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">856字</span></div>
-						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">凌晨三点的咖啡馆，只有我和一台老旧的意式咖啡机。屏幕上的光标在闪烁，Bug 却像幽灵一样躲藏在某个角落，不肯现身。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
+
+					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
+						<div class="flex-1 flex flex-col justify-center">
+							<div class="flex items-center gap-3 mb-3">
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">History</span>
+								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+									2026-01-12
+								</span>
+							</div>
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">1976年民兵史料辨伪与栎木的实体特征考据</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">通过对地方志的梳理，重新理清了许老三在70年代民兵活动中的真实轨迹。附带验证了方言中所谓“列树”的植物学真身——通过苦味与果实特征比对，确认为栎木。</p>
+							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+							</div>
+						</div>
+						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							</div>
+						</div>
 					</article>
-					<article class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col md:flex-row gap-4">
-						<div class="flex-[2] flex flex-col"><h3 class="text-lg font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 hover:text-[#8B7CB3] transition-colors">城市漫步笔记</h3>
-						<div class="flex items-center gap-2 mb-3"><span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">2026-04-10</span><span class="text-xs text-[#CCC]">·</span><span class="text-xs text-[#999]">1,042字</span></div>
-						<p class="text-sm text-[#666] dark:text-[#888] line-clamp-2 mb-3">从老城区走到江边，途经七家闭店的面包房和一家新开的花店。城市的肌理在步行中变得清晰，那些被车速忽略的细节一一浮现。</p></div><div class="flex-[1] min-h-[100px] h-full rounded-xl overflow-hidden bg-[#E8E8E8] dark:bg-[#2A2A2A] flex items-center justify-center"><span class="text-xs text-[#999]">封面占位</span></div>
+
+					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
+						<div class="flex-1 flex flex-col justify-center">
+							<div class="flex items-center gap-3 mb-3">
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">Photography</span>
+								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+									2025-11-05
+								</span>
+							</div>
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">沿海环境摄影：Lightroom 色彩分离与后期思路</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">海边的光线通常带有一种天然的青色调。本文分享了如何利用 Lightroom 的高光阴影色彩分离，将海岸线的冷峻感与夕阳的暖调进行融合重构。</p>
+							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+							</div>
+						</div>
+						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							</div>
+						</div>
 					</article>
+					<div class="w-full flex justify-center mt-8 mb-4">
+						<button id="load-more-btn" class="group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none">
+						<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+						<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多札记</span>
+						</button>
+					</div>
 				</div>
 
-				<!-- 其余面板（默认隐藏） -->
 				<div class="panel-critique" style="display: none;">
-					<p class="text-sm text-[#999]">时评簿面板占位</p>
+					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">时评簿面板建设中...</div>
 				</div>
 				<div class="panel-stack" style="display: none;">
-					<p class="text-sm text-[#999]">车间面板占位</p>
+					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">车间面板建设中...</div>
 				</div>
 				<div class="panel-body" style="display: none;">
-					<p class="text-sm text-[#999]">体感面板占位</p>
+					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">体感面板建设中...</div>
 				</div>
 				<div class="panel-transit" style="display: none;">
-					<p class="text-sm text-[#999]">行记面板占位</p>
+					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">行记面板建设中...</div>
 				</div>
 				<div class="panel-archive" style="display: none;">
-					<p class="text-sm text-[#999]">底片面版占位</p>
+					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">底片面版建设中...</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- 模块4：页脚 -->
-	<footer class="w-full bg-[#111111] py-12 px-6 mt-12">
-		<div class="flex flex-col items-center gap-1 text-xs text-[#888] leading-relaxed">
+	<footer id="site-footer" class="relative w-full bg-[#111111] py-12 px-6 mt-12 overflow-hidden">
+		
+		<div class="absolute inset-[-50%] z-0 pointer-events-none opacity-15">
+			<div id="footer-pattern" class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out will-change-transform"
+				style="
+					--pattern-size: 60px;           /* 控制星星之间的距离 */
+					--pattern-speed: 10s;           /* 流星雨速率 */
+					--pattern-color: #f90275;       /* 参考图中的暗粉紫色 */
+					
+					background-color: var(--pattern-color);
+					/* 纯描边 (Outline) 的星月交替阵列，利用 stroke 属性实现极致空心线框 */
+ 					-webkit-mask-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='black' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M25 8 Q25 25 42 25 Q25 25 25 42 Q25 25 8 25 Q25 25 25 8 Z' /%3E%3Cpath d='M80 60 A 14 14 0 1 0 60 80 A 18 18 0 1 1 80 60 Z' /%3E%3C/g%3E%3C/svg%3E&quot;);
+ 					mask-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='black' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M25 8 Q25 25 42 25 Q25 25 25 42 Q25 25 8 25 Q25 25 25 8 Z' /%3E%3Cpath d='M80 60 A 14 14 0 1 0 60 80 A 18 18 0 1 1 80 60 Z' /%3E%3C/g%3E%3C/svg%3E&quot;);
+					-webkit-mask-size: var(--pattern-size) var(--pattern-size);
+					mask-size: var(--pattern-size) var(--pattern-size);
+					animation: footer-pattern-move var(--pattern-speed) linear infinite;
+				"
+			></div>
+		</div>
+
+		<div class="absolute top-0 left-0 w-full h-16 z-0 pointer-events-none bg-gradient-to-b from-[#111111] to-transparent opacity-90"></div>
+
+		<div class="relative z-10 flex flex-col items-center gap-1 text-xs text-[#888] leading-relaxed">
 			<div>
 				<span>© 2026 {SITE_CONFIG.siteName}</span>
 				<span class="mx-2">/</span>
@@ -283,34 +472,64 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			console.log('menu');
 		}
 
-		// Tab 切换
+		// Tab 切换、果冻滑块与面板动画
 		const tabButtons = document.querySelectorAll('[data-tab]');
 		const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
+
+		// 果冻滑块引擎：精准捕获激活状态按钮的 X 轴偏移量和宽度
+		function syncSliders() {
+			const activePcBtn = document.querySelector('.hidden.md\\:flex [data-tab][data-active="true"]');
+			const pcSlider = document.getElementById('pc-tab-slider');
+			if(activePcBtn && pcSlider) {
+				pcSlider.style.transform = `translateX(${activePcBtn.offsetLeft}px)`;
+				pcSlider.style.width = `${activePcBtn.offsetWidth}px`;
+			}
+			
+			const activeMobileBtn = document.querySelector('.md\\:hidden [data-tab][data-active="true"]');
+			const mobileSlider = document.getElementById('mobile-tab-slider');
+			if(activeMobileBtn && mobileSlider) {
+				mobileSlider.style.transform = `translateX(${activeMobileBtn.offsetLeft}px)`;
+				mobileSlider.style.width = `${activeMobileBtn.offsetWidth}px`;
+			}
+		}
 
 		tabButtons.forEach(btn => {
 			btn.addEventListener('click', () => {
 				const tabId = btn.dataset.tab;
 
-				// 重置所有按钮样式
+				// 1. 同步所有按钮的数据状态
 				tabButtons.forEach(b => {
-					b.classList.remove('text-[#1A1A1A]', 'dark:text-[#EAEAEA]', 'border-b-2', 'border-[#8B7CB3]', 'pb-1');
-					b.classList.add('text-[#999]', 'dark:text-[#666]');
+					b.dataset.active = (b.dataset.tab === tabId) ? "true" : "false";
 				});
 
-				// 激活当前按钮
-				btn.classList.remove('text-[#999]', 'dark:text-[#666]');
-				btn.classList.add('text-[#1A1A1A]', 'dark:text-[#EAEAEA]', 'border-b-2', 'border-[#8B7CB3]', 'pb-1');
+				// 2. 触发滑块追随动画
+				syncSliders();
 
-				// 隐藏所有面板
+				// 3. 面板动画逻辑保持不变
 				panelClasses.forEach(cls => {
 					const panel = document.querySelector('.' + cls);
 					if (panel) panel.style.display = 'none';
 				});
 
-				// 显示目标面板
 				const target = document.querySelector('.panel-' + tabId);
-				if (target) target.style.display = 'block';
+				if (target) {
+					target.style.display = 'block';
+					target.animate([
+						{ opacity: 0, transform: 'translateY(10px)' }, 
+						{ opacity: 1, transform: 'translateY(0)' }
+					], { 
+						duration: 400, 
+						easing: 'cubic-bezier(0.16, 1, 0.3, 1)' 
+					});
+				}
 			});
+		});
+
+		// 页面尺寸变动或初次加载完成时，进行物理坐标矫正
+		window.addEventListener('resize', syncSliders);
+		document.addEventListener('DOMContentLoaded', () => {
+			// 增加一点小延迟，确保特殊字体加载完毕，算出的宽度才是最准确的
+			setTimeout(syncSliders, 50); 
 		});
 
 		// 导航栏滚动效果（简化版：只控制阴影深浅）
@@ -333,8 +552,12 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			const day = now.getDate();
 			const hours = String(now.getHours()).padStart(2, '0');
 			const minutes = String(now.getMinutes()).padStart(2, '0');
+			//更新顶部Tab栏日期时间显示
 			const el = document.getElementById('tab-datetime');
 			if (el) el.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
+			// 更新日历底部 Today 胶囊
+			const footerDateEl = document.getElementById('calendar-footer-date');
+			if (footerDateEl) footerDateEl.textContent = `${month}-${day}`;
 		}
 		updateDateTime();
 		setInterval(updateDateTime, 60000);
@@ -406,6 +629,65 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		}
 		updateRuntime();
 		setInterval(updateRuntime, 1000);
+    
+    // 监听暗黑模式 class 切换，确保无缝平滑过渡
+    const observer = new MutationObserver(() => {
+        // 仅仅是触发重新评估 isDark，下一帧 animate 就会自动更新颜色
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+	// 页脚星空鼠标视差交互 (全屏无缝监听版)
+		const footerPattern = document.getElementById('footer-pattern');
+
+		if (footerPattern) {
+			// 将监听器挂载到 window 上，无论鼠标在网页哪个角落，星空都会呼应
+			window.addEventListener('mousemove', (e) => {
+				// 以整个浏览器窗口宽度/高度为基准，计算 -0.5 到 +0.5 的相对比例
+				const x = e.clientX / window.innerWidth - 0.5;
+				const y = e.clientY / window.innerHeight - 0.5;
+				
+				// 保持 200px 的大幅度拉扯感
+				const moveX = x * -200; 
+				const moveY = y * -200;
+
+				requestAnimationFrame(() => {
+					footerPattern.style.transform = `translate(${moveX}px, ${moveY}px)`;
+				});
+			});
+			// （彻底移除了 mouseleave 事件，消灭鼠标移出时的回弹割裂感）
+		}
+	// 移动端全屏菜单控制逻辑
+		let isMobileMenuOpen = false;
+		function toggleMobileMenu() {
+			const menu = document.getElementById('mobile-menu');
+			const links = document.querySelectorAll('.mobile-nav-link');
+			const footer = document.getElementById('mobile-menu-footer');
+			
+			isMobileMenuOpen = !isMobileMenuOpen;
+
+			if (isMobileMenuOpen) {
+				// 1. 展开遮罩，阻止背景滚动
+				menu.classList.remove('opacity-0', 'pointer-events-none');
+				document.body.style.overflow = 'hidden';
+				
+				// 2. 触发文字错落上浮动画
+				setTimeout(() => {
+					links.forEach(link => {
+						link.classList.remove('translate-x-12', 'opacity-0');
+					});
+					footer.classList.remove('translate-x-12', 'opacity-0');
+				}, 50); // 微小延迟确保 CSS Transition 能捕捉到变化
+			} else {
+				// 1. 撤去遮罩，恢复滚动
+				menu.classList.add('opacity-0', 'pointer-events-none');
+				document.body.style.overflow = '';
+				
+				// 2. 文字瞬间归位，为下一次展开做准备
+				links.forEach(link => {
+					link.classList.add('translate-x-12', 'opacity-0');
+				});
+				footer.classList.add('translate-x-12', 'opacity-0');
+			}
+		}
 	</script>
 </body>
 </html>
@@ -428,6 +710,28 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 	}
 	.hide-scrollbar::-webkit-scrollbar {
 		display: none;
+	}
+	@keyframes wave-move {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
+	}
+	.animate-wave-1 {animation: wave-move 25s linear infinite; }
+	.animate-wave-2 {animation: wave-move 18s linear infinite; }
+	.animate-wave-3 {animation: wave-move 12s linear infinite; }
+	@keyframes footer-pattern-move {
+		0% {
+			-webkit-mask-position: 0 0;
+			mask-position: 0 0;
+		}
+		100% {
+			/* 动态获取控制面板中设置的大小，实现严丝合缝的无限循环滚动 */
+			-webkit-mask-position: calc(-1 * var(--pattern-size)) var(--pattern-size);
+			mask-position: calc(-1 * var(--pattern-size)) var(--pattern-size);
+		}
 	}
 
 </style>
