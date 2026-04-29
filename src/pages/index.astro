@@ -18,7 +18,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F]">
 	<!-- 模块1：导航栏 -->
-	<nav id="site-nav" class="site-nav fixed top-0 left-0 w-full h-16 z-50 transition-all duration-300 ease-out">
+	<nav id="site-nav" class="fixed top-0 left-0 w-full h-16 z-50 bg-[rgba(250,250,250,0.85)] dark:bg-[rgba(15,15,15,0.85)] backdrop-blur-[12px] shadow-sm transition-all duration-300">
 		<div class="flex justify-between items-center px-6 h-full">
 			<!-- 左侧站点名 -->
 			<a href="/" class="text-xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]">
@@ -54,18 +54,18 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 	</nav>
 
 	<!-- 模块2：Hero区 -->
-	<section class="relative w-full h-[35vh] overflow-hidden">
-		<img src="/images/hero-bg.jpg" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_30%]" />
+	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden">
+		<img src="/images/hero-bg.jpg" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_40%]" />
 		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
 		<div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FAFAFA] to-transparent dark:from-[#0F0F0F]"></div>
 	</section>
 
 	<!-- 模块3：个人锚点区 -->
-	<div class="max-w-[1200px] mx-auto px-4 md:px-6">
+	<div class="max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 md:px-6 lg:px-10 xl:px-12">
 		<!-- 顶部行：头像 + Tab栏 -->
-		<div class="flex md:grid md:grid-cols-[160px_1fr] gap-4 md:gap-6 items-end relative z-10">
+		<div class="flex md:grid md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-4 md:gap-6 items-end relative z-10">
 			<!-- 3.1 头像 -->
-			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] -mt-[80px] ring-4 ring-white flex-shrink-0 overflow-hidden relative">
+			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] md:-mt-[130px] xl:-mt-[140px] ring-4 ring-white flex-shrink-0 overflow-hidden relative">
 				<img
 					src={SITE_CONFIG.images.avatar}
 					alt="头像"
@@ -112,7 +112,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		</div>
 
 		<!-- 内容行 -->
-		<div class="mt-6 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
+		<div class="mt-6 grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-6">
 			<!-- 3.4 左侧盒子区（PC only） -->
 			<div class="hidden md:flex flex-col gap-4">
 				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-4 flex flex-col">
@@ -243,7 +243,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 				<span class="mx-2">/</span>
 				<a href="/colophon" class="hover:text-[#CCC] transition-colors no-underline">/colophon</a>
 			</div>
-			<div>本站已运行 <span id="site-runtime">--</span></div>
+			<div><span id="site-runtime">--</span></div>
 			<div>Powered by Astro & Cloudflare Pages / 萌ICP备XXXXX号</div>
 		</div>
 	</footer>
@@ -313,7 +313,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			});
 		});
 
-		// 导航栏滚动效果
+		// 导航栏滚动效果（简化版：只控制阴影深浅）
 		const nav = document.getElementById('site-nav');
 		function handleScroll() {
 			if (window.scrollY > 100) {
@@ -325,6 +325,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		window.addEventListener('scroll', handleScroll);
 		handleScroll();
 
+		//日期时间更新
 		function updateDateTime() {
 			const now = new Date();
 			const year = now.getFullYear();
@@ -417,13 +418,9 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		background-color: transparent;
 	}
 	.site-nav.scrolled {
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		background-color: rgba(250, 250, 250, 0.9);
 		box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 	}
 	.dark .site-nav.scrolled {
-		background-color: rgba(15, 15, 15, 0.9);
 	}
 	.hide-scrollbar {
 		-ms-overflow-style: none;
