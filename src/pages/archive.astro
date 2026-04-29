@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="归档">
+	<div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-16 pb-12">
+		<!-- 标题区 -->
+		<div class="mb-12">
+			<h1 class="text-4xl font-bold mb-2">Archive</h1>
+			<p class="text-lg text-[#666] dark:text-[#999]">过往，现在，未来</p>
+		</div>
+
+		<!-- 三栏布局 -->
+		<div class="grid grid-cols-1 md:grid-cols-[200px_1fr_260px] gap-8">
+			
+			<!-- 左侧：年份导航（sticky） -->
+			<aside class="hidden md:block">
+				<div class="sticky top-24">
+					<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-4">年份</h3>
+					<nav class="flex flex-col gap-2">
+						<!-- 锚点链接 -->
+						<a href="#year-2026" class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">2026</a>
+						<a href="#year-2025" class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">2025</a>
+					</nav>
+				</div>
+			</aside>
+
+			<!-- 中间：主时间轴 -->
+			<main class="relative">
+				<!-- 时间轴纵向竖线（绝对定位，偏左） -->
+				<div class="absolute left-[11px] top-0 bottom-0 w-[2px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+
+				<!-- 2026 年份节点 -->
+				<section id="year-2026" class="relative mb-12">
+					<!-- 年份大节点 -->
+					<div class="flex items-center gap-4 mb-6 relative">
+						<div class="w-6 h-6 rounded-full bg-[#8B7CB3] border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10"></div>
+						<h2 class="text-2xl font-bold">2026</h2>
+						<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+					</div>
+
+					<!-- 月份分组：04月 -->
+					<div class="ml-8 mb-8 relative">
+						<!-- 月份分支竖线 -->
+						<div class="absolute left-[-21px] top-0 bottom-0 w-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+						
+						<h3 class="text-sm font-medium text-[#999] mb-4 relative">
+							<span class="absolute left-[-28px] top-[50%] w-2 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></span>
+							04 月
+						</h3>
+
+						<!-- 文章卡片（只显示标题+标签，点击跳转） -->
+						<div class="flex flex-col gap-3">
+							<a href="/blog/chun-ye-du-shu-ji" class="group block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+								<div class="flex items-center gap-2 mb-2">
+									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
+									<span class="text-xs text-[#999]">04-20</span>
+								</div>
+								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">半封闭景观水体碳酸盐系统与碳汇观测日志</h4>
+							</a>
+
+							<a href="/blog/ka-fei-yu-dai-ma" class="group block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+								<div class="flex items-center gap-2 mb-2">
+									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
+									<span class="text-xs text-[#999]">04-15</span>
+								</div>
+								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">咖啡与代码</h4>
+							</a>
+						</div>
+					</div>
+
+					<!-- 月份分组：03月 -->
+					<div class="ml-8 mb-8 relative">
+						<div class="absolute left-[-21px] top-0 bottom-0 w-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+						<h3 class="text-sm font-medium text-[#999] mb-4 relative">
+							<span class="absolute left-[-28px] top-[50%] w-2 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></span>
+							03 月
+						</h3>
+						<div class="flex flex-col gap-3">
+							<a href="/blog/cheng-shi-man-bu-bi-ji" class="group block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+								<div class="flex items-center gap-2 mb-2">
+									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
+									<span class="text-xs text-[#999]">03-10</span>
+								</div>
+								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">城市漫步笔记</h4>
+							</a>
+						</div>
+					</div>
+				</section>
+
+				<!-- 2025 年份节点（占位） -->
+				<section id="year-2025" class="relative mb-12">
+					<div class="flex items-center gap-4 mb-6 relative">
+						<div class="w-6 h-6 rounded-full bg-[#E8913A] border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10"></div>
+						<h2 class="text-2xl font-bold">2025</h2>
+						<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+					</div>
+					<div class="ml-8 text-sm text-[#999]">暂无文章</div>
+				</section>
+			</main>
+
+			<!-- 右侧：年度摘要卡片 -->
+			<aside class="hidden md:block">
+				<div class="sticky top-24 space-y-4">
+					<!-- 统计卡片 -->
+					<div class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm">
+						<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-3">2026 统计</h3>
+						<div class="grid grid-cols-2 gap-3">
+							<div>
+								<div class="text-2xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">3</div>
+								<div class="text-xs text-[#999]">篇文章</div>
+							</div>
+							<div>
+								<div class="text-2xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">1</div>
+								<div class="text-xs text-[#999]">个分类</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 热门标签 -->
+					<div class="bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm">
+						<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-3">标签</h3>
+						<div class="flex flex-wrap gap-2">
+							<span class="px-2 py-1 rounded-md text-xs bg-[#F0F0F0] dark:bg-[#1A1A1A] text-[#666] dark:text-[#999]">碳汇</span>
+							<span class="px-2 py-1 rounded-md text-xs bg-[#F0F0F0] dark:bg-[#1A1A1A] text-[#666] dark:text-[#999]">阅读</span>
+							<span class="px-2 py-1 rounded-md text-xs bg-[#F0F0F0] dark:bg-[#1A1A1A] text-[#666] dark:text-[#999]">代码</span>
+						</div>
+					</div>
+				</div>
+			</aside>
+		</div>
+
+		<!-- 底部年度总结入口 -->
+		<div class="mt-16 text-center">
+			<a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-medium hover:bg-[#7A6BA2] transition-colors">
+				2026 Review →
+			</a>
+		</div>
+	</div>
+</BaseLayout>
+
+<script is:inline>
+	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener('click', function (e) {
+			e.preventDefault();
+			const target = document.querySelector(this.getAttribute('href'));
+			if (target) {
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		});
+	});
+</script>
