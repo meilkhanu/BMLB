@@ -322,4 +322,21 @@ const navLinkClass = (path: string) => {
  	.dark .annual-review-btn:hover {
  		box-shadow: 2px 2px 5px #080808, -2px -2px 5px #252525;
  	}
+	/* --- 流光进度条动画 --- */
+  	@keyframes gradient-x {
+  		0%, 100% { background-position: 0% 50%; }
+  		50% { background-position: 100% 50%; }
+  	}
+   	.animate-gradient-x {
+  		animation: gradient-x 3s ease infinite;
+  	}
+  
+  	/* --- 标签扫光动画 --- */
+	@keyframes sweep {
+		0% { left: -100%; }
+		100% { left: 200%; }
+	}
+	.animate-sweep {
+		animation: sweep 1.5s ease-in-out infinite;
+	} 
 </style>

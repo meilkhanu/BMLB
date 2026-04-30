@@ -3,11 +3,382 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="/now">
-	<div class="max-w-[1200px] mx-auto px-4 md:px-6 pt-12 pb-12">
-		<h2 class="text-2xl font-bold mb-4">/now</h2>
-		<p class="text-sm text-[#999] mb-6">现在在做的事，建设中</p>
-		<div class="w-full h-64 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center">
-			<span class="text-sm text-[#999]">now 页面占位</span>
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-[100px] pb-16 space-y-8">
+    <!-- 第一行：状态面板 -->
+    <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 p-6 md:p-8 relative overflow-hidden">
+		<!-- 装饰性光晕（在左上角放置环境光，与下方超大卡片的右上角光晕形成对角呼应） -->
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0"></div>
+	  	<div class="flex flex-col md:flex-row gap-6 relative z-10">
+        <!-- 左侧 35% 视觉文案 -->
+        <div class="md:w-[35%] flex flex-col justify-center">
+          <p class="text-xs font-medium text-[#999] uppercase tracking-widest mb-1">Now</p>
+          <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
+          <p class="text-sm text-[#999] mt-2">Current Focus</p>
+		  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
+          <p class="text-sm text-[#999]">Building</p>
+		  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
+        </div>
+        <!-- 中部 30% 时间河流 -->
+        <div class="md:w-[30%]">
+          <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">The Flowing of Becoming</p>
+          <div class="text-sm space-y-1">
+            <!-- 给每一行数据增加 -mx-2 和 px-2，实现鼠标悬浮时行内高亮的微反馈 -->
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+              <span class="text-[#999]">开始时间</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-04-30</span>
+            </div>
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+              <span class="text-[#999]">已持续</span>
+              <span id="now-running-time" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">计算中...</span>
+            </div>
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+              <span class="text-[#999]">预计结束</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-05-20</span>
+            </div>
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+              <span class="text-[#999]">已投入天数</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]"><span id="now-days">...</span> 天</span>
+            </div>
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+              <span class="text-[#999]">当前阶段</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">Phase 2</span>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧 35% 事项描述 -->
+        <div class="md:w-[35%]">
+          <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">事项描述</p>
+          <p class="text-sm text-[#666] dark:text-[#888] group-hover:text-[#444] dark:group-hover:text-[#AAA] leading-relaxed transition-colors duration-500">
+            目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第二行：并行卡片矩阵 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- 卡片 1：正在阅读 -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+        <!-- 隐性交互：背景巨型模糊 Emoji -->
+        <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">📖</div>
+        <!-- 前景内容区 -->
+        <div class="relative z-10">
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">📖</div>
+          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在阅读</h3>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">《追忆似水年华》</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">第三卷，缓慢推进中</p>
+        </div>
+      </div>
+
+      <!-- 卡片 2：正在学习 -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+        <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">💻</div>
+        <div class="relative z-10">
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">💻</div>
+          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在学习</h3>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">Astro + CF 全栈</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">进度 45%</p>
+        </div>
+      </div>
+
+      <!-- 卡片 3：正在研究 -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+        <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🔬</div>
+        <div class="relative z-10">
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🔬</div>
+          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在研究</h3>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">半封闭水体碳汇</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">数据整理阶段</p>
+        </div>
+      </div>
+
+      <!-- 卡片 4：正在听 -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+        <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🎵</div>
+        <div class="relative z-10">
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🎵</div>
+          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在听</h3>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">浮遊大陸アルジェス</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">Falcom Sound Team</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- 第三行：Current Project 超大卡片 -->
+    <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden">
+		<!-- 装饰性光晕（在卡片右上角微微发光，增加空间感） -->
+		<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+      	<div class="flex flex-col md:flex-row gap-8">
+        <!-- 左侧 55% -->
+        <div class="md:w-[55%]">
+          <p class="text-xs text-[#999] uppercase tracking-widest mb-2">Current Project</p>
+          <h2 class="text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">个人网站第二阶段开发</h2>
+          <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div>
+              <span class="text-[#999] block">Started</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-04-30</span>
+            </div>
+            <div>
+              <span class="text-[#999] block">Running</span>
+              <span id="project-running" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+            </div>
+            <div>
+              <span class="text-[#999] block">ETA</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-05-20</span>
+            </div>
+            <div>
+              <span class="text-[#999] block">Progress</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">72%</span>
+            </div>
+          </div>
+          <!-- 动态流光进度条（Animated Gradient + 头部发光点） -->
+          <div class="w-full h-2.5 bg-[#E0E0E0]/80 dark:bg-[#2A2A2A] rounded-full overflow-visible mb-5 relative shadow-inner">
+			<div class="absolute top-0 left-0 h-full rounded-full w-[72%] bg-gradient-to-r from-[#8B7CB3] via-[#B26A8B] to-[#8B7CB3] bg-[length:200%_200%] animate-gradient-x shadow-[0_0_10px_rgba(139,124,179,0.5)]">
+				<!-- 进度条推进末端的发光点 -->
+				<div class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_8px_rgba(139,124,179,0.8)] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+			</div>
+          </div>
+          <!-- 状态标签 -->
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default">
+          <span class="relative z-10">高投入推进中</span>
+		  <!-- 标签内的一道扫光 -->
+		  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
+		  </span>
+		  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 2026-05-20 前完成上线。</p>
+        </div>
+        <!-- 右侧 45% -->
+        <div class="md:w-[45%]">
+          <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F5F5F5] dark:bg-[#111111] border border-black/5 dark:border-white/5 shadow-inner flex items-center justify-center overflow-hidden relative group/screen">
+            <!-- 模拟屏幕玻璃反光 -->
+			<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none z-10"></div>
+			<span class="text-sm text-[#999]">项目截图占位</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第四行：左右双栏 -->
+    <div class="grid grid-cols-1 md:grid-cols-[30%_1fr] gap-6">
+    <!-- 左侧：微日志 (Dashboard Activity Feed 风格) -->
+        <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-5">
+            <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Activity Feed</p>
+            <span class="text-[9px] font-bold text-[#999] uppercase tracking-wider bg-black/5 dark:bg-white/5 px-2 py-1 rounded-md">Recent</span>
+          </div>
+  
+          <div class="flex flex-col gap-2">
+            <!-- Item 1: 最新动态 (高亮 + 呼吸灯 + 强背景) -->
+            <div class="group flex items-center justify-between p-3 rounded-2xl bg-white/80 dark:bg-[#252525]/80 hover:bg-white dark:hover:bg-[#2A2A2A] transition-all duration-300 shadow-sm hover:shadow-md hover:translate-x-1 cursor-default border border-white dark:border-white/5">
+              <div class="flex items-center gap-3">
+                <!-- 专属呼吸灯 -->
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
+                </span>
+                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">完成归档页设计</span>
+              </div>
+              <!-- 右侧高亮徽章 -->
+              <span class="text-[10px] font-mono font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-lg">04-30</span>
+            </div>
+  
+            <!-- Item 2: 历史动态 (常态透明，Hover点亮) -->
+            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
+              <div class="flex items-center gap-3">
+                <!-- 默认灰点，Hover变紫 -->
+                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
+                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">优化首页卡片层级</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-29</span>
+            </div>
+  
+            <!-- Item 3 -->
+            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
+              <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
+                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">构思 /now 页面结构</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-28</span>
+            </div>
+  
+            <!-- Item 4 -->
+            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
+              <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
+                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">统一配色系统</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-27</span>
+            </div>
+          </div>
+        </div>
+      <!-- 右侧：留言板 -->
+      <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col h-full">
+        <!-- 头部栏：加入 Live 呼吸绿点，暗示这是一个“活”的接收端 -->
+        <div class="flex items-center justify-between mb-5">
+          <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Leave a Message</p>
+          <span class="text-[10px] font-medium text-[#999] flex items-center gap-1.5">
+            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span></span>
+            Online
+          </span>
+        </div>
+
+        <!-- 留言板输入区（修正版：结构清晰、统一风格、无重复 textarea） -->
+		<div class="mb-6">
+  			<div
+    		class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300
+    		dark:border-[#2B2B2B] dark:bg-[#141414]/80
+    		focus-within:border-[#8B7CB3]/45
+    		focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)]
+    		focus-within:ring-4 focus-within:ring-[#8B7CB3]/8"
+  			>
+
+    		<!-- 输入区域 -->
+    		<textarea
+      		rows="3"
+      		placeholder="给现在的我留句话..."
+      		class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none
+      		dark:text-[#EAEAEA] dark:placeholder:text-[#666]"
+    		></textarea>
+
+    		<!-- 分割线 -->
+    		<div
+      		class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300
+      		dark:bg-[#2F2F2F]
+      		group-focus-within:bg-[#8B7CB3]/25"
+    	></div>
+
+    	<!-- 发送按钮 -->
+    	<button
+      	type="button"
+      	class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98]"
+    	>
+      	<!-- hover 扫光 -->
+      	<span class="absolute inset-0 overflow-hidden">
+        	<span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
+      	</span>
+
+      	<!-- 内容 -->
+      	<span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
+        	发送
+        	<svg
+          	class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+          	fill="none"
+          	stroke="currentColor"
+          	viewBox="0 0 24 24"
+        	>
+          	<path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+          	/>
+        	</svg>
+      	</span>
+    	</button>
+  		</div>
+
+		<!-- 底部提示信息 -->
+  		<div class="mt-2 flex items-center justify-between px-1">
+    		<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
+      		留下此刻想说的话
+    		</span>
+    		<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
+      		Ctrl + Enter 发送
+    		</span>
+  		</div>
 		</div>
-	</div>
+
+        <!-- 留言列表：统一磨砂玻璃与微交互体验 -->
+        <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1 pl-2 px-2 pt-2">
+          
+          <!-- Message 1 -->
+          <div class="group flex gap-3 cursor-default">
+            <!-- 头像：悬浮时放大并增加轻微阴影 -->
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B7CB3]/20 to-[#B26A8B]/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
+              <span class="text-xs font-bold text-[#8B7CB3]">A</span>
+            </div>
+            <div class="flex flex-col gap-1 w-full">
+              <div class="flex items-center justify-between pl-1">
+                <!-- 名字：悬浮时泛起专属紫灰色 -->
+                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Anonymous</span>
+                <!-- 时间戳 -->
+                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">刚刚</span>
+              </div>
+              <!-- 气泡本体：替换为磨砂玻璃 bg-white/60 + backdrop-blur-md，悬浮时上浮并加深边框微光 -->
+              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-[#8B7CB3]/20 transition-all duration-300">
+                页面很有生命力。
+              </div>
+            </div>
+          </div>
+          
+          <!-- Message 2 -->
+          <div class="group flex gap-3 cursor-default">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
+              <span class="text-xs font-bold text-blue-500">G</span>
+            </div>
+            <div class="flex flex-col gap-1 w-full">
+              <div class="flex items-center justify-between pl-1">
+                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-blue-500 transition-colors duration-300">Guest</span>
+                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">2 小时前</span>
+              </div>
+              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-blue-500/20 transition-all duration-300">
+                期待正式上线。
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 3 -->
+          <div class="group flex gap-3 cursor-default">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
+              <span class="text-xs font-bold text-emerald-500">V</span>
+            </div>
+            <div class="flex flex-col gap-1 w-full">
+              <div class="flex items-center justify-between pl-1">
+                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-emerald-500 transition-colors duration-300">Visitor</span>
+                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">昨天</span>
+              </div>
+              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-emerald-500/20 transition-all duration-300">
+                设计语言很统一。
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      		</div>
+    		</div>
+  		</div>
+
+  <script is:inline>
+    (function () {
+      const start = new Date('2026-04-26T00:00:00');
+
+      function formatDuration(ms) {
+        const totalMinutes = Math.floor(ms / 60000);
+        const days = Math.floor(totalMinutes / 1440);
+        const hours = Math.floor((totalMinutes % 1440) / 60);
+        const minutes = totalMinutes % 60;
+        return days + '天 ' + hours + '小时 ' + minutes + '分钟';
+      }
+
+      function update() {
+        const now = new Date();
+        const diff = now - start;
+
+        const runningText = diff >= 0 ? formatDuration(diff) : '0天 0小时 0分钟';
+        const days = diff >= 0 ? Math.floor(diff / 86400000) : 0;
+
+        const elRunning = document.getElementById('now-running-time');
+        const elDays = document.getElementById('now-days');
+        const elProject = document.getElementById('project-running');
+
+        if (elRunning) elRunning.textContent = runningText;
+        if (elDays) elDays.textContent = days;
+        if (elProject) elProject.textContent = runningText;
+      }
+
+      update();
+      setInterval(update, 1000);
+    })();
+  </script>
 </BaseLayout>
