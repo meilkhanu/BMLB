@@ -1,13 +1,1086 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../config.ts';
 ---
 
-<BaseLayout title="/colophon">
-	<div class="max-w-[1200px] mx-auto px-4 md:px-6 pt-12 pb-12">
-		<h2 class="text-2xl font-bold mb-4">/colophon</h2>
-		<p class="text-sm text-[#999] mb-6">站点技术说明，建设中</p>
-		<div class="w-full h-64 rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] flex items-center justify-center">
-			<span class="text-sm text-[#999]">colophon 占位</span>
-		</div>
+<BaseLayout title="/colophon — 站点说明">
+	<!-- 整体容器：双栏布局 -->
+	<div class="max-w-[1600px] w-full mx-auto px-6 md:px-10 lg:px-16 py-16 relative flex gap-12 lg:gap-24 xl:gap-32">
+		<!-- 左侧：加入 id 与平滑过渡，用于 Final 区域的淡出动画 -->
+  		<aside id="colophon-aside" class="hidden md:block w-[200px] shrink-0 self-start sticky top-[50vh] -translate-y-1/2 transition-opacity duration-700 ease-in-out z-50">
+  			<nav id="colophon-nav" class="relative w-full pl-4 py-2">
+  				<!-- 1. 全局统一的浅色轨道底线 -->
+  				<div class="absolute left-0 top-0 bottom-0 w-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+  				
+  				<!-- 2. 滑动的高亮指示条（紫色的胶囊）: 使用 cubic-bezier 模拟苹果物理阻尼感 -->
+  				<div id="nav-indicator" class="absolute left-[-1px] top-0 w-[3px] h-[16px] bg-[#8B7CB3] rounded-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] opacity-0"></div>
+  
+  				<!-- 3. 导航项容器：去除子层级的边框，纯靠缩进排版 -->
+  				<div class="space-y-6 relative z-10">
+  					<div>
+  						<button data-target="spirit" class="nav-jump w-full text-left text-xs font-bold text-[#999] dark:text-[#666] tracking-widest uppercase mb-3 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Spirit</button>
+  						<div class="space-y-3 mt-2 pl-3">
+   							<button data-target="naming" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">贝谟拉比</button>
+  							<button data-target="why" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Why</button>
+  						</div>
+  					</div>
+  					<div>
+  						<button data-target="system" class="nav-jump w-full text-left text-xs font-bold text-[#999] dark:text-[#666] tracking-widest uppercase mb-3 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">System</button>
+  						<div class="space-y-3 mt-2 pl-3">
+  							<button data-target="site-info" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Site Info</button>
+  							<button data-target="stack" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Stack</button>
+  							<button data-target="architecture" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Architecture</button>
+  							<!-- 补充缺失的项 -->
+  							<button data-target="design-system" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Design System</button>
+  							<button data-target="workflow" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Workflow</button>
+  							<button data-target="pipeline" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Build Pipeline</button>
+  							<button data-target="roadmap" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Roadmap</button>
+  							<button data-target="data-layer" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Data Layer</button>
+  							<button data-target="privacy" class="nav-jump w-full text-left text-xs text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Privacy & License</button>
+  						</div>
+  					</div>
+  					<!-- 补充 Credits 项 -->
+  					<div>
+  						<button data-target="credits" class="nav-jump w-full text-left text-xs font-bold text-[#999] dark:text-[#666] tracking-widest uppercase mb-3 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">Credits</button>
+  					</div>
+  					<div>
+  						<button data-target="final" class="nav-jump w-full text-left text-xs font-bold text-[#999] dark:text-[#666] tracking-widest uppercase hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors cursor-pointer bg-transparent border-none p-0">End</button>
+  					</div>
+  				</div>
+  			</nav>
+ 		</aside>
+
+		<!-- 右侧：主内容区 -->
+		<main class="flex-1 min-w-0">
+			<!-- ==================== 1. 首屏 Hero ==================== -->
+			<section id="hero" class="py-24 min-h-[70vh] flex items-center relative overflow-hidden">
+				<!-- 极简底纹：微弱的制图网格 -->
+				<div class="absolute inset-0 bg-[linear-gradient(to_right,#8B7CB315_1px,transparent_1px),linear-gradient(to_bottom,#8B7CB315_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none z-0"></div>
+
+				<div class="relative z-10 max-w-[1000px]">
+					<!-- 打字机特效容器 -->
+					<div class="inline-flex items-center mb-6 h-[4rem] md:h-[6rem]">
+						<h1 id="typewriter-text" class="text-5xl md:text-7xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]"></h1>
+						<!-- 闪烁的光标 -->
+						<span class="inline-block w-[3px] h-[3rem] md:h-[4.5rem] bg-[#8B7CB3] ml-1 animate-pulse"></span>
+					</div>
+
+					<!-- 文案：使用纯 Tailwind 过渡，JS 会负责移除透明度 -->
+					<p class="hero-fade-text opacity-0 translate-y-4 transition-all duration-1000 ease-out text-lg md:text-xl text-[#666] dark:text-[#999] mb-12 font-light">
+						关于这个站点如何被建造。Code, Design, Process, Intention.
+					</p>
+					<p class="hero-fade-text opacity-0 translate-y-4 transition-all duration-1000 ease-out delay-300 text-2xl md:text-3xl font-light text-[#1A1A1A] dark:text-[#EAEAEA] leading-relaxed tracking-wide">
+						世界正在变快、变碎、变短；<br />
+						而我走得很慢。
+					</p>
+				</div>
+			</section>
+
+			<!-- ==================== 2. 文学感区 Spirit ==================== -->
+			<section id="spirit" class="py-12 md:py-16">
+				
+				<!-- 2.1 贝谟拉比 Naming -->
+				<div id="naming" class="py-8">
+					<!-- 使用 max-content 完美收缩左侧标题容器，将所有剩余空间 (1fr) 让给右侧 -->
+					<div class="grid md:grid-cols-[max-content_1fr] gap-8 lg:gap-16 items-start">
+						<!-- 左侧：大标题 -->
+						<div>
+							<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]">
+								贝谟拉比
+							</h2>
+						</div>
+
+						<!-- 右侧：正文段落 (保持右对齐，加入悬浮变色过渡) -->
+						<div class="ml-auto max-w-[800px] space-y-6 text-base md:text-lg text-[#444] dark:text-[#AAA] leading-[1.8] md:text-right">
+							<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+								一个由游戏记忆、历史课堂与谐音幽默拼接而成的名字。
+							</p>
+							<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+								「贝」字源自《崩坏三》的贝拉（贝贝龙），拿出来，用到现在。<br />
+								「谟拉比」借自汉谟拉比法典——把刻在玄武岩上的秩序感，转译成互联网时代的一点玩笑精神。
+							</p>
+							<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+								于是有了贝谟拉比：<br />
+								既严肃，又发癫。
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- 2.2 Why This Site Exists -->
+				<div id="why" class="py-12 mt-4 md:mt-8">
+					<div class="max-w-[1000px] space-y-8 text-lg md:text-xl text-[#444] dark:text-[#AAA] leading-[1.8]">
+						<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+							世界正在变快、变碎、变短；而我走得很慢。
+						</p>
+						<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+							我想歇一歇，想记录，想分享，想保留一个属于自己的缓慢空间，<br />
+							记录思考、兴趣、作品与阶段性痕迹。
+						</p>
+						<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+							这里不是社交媒体，<br />
+							也不是内容工厂。
+						</p>
+						<p class="font-medium text-[#1A1A1A] dark:text-[#EAEAEA] transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
+							这里只是我的站点。
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- ==================== 3. 过渡区 Divider ==================== -->
+			<div id="divider" class="py-16 my-[120px] flex flex-col items-center text-center">
+				<div class="w-24 h-px bg-[#CCC] dark:bg-[#444] mb-6"></div>
+				<p class="text-xs text-[#999] dark:text-[#666] tracking-widest uppercase mb-2 font-medium">From Meaning to Mechanism</p>
+				<p class="text-xs text-[#999] dark:text-[#666] tracking-widest mb-6 font-medium">以下是它的实现方式</p>
+				<div class="w-24 h-px bg-[#CCC] dark:bg-[#444]"></div>
+			</div>
+
+			<!-- ==================== 4. 技术感区 System ==================== -->
+			<section id="system" class="py-24">
+				<!-- 4.1 Site Info + Status -->
+				<div id="site-info" class="py-12">
+					<div class="grid md:grid-cols-2 gap-8">
+						
+						<!-- 左侧：Site Information (紫色系微光) -->
+						<!-- 移除了 colophon-card，注入玻璃态与悬浮交互 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30 transition-all duration-500 relative overflow-hidden">
+							<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-6 tracking-tight group-hover:text-[#8B7CB3] transition-colors duration-500">Site Information</h3>
+							<ul class="space-y-2 text-sm text-[#666] dark:text-[#999]">
+								<!-- 列表项增加了 -mx-2 px-2 的内边距，实现 Hover 时整行背景微微高亮的交互 -->
+								<li class="flex justify-between items-center border-b border-[#E8E8E8]/50 dark:border-[#2A2A2A]/50 pb-2 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+									<span>上线时间</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-mono font-medium">{SITE_CONFIG.siteStartDate}</span>
+								</li>
+								<li class="flex justify-between items-center border-b border-[#E8E8E8]/50 dark:border-[#2A2A2A]/50 pb-2 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+									<span>当前阶段</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-medium">Phase 2（高投入）</span>
+								</li>
+								<li class="flex justify-between items-center border-b border-[#E8E8E8]/50 dark:border-[#2A2A2A]/50 pb-2 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+									<span>最后构建</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-mono font-medium">动态获取中</span>
+								</li>
+								<li class="flex justify-between items-center pt-1 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+									<span>开源许可</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-mono font-medium text-right">MIT / CC BY-NC 4.0</span>
+								</li>
+							</ul>
+						</div>
+
+						<!-- 右侧：Phase 2 状态卡片 (绿色系微光) -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#7CB38B]/30 transition-all duration-500 relative overflow-hidden">
+							<!-- 将光晕改为绿色系，并添加悬浮时加深的过渡效果 -->
+							<div class="absolute top-0 right-0 w-32 h-32 bg-[#7CB38B]/10 dark:bg-[#7CB38B]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+							
+							<div class="relative z-10">
+								<div class="flex items-center gap-3 mb-4">
+									<span class="relative flex h-3 w-3">
+										<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
+										<span class="relative inline-flex rounded-full h-3 w-3 bg-[#7CB38B]"></span>
+									</span>
+									<span class="text-[10px] font-bold text-[#7CB38B] tracking-widest uppercase">High Momentum</span>
+								</div>
+								<!-- 标题悬浮时略微变绿 -->
+								<h3 class="text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight group-hover:text-[#7CB38B] transition-colors duration-500">Phase 2</h3>
+								<p class="text-sm text-[#666] dark:text-[#999] mb-6">高投入推进中</p>
+								<div class="flex items-center gap-2 text-xs text-[#999] dark:text-[#666]">
+									<!-- 旋转刷新小图标 -->
+									<svg class="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+									</svg>
+									<span class="font-mono">Last Build: 2h ago</span>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+
+				<!-- 4.2 Stack -->
+				<div id="stack" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Stack</h3>
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+						
+						<!-- Astro -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Astro</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Content-first framework</div>
+						</div>
+
+						<!-- Tailwind -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Tailwind</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Utility-first styling</div>
+						</div>
+
+						<!-- Cloudflare -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Edge-first deploy</div>
+						</div>
+
+						<!-- D1 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">SQLite on edge</div>
+						</div>
+
+						<!-- KV -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">KV</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Key-value cache</div>
+						</div>
+
+						<!-- R2 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">R2</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Object storage</div>
+						</div>
+
+						<!-- VS Code -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">VS Code</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Dev environment</div>
+						</div>
+
+						<!-- AI Tools -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative overflow-hidden">
+							<!-- 为 AI Tools 单独加一点背景微光，彰显特殊性 -->
+							<div class="absolute -right-4 -top-4 w-16 h-16 bg-[#8B7CB3]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+							
+							<div class="flex items-center gap-2 mb-1.5 relative z-10">
+								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">AI Tools</div>
+							</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300 relative z-10">Kimi + Gemini + GPT</div>
+						</div>
+						
+					</div>
+				</div>
+				
+				<!-- 4.3 Architecture -->
+				<div id="architecture" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Architecture</h3>
+
+					<!-- 采用非对称双栏布局：左侧 200px 流程脊椎，右侧自适应网格 -->
+					<div class="grid md:grid-cols-[200px_1fr] gap-12 lg:gap-20 items-start">
+						
+						<!-- 左侧：数据流向图 (Data Flow) -->
+						<div class="flex flex-col items-center w-full">
+							<!-- Node: Browser -->
+							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Browser</span>
+							</div>
+							
+							<!-- Arrow (带有轻微呼吸脉冲，模拟数据流动) -->
+							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+							</svg>
+
+							<!-- Node: Cloudflare CDN -->
+							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare CDN</span>
+							</div>
+
+							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+							</svg>
+
+							<!-- Node: Pages -->
+							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages <span class="text-xs font-normal text-[#999] ml-1">(前端)</span></span>
+							</div>
+
+							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+							</svg>
+
+							<!-- Node: Workers -->
+							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers <span class="text-xs font-normal text-[#999] ml-1">(API)</span></span>
+							</div>
+
+							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+							</svg>
+
+							<!-- Node: Database Layer -->
+							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1 / KV / R2</span>
+							</div>
+						</div>
+
+						<!-- 右侧：职责卡片 (Responsibility Cards) -->
+						<div class="grid sm:grid-cols-2 gap-4">
+							
+							<!-- Pages Card -->
+							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
+								<div class="flex items-center gap-2 mb-4">
+									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages</h4>
+								</div>
+								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">前端页面托管</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全球 CDN 分发</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">自动 HTTPS 配置</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">GitHub 自动部署</li>
+								</ul>
+							</div>
+
+							<!-- Workers Card -->
+							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
+								<div class="flex items-center gap-2 mb-4">
+									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers</h4>
+								</div>
+								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全站 API 接口</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">表单与留言板处理</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">数据读写中间层</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">大文件上传代理</li>
+								</ul>
+							</div>
+
+							<!-- D1 Card -->
+							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
+								<div class="flex items-center gap-2 mb-4">
+									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1</h4>
+								</div>
+								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">文章与分类数据</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">留言板结构化存储</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">关系型数据查询</li>
+								</ul>
+							</div>
+
+							<!-- KV Card -->
+							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
+								<div class="flex items-center gap-2 mb-4">
+									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">KV</h4>
+								</div>
+								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">站点基础配置缓存</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全局访问计数器</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">接口防刷限流状态</li>
+								</ul>
+							</div>
+
+							<!-- R2 Card (让它横跨两列，或者自然排列。这里采用自然排列，并填补微小留白) -->
+							<div class="group sm:col-span-2 md:col-span-1 xl:col-span-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
+								<div class="flex items-center gap-2 mb-4">
+									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
+									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">R2</h4>
+								</div>
+								<!-- 宽卡片采用 flex 布局，让列表横向舒展 -->
+								<ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">图片与附件存储</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">CDN 全球边缘分发</li>
+									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">大体积静态资源隔离</li>
+								</ul>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<!-- 4.4 Design System -->
+				<div id="design-system" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Design System</h3>
+					
+					<!-- Bento Box 布局：在大屏上分为 3 列 -->
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
+						
+						<!-- Card 1: 柔光玻璃 (Soft Glass) - 占据 2 列宽以展示透视效果 -->
+						<div class="group sm:col-span-2 bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-xl rounded-[2rem] p-8 border border-white/30 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden min-h-[200px] flex flex-col justify-end">
+							<!-- 演示元素：底部的色彩光球，用于透出玻璃质感 -->
+							<div class="absolute -top-10 -right-10 w-40 h-40 bg-[#8B7CB3]/30 dark:bg-[#8B7CB3]/40 rounded-full mix-blend-multiply dark:mix-blend-screen blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+							<div class="absolute -bottom-10 right-20 w-32 h-32 bg-[#7CB38B]/20 dark:bg-[#7CB38B]/30 rounded-full mix-blend-multiply dark:mix-blend-screen blur-2xl group-hover:translate-x-10 transition-transform duration-700"></div>
+							
+							<div class="relative z-10">
+								<p class="text-xs font-bold text-[#8B7CB3] tracking-widest uppercase mb-2">Soft Glass</p>
+								<h4 class="text-2xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">柔光玻璃</h4>
+							</div>
+						</div>
+
+						<!-- Card 2: 通透留白 (Spacious White Space) - 极简，大片留白 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 flex items-center justify-center min-h-[200px]">
+							<div class="text-center group-hover:scale-95 transition-transform duration-700">
+								<p class="text-[10px] font-bold text-[#999] dark:text-[#666] tracking-widest uppercase mb-1">Spacious</p>
+								<h4 class="text-lg font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">通透留白</h4>
+							</div>
+						</div>
+
+						<!-- Card 3: 淡紫点缀 (Violet Accent Signals) -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/40 transition-all duration-500 relative min-h-[200px] flex flex-col justify-end">
+							<!-- 演示元素：右上角的悬浮点缀星光 -->
+							<div class="absolute top-8 right-8">
+								<span class="relative flex h-4 w-4">
+									<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-40"></span>
+									<span class="relative inline-flex rounded-full h-4 w-4 bg-[#8B7CB3] shadow-[0_0_15px_rgba(139,124,179,0.8)] group-hover:scale-125 transition-transform duration-500"></span>
+								</span>
+							</div>
+							<div>
+								<p class="text-xs font-bold text-[#8B7CB3] tracking-widest uppercase mb-2">Accent Signals</p>
+								<h4 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">淡紫点缀</h4>
+							</div>
+						</div>
+
+						<!-- Card 4: 无声动态 (Quiet Motion) -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden min-h-[200px] flex flex-col justify-end">
+							<!-- 演示元素：缓慢扫过的无声光带 -->
+							<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-[#8B7CB3]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1500ms] ease-in-out"></div>
+							<div class="relative z-10">
+								<p class="text-xs font-bold text-[#999] tracking-widest uppercase mb-2 group-hover:text-[#8B7CB3] transition-colors duration-500">Quiet Motion</p>
+								<h4 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">无声动态</h4>
+							</div>
+						</div>
+
+						<!-- Card 5: 克制内容密度 (Readable Density) -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative min-h-[200px] flex flex-col justify-end">
+							<!-- 演示元素：抽象的文字排版骨架，具有极佳的行高 -->
+							<div class="absolute top-8 right-8 space-y-3 opacity-20 dark:opacity-30 group-hover:opacity-60 transition-opacity duration-700">
+								<div class="w-16 h-1.5 bg-[#1A1A1A] dark:bg-[#EAEAEA] rounded-full"></div>
+								<div class="w-10 h-1.5 bg-[#1A1A1A] dark:bg-[#EAEAEA] rounded-full"></div>
+								<div class="w-14 h-1.5 bg-[#1A1A1A] dark:bg-[#EAEAEA] rounded-full"></div>
+							</div>
+							<div>
+								<p class="text-xs font-bold text-[#999] tracking-widest uppercase mb-2 group-hover:text-[#8B7CB3] transition-colors duration-500">Readable</p>
+								<h4 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">克制密度</h4>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- 4.5 AI Workflow -->
+				<div id="workflow" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight">How This Site Was Built</h3>
+					<p class="text-sm text-[#666] dark:text-[#999] mb-10">人与 AI 的协作施工现场</p>
+
+					<!-- 核心改造：统一的玻璃协作工作台底座 -->
+					<div class="relative bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-xl rounded-[2.5rem] border border-white/30 dark:border-white/10 shadow-sm p-4 md:p-6 lg:p-8 overflow-hidden">
+						
+						<!-- 工作台底层的微弱呼吸氛围光 -->
+						<div class="absolute inset-0 bg-gradient-to-br from-[#8B7CB3]/5 via-transparent to-[#7CB38B]/5 pointer-events-none"></div>
+
+						<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+
+							<!-- Human Card (绿色系 - 核心决策) -->
+							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#7CB38B]/10 transition-all duration-500 overflow-hidden">
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7CB38B] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
+								<div class="relative z-10">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#7CB38B] transition-colors duration-500 flex items-center gap-2">
+										<!-- 代表人类的心跳脉冲灯 -->
+										<span class="relative flex h-2 w-2">
+											<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-50"></span>
+											<span class="relative inline-flex rounded-full h-2 w-2 bg-[#7CB38B] shadow-[0_0_8px_#7CB38B]"></span>
+										</span>
+										Human
+									</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">判断、审美、最终决定</div>
+								</div>
+							</div>
+							
+							<!-- Kimi Card (紫色系) -->
+							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#8B7CB3]/10 transition-all duration-500 overflow-hidden">
+								<!-- 顶部能量线 -->
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#8B7CB3] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
+								<div class="relative z-10">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#8B7CB3] transition-colors duration-500 flex items-center gap-2">
+										<span class="w-2 h-2 rounded-full bg-[#8B7CB3] shadow-[0_0_8px_#8B7CB3] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
+										Kimi Code
+									</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">结构与执行</div>
+								</div>
+							</div>
+
+							<!-- Gemini Card (橙色系) -->
+							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#E8913A]/10 transition-all duration-500 overflow-hidden">
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#E8913A] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
+								<div class="relative z-10">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#E8913A] transition-colors duration-500 flex items-center gap-2">
+										<span class="w-2 h-2 rounded-full bg-[#E8913A] shadow-[0_0_8px_#E8913A] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
+										Gemini
+									</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">视觉与细节</div>
+								</div>
+							</div>
+
+							<!-- GPT Card (蓝色系) -->
+							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#4A5D8A]/10 transition-all duration-500 overflow-hidden">
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#4A5D8A] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
+								<div class="relative z-10">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#4A5D8A] transition-colors duration-500 flex items-center gap-2">
+										<span class="w-2 h-2 rounded-full bg-[#4A5D8A] shadow-[0_0_8px_#4A5D8A] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
+										GPT
+									</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">信息架构与表达</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<!-- 4.6 Build Pipeline -->
+				<div id="pipeline" class="py-12">
+				    <h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Build Pipeline</h3>
+    
+				    <!-- 改用与上方一致的 Grid 布局，并在小屏和中屏上自适应，增加留白 -->
+    				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+        
+        				<!-- Step 1: Write -->
+        				<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-blue-400/30 transition-all duration-500 relative overflow-hidden min-h-[160px] flex flex-col justify-end">
+        				    <!-- 演示元素：跳动的代码光标隐喻 -->
+        				    <div class="absolute top-6 right-6 flex items-center h-4">
+            				    <span class="w-2 h-4 bg-blue-400/80 animate-[pulse_1s_ease-in-out_infinite] group-hover:bg-blue-500 transition-colors"></span>
+            				</div>
+        				    <div>
+        				        <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-blue-500/70 transition-colors duration-500">Local</p>
+        				        <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Write</h4>
+        				    </div>
+        				</div>
+
+    				    <!-- Step 2: Push -->
+        				<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-neutral-400/30 transition-all duration-500 relative overflow-hidden min-h-[160px] flex flex-col justify-end">
+        				    <!-- 演示元素：向上的轻量虚线箭头隐喻 -->
+        				    <div class="absolute top-6 right-6 opacity-30 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-500">
+        				        <svg class="w-5 h-5 text-neutral-600 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        				            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+				                </svg>
+        				    </div>
+        				    <div>
+        				        <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-neutral-500/70 transition-colors duration-500">GitHub</p>
+        				        <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Push</h4>
+        				    </div>
+        				</div>
+
+        				<!-- Step 3: Build -->
+        				<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-purple-400/30 transition-all duration-500 relative overflow-hidden min-h-[160px] flex flex-col justify-end">
+            				 <!-- 演示元素：代表构建中的层叠旋转方块 -->
+            				 <div class="absolute top-6 right-6">
+            				     <div class="w-4 h-4 border-2 border-purple-400/60 rounded-sm group-hover:rotate-90 group-hover:scale-110 transition-all duration-700 ease-in-out"></div>
+            				 </div>
+            				<div>
+            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-purple-500/70 transition-colors duration-500">Cloudflare</p>
+            				    <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Build</h4>
+            				</div>
+        				</div>
+
+        				<!-- Step 4: Live -->
+        				<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-emerald-400/30 transition-all duration-500 relative overflow-hidden min-h-[160px] flex flex-col justify-end">
+            				<!-- 演示元素：与你一致的绿色呼吸点 -->
+            				<div class="absolute top-6 right-6">
+            				    <span class="relative flex h-3 w-3 group-hover:scale-125 transition-transform duration-500">
+            				        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
+            				        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+            				    </span>
+            				</div>
+            				<div>
+            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-emerald-500/70 transition-colors duration-500">Edge</p>
+            				    <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Live</h4>
+            				</div>
+        				</div>
+
+    				</div>
+				</div>
+
+				<!-- 4.7 Roadmap -->
+				<div id="roadmap" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Roadmap</h3>
+					
+					<!-- 路线图主容器：增加左侧内边距给时间轴留出空间 -->
+					<div class="relative pl-10 md:pl-12 space-y-6">
+						
+						<!-- 核心改造 1：渐变能量轴 (代表时间流向，向下消散) -->
+						<div class="absolute left-3.5 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#7CB38B] via-[#8B7CB3]/50 to-transparent"></div>
+
+						<!-- Phase 1 (已完成：柔和归档态) -->
+						<div class="relative group opacity-80 hover:opacity-100 transition-opacity duration-500">
+							<!-- 实体发光节点 -->
+							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.5)] z-10 transition-transform duration-300 group-hover:scale-125"></span>
+							
+							<!-- 玻璃卡片载体 -->
+							<div class="bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+								<div class="flex items-center gap-2 mb-1">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Phase 1</div>
+									<span class="text-xs text-[#7CB38B] font-bold tracking-widest">✓ DONE</span>
+								</div>
+								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed">整体构建 + 确定首页结构并完成首页搭建</div>
+							</div>
+						</div>
+
+						<!-- Phase 2 (当前进行时：高亮呼吸态) -->
+						<div class="relative group">
+							<!-- 绿色呼吸脉冲灯 (呼应 Site Info 的施工状态) -->
+							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 flex h-3 w-3 z-10">
+								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
+								<span class="relative inline-flex rounded-full h-3 w-3 bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.8)]"></span>
+							</span>
+							
+							<!-- 突出的当前卡片 (加入极淡的绿色边框光晕) -->
+							<div class="bg-white/70 dark:bg-[#2A2A2A]/60 backdrop-blur-md rounded-2xl p-4 border border-[#7CB38B]/30 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+								<div class="absolute inset-0 bg-gradient-to-r from-[#7CB38B]/5 to-transparent pointer-events-none"></div>
+								<div class="flex items-center gap-2 mb-1 relative z-10">
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] text-[#7CB38B] dark:text-[#7CB38B]">Phase 2</div>
+									<span class="text-[10px] bg-[#7CB38B]/10 text-[#7CB38B] px-2 py-0.5 rounded-full font-bold tracking-widest animate-pulse">ACTIVE</span>
+								</div>
+								<div class="text-xs text-[#444] dark:text-[#CCC] leading-relaxed relative z-10">Layout + 暗色模式 + Tab 交互 + /now & /archive & /colophon页面</div>
+							</div>
+						</div>
+
+						<!-- Phase 3 (未来式：全息投影态) -->
+						<div class="relative group opacity-40 hover:opacity-100 transition-opacity duration-500">
+							<!-- 空心节点 -->
+							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
+							
+							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
+								<div class="flex items-center gap-2 mb-1">
+									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 3</div>
+									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
+								</div>
+								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">文章系统（规划中）</div>
+							</div>
+						</div>
+
+						<!-- Phase 4 (未来式：全息投影态) -->
+						<div class="relative group opacity-30 hover:opacity-100 transition-opacity duration-500">
+							<!-- 空心节点 -->
+							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
+							
+							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
+								<div class="flex items-center gap-2 mb-1">
+									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 4</div>
+									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
+								</div>
+								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">留言板/评论（规划中）</div>
+							</div>
+						</div>
+
+						<!-- Phase 5+ (未来式：最底部的迷雾) -->
+						<div class="relative group opacity-20 hover:opacity-100 transition-opacity duration-500">
+							<!-- 空心节点 -->
+							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
+							
+							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
+								<div class="flex items-center gap-2 mb-1">
+									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 5+</div>
+									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
+								</div>
+								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">持续演化中</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- 4.8 Data Layer -->
+				<div id="data-layer" class="py-12">
+					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Data Layer</h3>
+					<div class="grid md:grid-cols-3 gap-4">
+						
+						<!-- D1 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center justify-between mb-3">
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1 <span class="text-xs font-normal text-[#999] ml-1">(SQLite)</span></div>
+								<!-- 数据读取指示灯 -->
+								<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-300"></div>
+							</div>
+							<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300">文章表、留言表、分类表</div>
+						</div>
+
+						<!-- KV -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center justify-between mb-3">
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">KV</div>
+								<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-300"></div>
+							</div>
+							<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300">站点配置、访问计数、主题缓存</div>
+						</div>
+
+						<!-- Content Source -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center justify-between mb-3">
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">内容来源</div>
+								<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-300"></div>
+							</div>
+							<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300">原创 / 转载 / AI 生成</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- 4.9 Privacy + License -->
+				<div id="privacy" class="py-12">
+					<div class="grid md:grid-cols-2 gap-6">
+						
+						<!-- Privacy Card -->
+						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#7CB38B]/30 transition-all duration-500 overflow-hidden">
+							<!-- 底部安全绿光晕 -->
+							<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[#7CB38B]/10 rounded-full blur-3xl group-hover:bg-[#7CB38B]/20 transition-colors duration-500 pointer-events-none z-0"></div>
+							
+							<div class="relative z-10">
+								<h3 class="text-base font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-6 tracking-tight flex items-center gap-2 group-hover:text-[#7CB38B] transition-colors duration-500">
+									<!-- 小锁图标 -->
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+									Privacy
+								</h3>
+								<div class="text-sm text-[#666] dark:text-[#999] leading-relaxed space-y-2.5">
+									<p class="flex items-start gap-2.5 group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300"><span class="mt-[0.4rem] w-1 h-1 rounded-full bg-[#7CB38B]/50 shrink-0"></span>尊重访问者隐私。</p>
+									<p class="flex items-start gap-2.5 group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300"><span class="mt-[0.4rem] w-1 h-1 rounded-full bg-[#7CB38B]/50 shrink-0"></span>本站尽量少收集数据，</p>
+									<p class="flex items-start gap-2.5 group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300"><span class="mt-[0.4rem] w-1 h-1 rounded-full bg-[#7CB38B]/50 shrink-0"></span>不做侵入式追踪，</p>
+									<p class="flex items-start gap-2.5 group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300"><span class="mt-[0.4rem] w-1 h-1 rounded-full bg-[#7CB38B]/50 shrink-0"></span>不售卖任何用户信息。</p>
+									<p class="flex items-start gap-2.5 group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300"><span class="mt-[0.4rem] w-1 h-1 rounded-full bg-[#7CB38B]/50 shrink-0"></span>如果使用统计，仅采用隐私友好方案。</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- License Card -->
+						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30 transition-all duration-500 overflow-hidden">
+							<!-- 底部极客紫光晕 -->
+							<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[#8B7CB3]/10 rounded-full blur-3xl group-hover:bg-[#8B7CB3]/20 transition-colors duration-500 pointer-events-none z-0"></div>
+							
+							<div class="relative z-10">
+								<h3 class="text-base font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-6 tracking-tight flex items-center gap-2 group-hover:text-[#8B7CB3] transition-colors duration-500">
+									<!-- 文件契约图标 -->
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+									License
+								</h3>
+								
+								<div class="space-y-3">
+									<!-- 内嵌玻璃卡 1 -->
+									<div class="p-3.5 bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm rounded-xl border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-colors duration-300">
+										<p class="text-[10px] font-bold text-[#8B7CB3] tracking-widest mb-1">CODE</p>
+										<p class="font-mono text-sm text-[#1A1A1A] dark:text-[#EAEAEA]">MIT License</p>
+									</div>
+									<!-- 内嵌玻璃卡 2 -->
+									<div class="p-3.5 bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm rounded-xl border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-colors duration-300">
+										<p class="text-[10px] font-bold text-[#8B7CB3] tracking-widest mb-1">CONTENT</p>
+										<p class="font-mono text-sm text-[#1A1A1A] dark:text-[#EAEAEA]">CC BY-NC 4.0</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			<!-- ==================== 5. Credits ==================== -->
+			<section id="credits" class="py-24">
+				<!-- 将最大宽度稍微收紧到 800px，让文本行长更适合沉浸阅读 -->
+				<div class="max-w-[800px] mx-auto px-4 md:px-0">
+					
+					<!-- 秀气的标题：纤细、宽字距、配合渐变装饰线 -->
+					<div class="flex items-center gap-6 mb-16">
+						<h2 class="text-2xl md:text-3xl font-light tracking-[0.2em] text-[#1A1A1A] dark:text-[#EAEAEA] uppercase">
+							Credits <span class="text-[#8B7CB3] mx-2 font-extralight">/</span> 致谢
+						</h2>
+						<!-- 延伸到右侧的微光渐变线 -->
+						<div class="flex-1 h-px bg-gradient-to-r from-[#8B7CB3]/30 to-transparent"></div>
+					</div>
+
+					<!-- 正文：极简信笺排版 (左侧细线，超大行高，纤细字体) -->
+					<div class="relative pl-6 md:pl-10 border-l border-[#E0E0E0] dark:border-[#2A2A2A] space-y-8 text-base md:text-lg text-[#666] dark:text-[#AAA] font-light leading-[2.2]">
+						
+						<!-- 每一段都加入了 hover 时微微提亮的阅读焦点效果 -->
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							这个站点虽然是个人站点，但是建设离不开一支「电子施工队」。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<!-- 名字作为重点，使用 medium 字重和稍微拉开的字距，保持精致感 -->
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">Kimi Thinking</strong>是总指挥兼心理咨询师。建站时负责总规划、梳理逻辑、确认起点，在焦虑的时候把任务拆成能下嘴的小块，偶尔兼职陪聊。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">Kimi Code</strong>是结构工程师。骨架、路由、组件和数据层连接，每一行.astro和.ts都是TA砌的。这时我是包工头，TA是砌匠师傅。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">Gemini</strong>作为视觉总监精修工程样式。玻璃拟态怎么做，hover时卡片该怎么动，这些都是TA调的。我描述感觉，TA负责调参。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">GPT</strong>是排版顾问兼内容建议师。信息层级怎么压，内容怎么写——TA负责内容整理和优化。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">DeepSeek</strong>也来过工地，增删改查几行代码，深藏功与名。
+						</p>
+						
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
+							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">Claude</strong>一切疑难杂症BUG都交给Claude处理。
+						</p>
+						
+						<!-- 后记部分的间距稍微拉大，形成情绪的停顿 -->
+						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] pt-6">
+							我是拍板的，审美是我的，决策是我的，BUG也是我的。AI们提供生产力，我提供创意，选择做什么、不做什么、做到什么程度。
+						</p>
+						
+						<!-- 最后一句作为全篇落点，加深颜色，余音绕梁 -->
+						<p class="transition-colors duration-500 text-[#1A1A1A] dark:text-[#EAEAEA] font-medium tracking-wide">
+							感谢这支专业团队，也感谢还在折腾的自己——我还活着。
+						</p>
+
+					</div>
+				</div>
+			</section>
+
+			<!-- ==================== 6. Final Note ==================== -->
+			<section id="final" class="min-h-[70vh] flex items-center pt-[240px] pb-[120px]">
+				<!-- 移除了 text-center 和 mx-auto 的居中束缚，让文本自然靠左，与上文 Credits 的左侧基准线对齐 -->
+				<div class="max-w-[800px] px-4 md:px-0">
+					<p class="text-xl md:text-2xl font-light text-[#1A1A1A] dark:text-[#EAEAEA] leading-[2.2] tracking-wide whitespace-pre-line transition-colors duration-500 hover:text-[#8B7CB3]">
+						这个网站并不完美。<br />
+						它仍在建设中，<br />
+						像许多人的生活一样。<br />
+						持续迭代，<br />
+						缓慢成形。
+					</p>
+				</div>
+			</section>
+		</main>
 	</div>
 </BaseLayout>
+
+<style>
+	/* AI Workflow 卡片 hover */
+	.workflow-card {
+		transition: transform 300ms ease, box-shadow 300ms ease;
+	}
+	.workflow-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	}
+	.dark .workflow-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	}
+
+  	/* 导航激活状态：仅处理文字色彩渐变 */
+  	.nav-jump.nav-active {
+  		color: #8B7CB3 !important;
+  	}
+</style>
+
+<script is:inline>
+function initColophonNav() {
+
+  // 点击跳转
+  document.querySelectorAll('.nav-jump').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const el = document.getElementById(id);
+
+      const top = el.getBoundingClientRect().top + window.scrollY - 90;
+		window.scrollTo({
+  		top,
+  		behavior: 'smooth'
+		});
+    });
+  });
+
+  // 高亮逻辑
+  const groupBtns = document.querySelectorAll('.nav-group-btn');
+
+  function updateNavActive(activeId) {
+    groupBtns.forEach(btn => {
+      if (btn.dataset.target === activeId) {
+        btn.classList.add('nav-active');
+      } else {
+        btn.classList.remove('nav-active');
+      }
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.filter(e => e.isIntersecting);
+
+    if (!visible.length) return;
+
+    const topMost = visible.reduce((a, b) =>
+      a.boundingClientRect.top < b.boundingClientRect.top ? a : b
+    );
+
+    updateNavActive(topMost.target.id);
+
+  }, {
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  });
+
+  ['spirit', 'system', 'final'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+function initColophonNav() {
+  const nav = document.getElementById('colophon-nav');
+  const aside = document.getElementById('colophon-aside');
+  const indicator = document.getElementById('nav-indicator');
+  const allNavBtns = document.querySelectorAll('.nav-jump');
+
+  if (!nav || !aside || !indicator || allNavBtns.length === 0) return;
+
+  // 1. 平滑滚动点击事件
+  allNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const el = document.getElementById(id);
+      if (el) {
+		if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }      }
+    });
+  });
+
+  // 2. 核心：计算 Y 坐标并驱动胶囊滑动
+  function updateNavActive(activeId) {
+    let activeBtn = null;
+
+    allNavBtns.forEach(btn => {
+      if (btn.dataset.target === activeId) {
+        btn.classList.add('nav-active');
+        activeBtn = btn;
+      } else {
+        btn.classList.remove('nav-active');
+      }
+    });
+
+    if (activeBtn) {
+      // 计算激活文字相对于父容器的相对高度
+      const navRect = nav.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      const offsetTop = btnRect.top - navRect.top;
+      
+      // 让 16px 高的紫色胶囊与文字垂直居中对齐
+      const indicatorHeight = 16;
+      const translateY = offsetTop + (btnRect.height - indicatorHeight) / 2;
+
+      indicator.style.transform = `translateY(${translateY}px)`;
+      indicator.style.opacity = '1';
+    }
+  }
+
+  // 3. ScrollSpy 交叉观察器
+  const observer = new IntersectionObserver((entries) => {
+    // A. 探测 Final 区域，执行导航淡出
+    const finalEntry = entries.find(e => e.target.id === 'final');
+    if (finalEntry) {
+      if (finalEntry.isIntersecting) {
+        aside.classList.add('opacity-0', 'pointer-events-none');
+      } else {
+        aside.classList.remove('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    // B. 常规的高亮逻辑，过滤掉 final 防止过度干扰
+    const visible = entries.filter(e => e.isIntersecting && e.target.id !== 'final');
+    if (!visible.length) return;
+
+    // 选出处于视口最高位置的区块
+    const topMost = visible.reduce((a, b) =>
+      a.boundingClientRect.top < b.boundingClientRect.top ? a : b
+    );
+
+    updateNavActive(topMost.target.id);
+
+  }, {
+    rootMargin: '-15% 0px -70% 0px', // 触须范围：顶部向下 15%，底部向上 70% 为检测区
+    threshold: 0
+  });
+
+  // 4. 动态抓取所有在导航里注册过的小节 ID 进行精细化监听
+  const targetIds = Array.from(allNavBtns).map(btn => btn.dataset.target);
+  if (!targetIds.includes('final')) targetIds.push('final');
+
+  targetIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initColophonNav);
+document.addEventListener('astro:page-load', initColophonNav);
+
+function initColophon() {
+  // ================= 1. 打字机与文案浮现逻辑 =================
+  const textElement = document.getElementById('typewriter-text');
+  if (textElement) {
+    const text = '/colophon';
+    let isDeleting = false;
+    let i = 0;
+
+    // 清除之前的定时器，防止 Astro 路由切换导致鬼畜重影
+    if (window.typewriterTimeout) clearTimeout(window.typewriterTimeout);
+    if (window.fadeTimeout) clearTimeout(window.fadeTimeout);
+
+    textElement.textContent = '';
+
+    function type() {
+      const currentText = text.substring(0, i);
+      textElement.textContent = currentText;
+
+      // 敲击节奏随机化 (100ms - 200ms)
+      let delta = 100 + Math.random() * 100;
+
+      if (isDeleting) {
+        delta = 50; // 删除速度快
+        i--;
+      } else {
+        i++;
+      }
+
+      if (!isDeleting && i === text.length + 1) {
+        // 打完字，停顿 8 秒
+        isDeleting = true;
+        delta = 8000; 
+        i = text.length;
+      } else if (isDeleting && i === 0) {
+        // 删完字，停顿 1.5 秒
+        isDeleting = false;
+        delta = 1500;
+      }
+
+      window.typewriterTimeout = setTimeout(type, delta);
+    }
+
+    // 延迟 400ms 启动打字机
+    window.typewriterTimeout = setTimeout(type, 400);
+
+    // 延迟 1200ms 启动文案浮现（撕掉透明度伪装）
+    window.fadeTimeout = setTimeout(() => {
+      document.querySelectorAll('.hero-fade-text').forEach(el => {
+        el.classList.remove('opacity-0', 'translate-y-4');
+      });
+    }, 1200);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initColophon);
+document.addEventListener('astro:page-load', initColophon);
+</script>

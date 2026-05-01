@@ -339,4 +339,13 @@ const navLinkClass = (path: string) => {
 	.animate-sweep {
 		animation: sweep 1.5s ease-in-out infinite;
 	} 
+	/* --- 元素淡入上浮动画 --- */
+	@keyframes fadeInUp {
+		from { opacity: 0; transform: translateY(20px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+	.animate-fade-in-up {
+		/* 加上 forwards，让元素在动画结束后停留在 opacity: 1 的状态，不再消失！ */
+		animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
 </style>
