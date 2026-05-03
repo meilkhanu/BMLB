@@ -40,15 +40,15 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			</div>
 
 			<!-- 3.2 PC Tab 长条栏 -->
-			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-2xl bg-[#F0F0F0] dark:bg-[#1A1A1A] shadow-sm hover:shadow-md transition-all duration-300">
-				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-[#E0E0E0] dark:border-[#2A2A2A] pr-4 mr-4">分类</span>
-				<div class="relative flex gap-2 z-0">
-					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-xl bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
+			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-full bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
+ 				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
+ 				<div class="relative flex gap-1 z-0">
+ 					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-white/80 dark:bg-[#2A2A2A]/80 backdrop-blur-md shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white/50 dark:border-white/5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
 							data-active={idx === 0 ? 'true' : 'false'}
-							class="relative z-10 px-4 py-1.5 text-sm font-medium transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
+							class="relative z-10 px-5 py-1.5 text-sm font-medium transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
 						>
 							{cat.name}
 						</button>
@@ -81,7 +81,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 		<div class="mt-6 grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-6">
 			<!-- 3.4 左侧盒子区（PC only） -->
 			<div class="hidden md:flex flex-col gap-4">
-				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 flex flex-col">
 					<div class="flex justify-between items-center mb-4">
 						<span id="calendar-title" class="text-xs font-bold text-[#8B7CB3] tracking-widest"></span>
 						<div class="flex gap-1">
@@ -114,7 +114,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 						<span id="calendar-footer-date" class="text-[10px] font-mono font-medium text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-0.5 rounded-md">--/--</span>
 					</div>
 				</div>
-				<div id="sidebar-box-2" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+				<div id="sidebar-box-2" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500">
 					<div class="flex items-center justify-between mb-4">
 						<div class="flex items-center gap-2">
 							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
@@ -176,7 +176,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 						</button>
 					</div>
 				</div>
-				<div id="sidebar-box-3" class="w-full rounded-3xl bg-[#F0F0F0] dark:bg-[#1A1A1A] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500">
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">System Status</span>
 						<div class="flex items-center gap-1.5">
@@ -189,7 +189,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 					</div>
 
 					<div class="grid grid-cols-2 gap-3">
-						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
 							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
 							</div>
@@ -197,7 +197,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 							<div class="text-[10px] text-[#999] mt-0.5">运行时间</div>
 						</div>
 
-						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
 							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
 							</div>
@@ -205,7 +205,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 							<div class="text-[10px] text-[#999] mt-0.5">最后活动</div>
 						</div>
 
-						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
 							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
 							</div>
@@ -213,7 +213,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 							<div class="text-[10px] text-[#999] mt-0.5">站点分类</div>
 						</div>
 
-						<div class="flex flex-col bg-white dark:bg-[#252525] p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-transparent hover:border-[#8B7CB3]/30 transition-all duration-300 group">
+						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
 							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
 							</div>
@@ -231,15 +231,15 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
 						<div class="flex-1 flex flex-col justify-center">
 							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">Research</span>
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
 								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
 									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2026-03-20
+									2026-05-03
 								</span>
 							</div>
 							
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">半封闭景观水体碳酸盐系统与碳汇观测日志</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">历时一年针对厦门龙舟池的物理采样与数据建模终于告一段落。本文记录了这14个月里关于水体碳汇计算的关键参数，以及模型建立初期踩过的一些坑。</p>
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">网站正式公开上线</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">高投入6天后，精力下降了，也应该回到该做的事上去了。建站是去年3月就想做的事情，随着大三课程和实习的忙碌，又放下了建站的进度。不过那会也没有现在这么强的AI可以辅助，哪怕HTML和CSS是最简单的，我也是个外行，只能看懂，不会写出好效果。</p>
 							
 							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
 								Read Article 
@@ -256,14 +256,14 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
 						<div class="flex-1 flex flex-col justify-center">
 							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">History</span>
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
 								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
 									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2026-01-12
+									2026-04-27
 								</span>
 							</div>
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">1976年民兵史料辨伪与栎木的实体特征考据</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">通过对地方志的梳理，重新理清了许老三在70年代民兵活动中的真实轨迹。附带验证了方言中所谓"列树"的植物学真身——通过苦味与果实特征比对，确认为栎木。</p>
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">框架完善，抽BaseLayout.astro</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">两天完成整体架构搭建，并设计好首页，优化UI后就抽取了BaseLayout.astro。同时开始上传GitHub开始更新仓库。</p>
 							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
 								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
 							</div>
@@ -278,14 +278,14 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden cursor-pointer">
 						<div class="flex-1 flex flex-col justify-center">
 							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">Photography</span>
+								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
 								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
 									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2025-11-05
+									2026-04-26
 								</span>
 							</div>
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">沿海环境摄影：Lightroom 色彩分离与后期思路</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">海边的光线通常带有一种天然的青色调。本文分享了如何利用 Lightroom 的高光阴影色彩分离，将海岸线的冷峻感与夕阳的暖调进行融合重构。</p>
+							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">开始建站</h3>
+							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">不想投简历了，只想回家。暂时不想写论文了。又不能无所事事地躺着，现在AI很强，试着做网站吧，之前使用Vercel没建成功，这次自己想想工作流。</p>
 							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
 								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
 							</div>

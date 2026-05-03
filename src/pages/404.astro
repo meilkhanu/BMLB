@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — 页面未找到">
+	<!-- 全屏居中容器 -->
+	<div class="min-h-[calc(100vh-120px)] flex flex-col items-center px-6 pt-[12vh] pb-16 relative overflow-hidden">
+		<!-- 极淡几何网格背景 -->
+		<div 
+			class="absolute inset-0 pointer-events-none z-0 opacity-[0.03] dark:opacity-[0.04]"
+			style="background-image: linear-gradient(to right, #8B7CB3 1px, transparent 1px), linear-gradient(to bottom, #8B7CB3 1px, transparent 1px); background-size: 3rem 3rem;"
+		></div>
+
+		<div class="relative z-10 flex flex-col items-center max-w-[600px] w-full">
+			<!-- 大号 404 装饰数字 -->
+			<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0">
+				<span class="font-black text-[#8B7CB3] opacity-20 tracking-[0.15em] leading-none"
+					  style="font-size: clamp(80px, 15vw, 800px);">
+					404
+				</span>
+			</div>
+
+			<!-- 文案区域 -->
+			<div class="relative z-10 text-center mb-10">
+				<h1 class="text-3xl md:text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4 tracking-tight">
+					页面还在施工中...
+				</h1>
+				<p class="text-lg md:text-xl text-[#666] dark:text-[#999] leading-relaxed mb-3">
+					( *^-^)ρ(^0^* )
+				</p>
+				<p class="text-base md:text-lg text-[#666] dark:text-[#999] leading-relaxed">
+					还请客官浏览其它页面
+				</p>
+			</div>
+
+			<!-- 叠叠乐小游戏 -->
+ 			<div class="relative z-10 flex flex-col items-center mb-10 w-full">
+ 				<p class="text-xs font-medium text-[#999] dark:text-[#666] mb-4 tracking-widest uppercase">
+ 					Wait & Play
+ 				</p>
+ 				
+				<!-- 计分板：采用柔光玻璃卡片风格 -->
+				<div class="flex justify-between w-full max-w-[360px] text-xs mb-3 px-4 py-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-white/20 dark:border-white/10 shadow-sm">
+ 					<span class="text-[#666] dark:text-[#999]">砖块 <span id="stack-score" class="font-mono text-[#8B7CB3] font-bold ml-1">0</span></span>
+ 					<span class="text-[#666] dark:text-[#999]">最高 <span id="stack-best" class="font-mono text-[#8B7CB3] font-bold ml-1">0</span></span>
+ 					<span class="text-[#666] dark:text-[#999]">层数 <span id="stack-floors" class="font-mono text-[#7CB38B] font-bold ml-1">0</span> / 10</span>
+ 				</div>
+				 
+				<!-- Canvas 容器：取消内联宽高，使用 CSS 控制，解决高分屏模糊 -->
+				<div class="w-full max-w-[360px] aspect-[360/260] bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-xl rounded-2xl border border-white/30 dark:border-white/10 shadow-sm overflow-hidden relative">
+					<canvas
+						id="stack-canvas"
+						class="absolute inset-0 w-full h-full cursor-pointer"
+					></canvas>
+				</div>
+ 				
+				<p id="stack-hint" class="mt-4 text-xs text-[#999] dark:text-[#666] min-h-[18px] transition-colors duration-300">
+ 					点击画布开始，再点击让砖块落下
+ 				</p>
+ 			</div>
+
+			<!-- 导航链接区 -->
+			<div id="nav-links" class="relative z-10 flex flex-wrap justify-center gap-3 md:gap-4 w-full mt-4">
+				<a 
+					href="/" 
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+				>
+					返回首页
+				</a>
+				<a 
+					href="/now" 
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+				>
+					/now
+				</a>
+				<a 
+					href="/archive" 
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+				>
+					/archive
+				</a>
+				<a 
+					href="/colophon" 
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+				>
+					/colophon
+				</a>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	@keyframes pulse-btn {
+		0%, 100% {
+			box-shadow: 0 0 0 0 rgba(139, 124, 179, 0.4);
+		}
+		50% {
+			box-shadow: 0 0 0 8px rgba(139, 124, 179, 0);
+		}
+	}
+
+	.animate-pulse-btn {
+		animation: pulse-btn 2s ease-in-out infinite;
+	}
+</style>
+
+<script is:inline>
+	(function() {
+ 		// ── 叠叠乐 (高分屏修复 & 样式优化) ────────────────────────
+ 		const canvas  = document.getElementById('stack-canvas');
+ 		const scoreEl = document.getElementById('stack-score');
+ 		const bestEl  = document.getElementById('stack-best');
+ 		const floorsEl= document.getElementById('stack-floors');
+ 		const hintEl  = document.getElementById('stack-hint');
+ 		const navLinks= document.getElementById('nav-links');
+ 		
+		if (!canvas) return;
+ 
+ 		const ctx = canvas.getContext('2d');
+		
+		// 设定逻辑分辨率
+		const LOGICAL_W = 360;
+		const LOGICAL_H = 260;
+		
+		// 获取设备像素比，并放大实际 Canvas 尺寸
+		function setupCanvas() {
+			const dpr = window.devicePixelRatio || 1;
+			// 实际渲染像素
+			canvas.width = LOGICAL_W * dpr;
+			canvas.height = LOGICAL_H * dpr;
+			// CSS 尺寸已由父容器通过 width: 100%, height: 100% 控制
+			
+			// 缩放上下文，使得后续绘图只需按照逻辑坐标 (LOGICAL_W, LOGICAL_H) 进行
+			ctx.scale(dpr, dpr);
+		}
+		
+		setupCanvas();
+
+		// 监听系统主题变化，重新绘制
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+			if(state === 'idle' || state === 'win' || state === 'lose') {
+				// 强制重绘一次背景
+				ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
+				loop();
+			}
+		});
+
+		const BLOCK_H   = 20;
+		const GROUND_Y  = LOGICAL_H - 28;
+		const MAX_FLOORS = 10;
+		
+		// 更新为你的站点色系：紫红、青绿、灰蓝、淡紫
+		const COLORS = ['#8B7CB3', '#7CB38B', '#7CA8B3', '#A8B37C', '#B3967C'];
+		
+		let best = parseInt(localStorage.getItem('404_stack_best') || '0');
+		bestEl.textContent = best;
+
+		let state, score, floors, moving, dropped, msgText, msgAlpha, animId;
+
+		function getBlockWidth(floor) { return Math.max(30, 130 - floor * 8); }
+
+		function init() {
+			state = 'playing'; score = 0; floors = []; dropped = []; msgText = ''; msgAlpha = 0;
+			scoreEl.textContent = 0; floorsEl.textContent = '0';
+			hintEl.textContent = '点击放下砖块！';
+			hintEl.style.color = ''; // 重置颜色
+			
+			const baseW = getBlockWidth(0);
+			const base = { x: LOGICAL_W/2 - baseW/2, y: GROUND_Y - BLOCK_H, w: baseW, h: BLOCK_H, color: COLORS[0] };
+			dropped.push(base); floors.push(base);
+			spawnMoving();
+			if (animId) cancelAnimationFrame(animId);
+			loop();
+		}
+
+		function spawnMoving() {
+			const floor = floors.length;
+			if (floor >= MAX_FLOORS) { endGame(true); return; }
+			const w = getBlockWidth(floor);
+			const speed = (1.5 + floor * 0.18) * (Math.random() < 0.5 ? 1 : -1);
+			moving = { x: speed > 0 ? -w : LOGICAL_W, y: GROUND_Y - BLOCK_H * (floor + 1), w, h: BLOCK_H, color: COLORS[floor % COLORS.length], speed };
+		}
+
+		function drop() {
+			if (!moving || state !== 'playing') return;
+			const top = floors[floors.length - 1];
+			const left = Math.max(moving.x, top.x);
+			const right = Math.min(moving.x + moving.w, top.x + top.w);
+			const overlap = right - left;
+
+			// 容错率放宽一点点
+			if (overlap <= 6) { showMsg('掉了！'); endGame(false); return; }
+
+			const clipped = { x: left, y: moving.y, w: overlap, h: BLOCK_H, color: moving.color };
+			dropped.push(clipped); floors.push(clipped);
+			
+			const bonus = overlap >= moving.w - 3 ? 20 : 0;
+			score += Math.round(overlap) + bonus;
+			
+			scoreEl.textContent = score;
+			floorsEl.textContent = floors.length - 1;
+			
+			showMsg(bonus ? '完美对齐！' : overlap < 20 ? '险！' : overlap < 60 ? '不错' : '稳！');
+			
+			if (floors.length - 1 >= MAX_FLOORS) { endGame(true); return; }
+			spawnMoving();
+		}
+
+		function endGame(win) {
+			state = win ? 'win' : 'lose';
+			if (score > best) { 
+				best = score; 
+				bestEl.textContent = best; 
+				try { localStorage.setItem('404_stack_best', best); } catch(e){} 
+			}
+			
+			hintEl.textContent = win ? '10层完工！点击再来' : '大楼倒塌...点击重试';
+			hintEl.style.color = win ? '#7CB38B' : '#B37C7C'; // 胜利变绿，失败变红
+
+			moving = null;
+			if (win) {
+				setTimeout(() => {
+					navLinks && navLinks.querySelectorAll('a').forEach((a, i) => {
+						setTimeout(() => {
+							a.classList.add('animate-pulse-btn');
+							setTimeout(() => a.classList.remove('animate-pulse-btn'), 2000);
+						}, i * 150);
+					});
+				}, 800);
+			}
+		}
+
+		function showMsg(t) { msgText = t; msgAlpha = 1; }
+
+		function isDark() {
+			return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		}
+
+		function drawBlock(b, moving) {
+			ctx.globalAlpha = moving ? 0.8 : 1;
+			ctx.fillStyle = b.color;
+			
+			// 增加一点圆角
+			const r = 4;
+			ctx.beginPath();
+			ctx.moveTo(b.x+r, b.y); ctx.lineTo(b.x+b.w-r, b.y);
+			ctx.quadraticCurveTo(b.x+b.w, b.y, b.x+b.w, b.y+r);
+			ctx.lineTo(b.x+b.w, b.y+b.h-r);
+			ctx.quadraticCurveTo(b.x+b.w, b.y+b.h, b.x+b.w-r, b.y+b.h);
+			ctx.lineTo(b.x+r, b.y+b.h);
+			ctx.quadraticCurveTo(b.x, b.y+b.h, b.x, b.y+b.h-r);
+			ctx.lineTo(b.x, b.y+r);
+			ctx.quadraticCurveTo(b.x, b.y, b.x+r, b.y);
+			ctx.closePath();
+			ctx.fill();
+			
+			// 修改边框颜色，使其更融合
+			ctx.globalAlpha = 0.3;
+			ctx.strokeStyle = '#ffffff'; // 高光边
+			ctx.lineWidth = 1;
+			
+			// 只画顶边和左边做一点立体感
+			ctx.beginPath();
+			ctx.moveTo(b.x+r, b.y);
+			ctx.lineTo(b.x+b.w-r, b.y);
+			ctx.stroke();
+
+			ctx.globalAlpha = 1;
+		}
+
+		function loop() {
+			animId = requestAnimationFrame(loop);
+			const dark = isDark();
+			
+			// 注意：清理和绘制都需要使用 LOGICAL 尺寸
+			ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
+
+			// 背景透明，因为在 CSS 中设置了 backdrop-blur 和渐变
+
+			// 网格背景 - 细化
+			ctx.strokeStyle = dark ? 'rgba(255,255,255,0.03)' : 'rgba(139,124,179,0.05)';
+			ctx.lineWidth = 1;
+			for (let x = 0; x < LOGICAL_W; x += 28) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,LOGICAL_H); ctx.stroke(); }
+			for (let y = 0; y < LOGICAL_H; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(LOGICAL_W,y); ctx.stroke(); }
+
+			// 地基 - 配合站点风格
+			ctx.fillStyle = dark ? '#2A2A2A' : '#E0E0E0';
+			
+			// 画地基圆角矩形
+			const bw = LOGICAL_W * 0.8;
+			const bx = (LOGICAL_W - bw) / 2;
+			const by = GROUND_Y + BLOCK_H;
+			ctx.beginPath();
+			ctx.roundRect(bx, by, bw, 6, 3);
+			ctx.fill();
+
+			dropped.forEach(b => drawBlock(b, false));
+			if (moving) {
+				moving.x += moving.speed;
+				if (moving.x > LOGICAL_W + 10) moving.x = -moving.w;
+				if (moving.x < -moving.w - 10) moving.x = LOGICAL_W;
+				drawBlock(moving, true);
+			}
+
+			if (state === 'win' || state === 'lose') {
+				// 结束遮罩
+				ctx.fillStyle = dark ? 'rgba(26,26,26,0.7)' : 'rgba(255,255,255,0.7)';
+				ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+				
+				ctx.fillStyle = state === 'win' ? '#7CB38B' : '#B37C7C';
+				ctx.font = 'bold 24px system-ui, sans-serif';
+				ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+				ctx.fillText(state === 'win' ? '施工完成！' : '大楼倒塌...', LOGICAL_W/2, LOGICAL_H/2 - 16);
+				
+				ctx.font = '500 13px font-mono, system-ui';
+				ctx.fillStyle = dark ? '#AAA' : '#666';
+				ctx.fillText('SCORE: ' + score, LOGICAL_W/2, LOGICAL_H/2 + 16);
+			}
+
+			if (state === 'idle') {
+				ctx.fillStyle = dark ? '#666' : '#999';
+				ctx.font = '500 14px system-ui, sans-serif';
+				ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+				// 绘制一点发光效果提示点击
+				ctx.shadowColor = dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
+				ctx.shadowBlur = 4;
+				ctx.fillText('点击开始 — 叠砖盖楼', LOGICAL_W/2, LOGICAL_H/2);
+				ctx.shadowBlur = 0;
+			}
+
+			if (msgAlpha > 0) {
+				ctx.save(); ctx.globalAlpha = msgAlpha;
+				ctx.font = 'bold 16px system-ui, sans-serif';
+				ctx.textAlign = 'center'; ctx.fillStyle = '#8B7CB3';
+				ctx.fillText(msgText, LOGICAL_W/2, 60);
+				ctx.restore();
+				msgAlpha -= 0.025; // 加快文字消失速度
+			}
+		}
+
+		canvas.addEventListener('click', () => {
+			if (state === 'idle' || state === 'win' || state === 'lose') { init(); return; }
+			if (state === 'playing') drop();
+		});
+
+		// 监听窗口大小变化可能引起的 DPR 变化（如拖动到不同屏幕）
+		let currentDpr = window.devicePixelRatio;
+		window.addEventListener('resize', () => {
+			if(currentDpr !== window.devicePixelRatio) {
+				currentDpr = window.devicePixelRatio;
+				setupCanvas();
+				if(state === 'idle' || state === 'win' || state === 'lose') {
+					loop(); // 重新绘制当前状态
+				}
+			}
+		});
+
+		// 初始待机画面
+		state = 'idle'; dropped = []; floors = []; msgAlpha = 0;
+		// 延迟一下再 loop 防止刚加载宽高计算未完成
+		requestAnimationFrame(loop);
+	})();
+</script>
