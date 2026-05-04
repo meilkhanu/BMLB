@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostBySlug, getAdjacentPosts } from '../../data/posts';
+import { SITE_CONFIG } from '../../config.ts';
+
+const { slug } = Astro.params;
+
+// 1. 新增：前置检查 slug 是否存在，消除 undefined 的可能性
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
+// 此时 TypeScript 已经明确知道 slug 是 string 类型了
+const post = getPostBySlug(slug); // 行 7 报错解除
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+const { prev, next } = getAdjacentPosts(slug); // 行 13 报错解除
+
+// 计算阅读时间（中文约 400 字/分钟）
+function estimateReadingTime(html: string): number {
+  const text = html.replace(/<[^>]+>/g, '');
+  const chars = text.replace(/\s/g, '').length;
+  return Math.max(1, Math.ceil(chars / 400));
+}
+const readingTime = estimateReadingTime(post.content);
+
+// 查找分类颜色
+const categoryInfo = SITE_CONFIG.categories.find(c => c.name === post.category);
+const catColor = categoryInfo?.color ?? '#8B7CB3';
+
+// 格式化日期
+const dateObj = new Date(post.date);
+const dateFormatted = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
+---
+
+<BaseLayout title={`${post.title} — ${SITE_CONFIG.siteName}`}>
+  <article class="max-w-[900px] mx-auto px-4 md:px-6 pt-28 pb-16">
+
+    <!-- 返回链接 -->
+    <a
+      href="/archive"
+      class="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors duration-300 mb-8 group no-underline"
+    >
+      <svg
+        class="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1"
+        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      <span>返回归档</span>
+    </a>
+
+    <!-- ========== 文章头部 ========== -->
+    <header class="mb-12">
+      <!-- 分类徽章 + 日期 -->
+      <div class="flex items-center gap-3 mb-5 flex-wrap">
+        <span
+          class="px-3 py-1 rounded-lg text-[11px] font-bold tracking-widest uppercase"
+          style={`background-color: ${catColor}18; color: ${catColor}`}
+        >
+          {post.category}
+        </span>
+        <span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {dateFormatted}
+        </span>
+        <span class="text-xs text-[#999]">· 约 {readingTime} 分钟</span>
+      </div>
+
+      <!-- 标题 -->
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] leading-tight tracking-tight mb-6">
+        {post.title}
+      </h1>
+
+      <!-- 封面图（如果有）或渐变色块 -->
+      {
+        post.coverImage ? (
+          <div class="w-full aspect-[21/9] rounded-3xl overflow-hidden mb-0 shadow-sm">
+            <img
+              src={post.coverImage}
+              alt={post.title}
+              class="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            class="w-full aspect-[21/9] rounded-3xl mb-0 flex items-center justify-center relative overflow-hidden"
+            style={`background: linear-gradient(135deg, ${catColor}20 0%, ${catColor}08 50%, transparent 100%)`}
+          >
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#8B7CB310_1px,transparent_1px),linear-gradient(to_bottom,#8B7CB310_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)]"></div>
+          </div>
+        )
+      }
+    </header>
+
+    <!-- ========== 文章正文 ========== -->
+    <div
+      class="prose prose-lg dark:prose-invert max-w-none
+        prose-headings:text-[#1A1A1A] dark:prose-headings:text-[#EAEAEA]
+        prose-headings:font-bold prose-headings:tracking-tight
+        prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5
+        prose-p:text-[#444] dark:prose-p:text-[#AAA]
+        prose-p:leading-[1.85] prose-p:mb-5 prose-p:text-[16px]
+        prose-strong:text-[#1A1A1A] dark:prose-strong:text-[#EAEAEA]
+        prose-a:text-[#8B7CB3] dark:prose-a:text-[#8B7CB3]
+        prose-a:no-underline hover:prose-a:underline
+        prose-li:text-[#444] dark:prose-li:text-[#AAA]
+        prose-li:leading-[1.8] prose-li:mb-1
+        prose-code:text-[#8B7CB3] dark:prose-code:text-[#C9BAE5]
+        prose-code:bg-[#8B7CB3]/10 dark:prose-code:bg-[#8B7CB3]/15
+        prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md
+        prose-code:text-sm prose-code:font-medium
+        prose-code:before:content-none prose-code:after:content-none
+        prose-ul:pl-0 prose-ul:list-none prose-ul:space-y-2
+        prose-li:pl-6 prose-li:relative
+        [&_ul>li::before]:content-['—']
+        [&_ul>li::before]:absolute [&_ul>li::before]:left-0
+        [&_ul>li::before]:text-[#CCC] dark:[&_ul>li::before]:text-[#555]"
+    >
+      <Fragment set:html={post.content} />
+    </div>
+
+    <!-- ========== 标签 ========== -->
+    {
+      post.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2.5 mt-12 pt-8 border-t border-[#E8E8E8] dark:border-[#2A2A2A]">
+          {post.tags.map(tag => (
+            <span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-default">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <!-- ========== 上下篇导航 ========== -->
+    <nav class="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {prev ? (
+        <a
+          href={`/blog/${prev.slug}`}
+          class="group flex flex-col gap-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/20 transition-all duration-300 no-underline"
+        >
+          <span class="text-[10px] font-bold text-[#999] tracking-widest uppercase flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            上一篇
+          </span>
+          <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors line-clamp-1">
+            {prev.title}
+          </span>
+        </a>
+      ) : (
+        <div></div>
+      )}
+
+      {next ? (
+        <a
+          href={`/blog/${next.slug}`}
+          class="group flex flex-col gap-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/20 transition-all duration-300 no-underline text-right"
+        >
+          <span class="text-[10px] font-bold text-[#999] tracking-widest uppercase flex items-center justify-end gap-1">
+            下一篇
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
+          <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors line-clamp-1">
+            {next.title}
+          </span>
+        </a>
+      ) : (
+        <div></div>
+      )}
+    </nav>
+
+    <!-- ========== 底部返回 ========== -->
+    <div class="mt-12 text-center">
+      <a
+        href="/archive"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] no-underline"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回归档
+      </a>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* 文章正文内图片适配 */
+  .prose img {
+    border-radius: 1.5rem;
+    margin: 2rem auto;
+    box-shadow: 0 2px 20px -5px rgba(0, 0, 0, 0.06);
+  }
+  .dark .prose img {
+    box-shadow: 0 2px 20px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  /* 引用块样式 */
+  .prose blockquote {
+    border-left: 3px solid #8B7CB3;
+    background: rgba(139, 124, 179, 0.05);
+    border-radius: 0 1rem 1rem 0;
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    font-style: normal;
+    color: #666;
+  }
+  .dark .prose blockquote {
+    background: rgba(139, 124, 179, 0.08);
+    color: #999;
+  }
+</style>

@@ -1,0 +1,505 @@
+---
+// src/pages/admin/index.astro
+// 管理后台主页：文章列表 + 新建/编辑（TinyMCE）+ 删除
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理后台 — 贝谟拉比</title>
+  <!-- TinyMCE 6 (MIT, 无需 API Key) -->
+  <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.6/tinymce.min.js"></script>
+</head>
+<body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
+
+  <!-- ========== 顶部栏 ========== -->
+  <header class="fixed top-0 left-0 w-full h-16 z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
+    <div class="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="/" class="text-lg font-bold no-underline text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] transition-colors">贝谟拉比</a>
+        <span class="text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
+        <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== 主体区域 ========== -->
+  <main class="pt-20 pb-12 px-6 max-w-[1400px] mx-auto">
+
+    <!-- —— 文章列表 —— -->
+    <div id="list-view">
+      <!-- 加载状态 -->
+      <div id="loading-state" class="text-center py-20 text-[#999] text-sm">加载中...</div>
+
+      <!-- 错误状态 -->
+      <div id="error-state" class="hidden text-center py-20">
+        <p class="text-red-500 text-sm mb-4" id="error-msg-text"></p>
+        <button onclick="location.reload()" class="px-4 py-2 rounded-full bg-white dark:bg-[#252525] text-sm border border-[#E0E0E0] dark:border-[#333] cursor-pointer">重试</button>
+      </div>
+
+      <!-- 空状态 -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <p class="text-[#999] text-lg mb-2">还没有文章</p>
+        <p class="text-[#999] text-sm mb-6">点击上方「+ 新建文章」开始写作</p>
+      </div>
+
+      <!-- 文章表格 -->
+      <div id="posts-table" class="hidden">
+        <div class="overflow-x-auto rounded-2xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-[#F5F5F5] dark:bg-[#1A1A1A] text-left">
+                <th class="px-5 py-3 font-medium text-[#999] text-xs w-16">状态</th>
+                <th class="px-5 py-3 font-medium text-[#999] text-xs">标题</th>
+                <th class="px-5 py-3 font-medium text-[#999] text-xs w-20">分类</th>
+                <th class="px-5 py-3 font-medium text-[#999] text-xs w-28">日期</th>
+                <th class="px-5 py-3 font-medium text-[#999] text-xs w-36">操作</th>
+              </tr>
+            </thead>
+            <tbody id="posts-tbody" class="divide-y divide-[#EAEAEA] dark:divide-[#2A2A2A]"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- —— 编辑器面板（隐藏） —— -->
+    <div id="editor-view" class="hidden">
+      <form id="editor-form" onsubmit="return false">
+        <!-- 返回按钮 -->
+        <button type="button" id="back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          返回列表
+        </button>
+
+        <!-- 字段区 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">标题 *</label>
+            <input type="text" id="field-title" required class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">Slug（URL标识）*</label>
+            <input type="text" id="field-slug" required pattern="[a-z0-9-]+" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">分类 *</label>
+            <select id="field-category" required class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
+              <option value="notes">札记</option>
+              <option value="critique">时评簿</option>
+              <option value="stack">车间</option>
+              <option value="body">体感</option>
+              <option value="transit">行记</option>
+              <option value="archive">底片</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">发布日期</label>
+            <input type="text" id="field-publishedAt" placeholder="如 2026-05-04，留空则取今天" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">标签（逗号分隔）</label>
+            <input type="text" id="field-tags" placeholder="建站, Astro" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">状态</label>
+            <select id="field-status" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
+              <option value="draft">草稿</option>
+              <option value="published">发布</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">封面图 URL（可选）</label>
+            <input type="text" id="field-coverImage" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-[#999] mb-1.5">摘要</label>
+          <textarea id="field-excerpt" rows="2" placeholder="留空则自动从正文截取..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-[#999] mb-1.5">正文 *</label>
+          <textarea id="field-content"></textarea>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <button type="button" id="save-draft-btn" class="px-6 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">保存草稿</button>
+          <button type="button" id="publish-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">发布</button>
+          <span id="save-status" class="text-xs text-[#999] ml-2"></span>
+        </div>
+      </form>
+    </div>
+
+    <!-- —— 删除确认弹窗 —— -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
+        <h3 class="text-lg font-bold mb-2">确认删除</h3>
+        <p class="text-sm text-[#666] dark:text-[#999] mb-6" id="delete-title-text"></p>
+        <div class="flex gap-3">
+          <button id="delete-cancel-btn" class="flex-1 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium hover:bg-[#E0E0E0] dark:hover:bg-[#333] transition-colors cursor-pointer border-none">取消</button>
+          <button id="delete-confirm-btn" class="flex-1 py-2.5 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-600 active:scale-95 transition-all cursor-pointer border-none">删除</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script is:inline>
+    // ============================================================
+    // 全局状态
+    // ============================================================
+    let currentSlug = null;    // null = 新建模式，有值 = 编辑模式
+    let tinymceReady = false;
+    let deleteTarget = null;
+
+    // ============================================================
+    // 初始化
+    // ============================================================
+    (async function init() {
+      await checkAuth();
+      await loadPosts();
+    })();
+
+    // 登录状态检查
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth');
+        const data = await res.json();
+        if (!data.logged_in) {
+          window.location.href = '/admin/login';
+        }
+      } catch (e) {
+        window.location.href = '/admin/login';
+      }
+    }
+
+    // ============================================================
+    // 文章列表
+    // ============================================================
+    async function loadPosts() {
+      showListState('loading');
+      try {
+        const res = await fetch('/api/posts?admin=1');
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const posts = await res.json();
+        if (posts.error) throw new Error(posts.error);
+
+        if (posts.length === 0) {
+          showListState('empty');
+        } else {
+          renderTable(posts);
+          showListState('table');
+        }
+      } catch (e) {
+        showListState('error', e.message);
+      }
+    }
+
+    function showListState(state, msg) {
+      document.getElementById('loading-state').classList.toggle('hidden', state !== 'loading');
+      document.getElementById('empty-state').classList.toggle('hidden', state !== 'empty');
+      document.getElementById('error-state').classList.toggle('hidden', state !== 'error');
+      document.getElementById('posts-table').classList.toggle('hidden', state !== 'table');
+      if (state === 'error') {
+        document.getElementById('error-msg-text').textContent = msg || '加载失败';
+      }
+    }
+
+    function renderTable(posts) {
+      const tbody = document.getElementById('posts-tbody');
+      tbody.innerHTML = posts.map(p => {
+        const statusClass = p.status === 'published'
+          ? 'bg-[#7CB38B]/10 text-[#7CB38B]'
+          : 'bg-[#E8913A]/10 text-[#E8913A]';
+        const statusText = p.status === 'published' ? '已发布' : '草稿';
+        const catMap = { notes:'札记', critique:'时评簿', stack:'车间', body:'体感', transit:'行记', archive:'底片' };
+        const catName = catMap[p.categoryId] || p.categoryId;
+        const date = p.publishedAt || '—';
+        return `
+          <tr class="hover:bg-[#F5F5F5] dark:hover:bg-[#1A1A1A] transition-colors">
+            <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${statusClass}">${statusText}</span></td>
+            <td class="px-5 py-3 font-medium">${escapeHtml(p.title)}</td>
+            <td class="px-5 py-3 text-[#999] text-xs">${catName}</td>
+            <td class="px-5 py-3 text-[#999] text-xs font-mono">${date}</td>
+            <td class="px-5 py-3">
+              <div class="flex gap-2">
+                <button onclick="editPost('${p.slug}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-[#8B7CB3] hover:text-white transition-colors cursor-pointer border-none">编辑</button>
+                <button onclick="confirmDelete('${p.slug}', '${escapeJs(p.title)}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-red-500 hover:text-white transition-colors cursor-pointer border-none">删除</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ============================================================
+    // 编辑器
+    // ============================================================
+    document.getElementById('new-post-btn').addEventListener('click', () => openEditor());
+    document.getElementById('back-btn').addEventListener('click', () => closeEditor());
+
+    async function openEditor(slug = null) {
+      currentSlug = slug;
+
+      // 切换视图
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.remove('hidden');
+      document.getElementById('save-status').textContent = '';
+
+      if (slug) {
+        // 编辑模式：加载文章数据
+        const res = await fetch(`/api/posts?slug=${slug}&admin=1`);
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const post = await res.json();
+        if (post.error) { alert(post.error); closeEditor(); return; }
+        populateForm(post);
+      } else {
+        // 新建模式：清空表单
+        resetForm();
+      }
+
+      // 初始化 TinyMCE
+      initTinyMCE();
+    }
+
+    function closeEditor() {
+      if (tinymceReady) {
+        tinymce.remove('#field-content');
+        tinymceReady = false;
+      }
+      currentSlug = null;
+      document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      loadPosts();
+    }
+
+    function resetForm() {
+      document.getElementById('field-title').value = '';
+      document.getElementById('field-slug').value = '';
+      document.getElementById('field-category').value = 'notes';
+      document.getElementById('field-publishedAt').value = '';
+      document.getElementById('field-tags').value = '';
+      document.getElementById('field-status').value = 'draft';
+      document.getElementById('field-coverImage').value = '';
+      document.getElementById('field-excerpt').value = '';
+    }
+
+    function populateForm(post) {
+      document.getElementById('field-title').value = post.title || '';
+      document.getElementById('field-slug').value = post.slug || '';
+      document.getElementById('field-category').value = post.categoryId || 'notes';
+      document.getElementById('field-publishedAt').value = post.publishedAt || '';
+      document.getElementById('field-tags').value = (post.tags || []).join(', ');
+      document.getElementById('field-status').value = post.status || 'draft';
+      document.getElementById('field-coverImage').value = post.coverImage || '';
+      document.getElementById('field-excerpt').value = post.excerpt || '';
+      // content 由 TinyMCE 填充
+    }
+
+    function initTinyMCE() {
+      if (tinymceReady) {
+        tinymce.remove('#field-content');
+      }
+
+      tinymce.init({
+        selector: '#field-content',
+        height: 500,
+        plugins: 'link image code lists fullscreen',
+        toolbar: 'undo redo | bold italic underline strikethrough | h2 h3 | bullist numlist | link image | blockquote code | removeformat fullscreen',
+        menubar: false,
+        statusbar: false,
+        content_style: 'body { font-family: Inter, PingFang SC, Microsoft YaHei, sans-serif; font-size: 16px; line-height: 1.8; color: #1a1a1a; padding: 1rem; }',
+        setup: (editor) => {
+          editor.on('init', () => {
+            tinymceReady = true;
+            // 编辑模式下填充正文内容
+            if (currentSlug) {
+              loadContentIntoEditor(editor);
+            }
+          });
+        },
+      });
+    }
+
+    async function loadContentIntoEditor(editor) {
+      const res = await fetch(`/api/posts?slug=${currentSlug}&admin=1`);
+      const post = await res.json();
+      if (post.content && editor) {
+        editor.setContent(post.content);
+      }
+    }
+
+    function getContent() {
+      if (tinymceReady) {
+        return tinymce.get('#field-content')?.getContent() || '';
+      }
+      return '';
+    }
+
+    function collectFormData() {
+      const tagsRaw = document.getElementById('field-tags').value;
+      const tags = tagsRaw
+        ? tagsRaw.split(/[,，]/).map(t => t.trim()).filter(Boolean)
+        : [];
+
+      let publishedAt = document.getElementById('field-publishedAt').value.trim();
+      if (!publishedAt) {
+        const today = new Date();
+        publishedAt = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      }
+
+      return {
+        slug: document.getElementById('field-slug').value.trim(),
+        title: document.getElementById('field-title').value.trim(),
+        content: getContent(),
+        excerpt: document.getElementById('field-excerpt').value.trim(),
+        categoryId: document.getElementById('field-category').value,
+        tags,
+        coverImage: document.getElementById('field-coverImage').value.trim(),
+        publishedAt,
+        status: document.getElementById('field-status').value,
+      };
+    }
+
+    // Slug 自动生成（中文标题 → 时间戳兜底）
+    document.getElementById('field-title').addEventListener('blur', function() {
+      const slugField = document.getElementById('field-slug');
+      if (!slugField.value && !currentSlug) {
+        const title = this.value.trim();
+        // 简单处理：无中文输入时自动转 slug，中文则留空让用户手动填
+        if (title && /^[a-zA-Z0-9\s-]+$/.test(title)) {
+          slugField.value = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        }
+      }
+    });
+
+    // ============================================================
+    // 保存 / 发布
+    // ============================================================
+    document.getElementById('save-draft-btn').addEventListener('click', () => savePost('draft'));
+    document.getElementById('publish-btn').addEventListener('click', () => savePost('published'));
+
+    async function savePost(status) {
+      const data = collectFormData();
+      data.status = status;
+
+      // 校验
+      if (!data.title || !data.slug || !data.content || !data.categoryId) {
+        document.getElementById('save-status').textContent = '请填写标题、Slug 和正文';
+        document.getElementById('save-status').className = 'text-xs text-red-500 ml-2';
+        return;
+      }
+
+      // 关闭正在编辑的 TinyMCE 实例以获取最新内容
+      if (tinymceReady) {
+        data.content = tinymce.get('#field-content')?.getContent() || '';
+      }
+
+      const isUpdate = !!currentSlug && data.slug === currentSlug;
+      const url = '/api/posts';
+      const method = isUpdate ? 'PUT' : 'POST';
+
+      const statusEl = document.getElementById('save-status');
+      statusEl.textContent = '保存中...';
+      statusEl.className = 'text-xs text-[#999] ml-2';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-xs text-red-500 ml-2';
+        } else {
+          statusEl.textContent = status === 'published' ? '✓ 已发布' : '✓ 草稿已保存';
+          statusEl.className = 'text-xs text-[#7CB38B] ml-2';
+          currentSlug = result.slug || data.slug;
+
+          // 3 秒后返回列表
+          setTimeout(() => {
+            if (document.getElementById('save-status').textContent.includes('✓')) {
+              closeEditor();
+            }
+          }, 1500);
+        }
+      } catch (e) {
+        statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'text-xs text-red-500 ml-2';
+      }
+    }
+
+    // ============================================================
+    // 删除
+    // ============================================================
+    function confirmDelete(slug, title) {
+      deleteTarget = slug;
+      document.getElementById('delete-title-text').textContent = `删除「${title}」？此操作不可撤销。`;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('delete-cancel-btn').addEventListener('click', () => {
+      document.getElementById('delete-modal').classList.add('hidden');
+      deleteTarget = null;
+    });
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', async () => {
+      if (!deleteTarget) return;
+      try {
+        const res = await fetch(`/api/posts?slug=${deleteTarget}`, { method: 'DELETE' });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        document.getElementById('delete-modal').classList.add('hidden');
+        deleteTarget = null;
+        loadPosts();
+      } catch (e) {
+        alert('删除失败，请重试');
+      }
+    });
+
+    // ============================================================
+    // 登出
+    // ============================================================
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' }),
+      });
+      window.location.href = '/';
+    });
+
+    // ============================================================
+    // 公开函数（供 onclick 调用）
+    // ============================================================
+    window.editPost = (slug) => openEditor(slug);
+    window.confirmDelete = confirmDelete;
+
+    // ============================================================
+    // 工具函数
+    // ============================================================
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escapeJs(s) {
+      if (!s) return '';
+      return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
+    }
+  </script>
+</body>
+</html>
