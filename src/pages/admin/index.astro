@@ -9,8 +9,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理后台 — 贝谟拉比</title>
-  <!-- TinyMCE 6 (MIT, 无需 API Key) -->
-  <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.6/tinymce.min.js"></script>
+  <!-- TinyMCE 8 (API key, 需在 tiny.cloud 控制台注册域名) -->
+  <script src="https://cdn.tiny.cloud/1/jyhfqudwd0zic9z9y1l31phs1jcg0pdb72q46rf9xpd56x0t/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
@@ -313,12 +313,12 @@
 
       tinymce.init({
         selector: '#field-content',
-        height: 500,
-        plugins: 'link image code lists fullscreen',
-        toolbar: 'undo redo | bold italic underline strikethrough | h2 h3 | bullist numlist | link image | blockquote code | removeformat fullscreen',
+        height: 600,
+        plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount fullscreen code',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | h2 h3 | bullist numlist | link image | blockquote codesample | table charmap | searchreplace | removeformat fullscreen',
         menubar: false,
-        statusbar: false,
-        content_style: 'body { font-family: Inter, PingFang SC, Microsoft YaHei, sans-serif; font-size: 16px; line-height: 1.8; color: #1a1a1a; padding: 1rem; }',
+        statusbar: true,
+        content_style: 'body { font-family: Inter, PingFang SC, Microsoft YaHei, sans-serif; font-size: 16px; line-height: 1.8; color: #1a1a1a; padding: 1rem; max-width: 860px; margin: 0 auto; }',
         images_upload_handler: async (blobInfo, progress) => new Promise((resolve, reject) => {
           const formData = new FormData();
           formData.append('file', blobInfo.blob(), blobInfo.filename());
