@@ -2,6 +2,41 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_CONFIG } from '../config.ts';
 import CalendarIcon from '../components/icons/CalendarIcon.astro';
+
+// —— 服务端获取全部已发布文章 ——
+interface ApiPost {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  categoryId: string;
+  tags: string[];
+  coverImage: string;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+}
+
+let allPosts: ApiPost[] = [];
+try {
+  const res = await fetch('/api/posts?limit=50');
+  if (res.ok) {
+    allPosts = await res.json();
+    // 按 publishedAt 降序排列（API 已排，但确保一致）
+    allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  }
+} catch {
+  // API 不可用时页面正常展示（空状态）
+}
+
+// 序列化为 JSON 供客户端使用
+const postsJson = JSON.stringify(allPosts);
+const catMap = Object.fromEntries(
+  SITE_CONFIG.categories.map(c => [c.id, { name: c.name, color: c.color }])
+);
+const catMapJson = JSON.stringify(catMap);
 ---
 
 <BaseLayout title="贝谟拉比">
@@ -217,121 +252,153 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
 							</div>
-							<div id="stat-posts" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">3篇</div>
+							<div id="stat-posts" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">{allPosts.length}篇</div>
 							<div class="text-[10px] text-[#999] mt-0.5">已发文章</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- 3.4 右侧主容器区 -->
+			<!-- 3.4 右侧主容器区 —— 动态渲染 -->
 			<div id="tab-panel-container" class="flex-1 min-h-[400px] w-full mt-4 md:mt-0">
-				
-				<div class="panel-notes">
-					<a href="/blog/wang-zhan-shang-xian" class="block no-underline">
-					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
-						<div class="flex-1 flex flex-col justify-center">
-							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
-								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
-									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2026-05-03
-								</span>
-							</div>
-							
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">网站正式公开上线</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">高投入6天后，精力下降了，也应该回到该做的事上去了。建站是去年3月就想做的事情，随着大三课程和实习的忙碌，又放下了建站的进度。不过那会也没有现在这么强的AI可以辅助，哪怕HTML和CSS是最简单的，我也是个外行，只能看懂，不会写出好效果。</p>
-							
-							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-								Read Article 
-								<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-							</div>
+				{SITE_CONFIG.categories.map(cat => (
+					<div class="panel-{cat.id}" data-panel={cat.id} style={`display: ${cat.id === 'notes' ? 'block' : 'none'}`}>
+						<div id={`posts-${cat.id}`} class="flex flex-col gap-6"></div>
+						<div id={`empty-${cat.id}`} class="hidden w-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999] text-sm">
+							暂无文章
 						</div>
-						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
-							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
-								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							</div>
+						<div id={`load-more-${cat.id}`} class="hidden w-full flex justify-center mt-8 mb-4">
+							<button class="load-more-btn group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none" data-cat={cat.id}>
+								<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+								<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多</span>
+							</button>
 						</div>
-					</article>
-					</a>
-
-					<a href="/blog/kuang-jia-wan-shan" class="block no-underline">
-					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
-						<div class="flex-1 flex flex-col justify-center">
-							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
-								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
-									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2026-04-27
-								</span>
-							</div>
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">框架完善，抽BaseLayout.astro</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">两天完成整体架构搭建，并设计好首页，优化UI后就抽取了BaseLayout.astro。同时开始上传GitHub开始更新仓库。</p>
-							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-							</div>
-						</div>
-						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
-							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
-								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							</div>
-						</div>
-					</article>
-					</a>
-
-					<a href="/blog/kai-shi-jian-zhan" class="block no-underline">
-					<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 mb-6 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
-						<div class="flex-1 flex flex-col justify-center">
-							<div class="flex items-center gap-3 mb-3">
-								<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] tracking-widest uppercase">WebBuilding</span>
-								<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
-									<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-									2026-04-26
-								</span>
-							</div>
-							<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">开始建站</h3>
-							<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">不想投简历了，只想回家。暂时不想写论文了。又不能无所事事地躺着，现在AI很强，试着做网站吧，之前使用Vercel没建成功，这次自己想想工作流。</p>
-							<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-								Read Article <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-							</div>
-						</div>
-						<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
-							<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
-								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							</div>
-						</div>
-					</article>
-					</a>
-					<div class="w-full flex justify-center mt-8 mb-4">
-						<button id="load-more-btn" class="group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none">
-						<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-						<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多札记</span>
-						</button>
 					</div>
-				</div>
-
-				<div class="panel-critique" style="display: none;">
-					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">时评簿面板建设中...</div>
-				</div>
-				<div class="panel-stack" style="display: none;">
-					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">车间面板建设中...</div>
-				</div>
-				<div class="panel-body" style="display: none;">
-					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">体感面板建设中...</div>
-				</div>
-				<div class="panel-transit" style="display: none;">
-					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">行记面板建设中...</div>
-				</div>
-				<div class="panel-archive" style="display: none;">
-					<div class="w-full h-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999]">底片面版建设中...</div>
-				</div>
+				))}
 			</div>
 		</div>
 	</div>
 </BaseLayout>
 
+<!-- 嵌入文章数据供客户端 JS 使用 -->
 <script is:inline>
+	window.__POSTS__ = {postsJson};
+	window.__CAT_MAP__ = {catMapJson};
+</script>
+
+<script is:inline>
+	// ============================================================
+	// 文章卡片渲染引擎
+	// ============================================================
+	const POSTS = window.__POSTS__ || [];
+	const CAT_MAP = window.__CAT_MAP__ || {};
+	const POSTS_PER_PAGE = 6;
+
+	// 每分类的文章缓存（按 publishedAt 降序）
+	const postsByCategory = {};
+	POSTS.forEach(p => {
+		const cid = p.categoryId || 'notes';
+		if (!postsByCategory[cid]) postsByCategory[cid] = [];
+		postsByCategory[cid].push(p);
+	});
+
+	// 每分类当前展示数量
+	const displayCount = {};
+
+	function formatDate(dateStr) {
+		if (!dateStr) return '';
+		const d = new Date(dateStr);
+		if (isNaN(d.getTime())) return dateStr;
+		return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+	}
+
+	function escapeHtml(s) {
+		if (!s) return '';
+		return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+	}
+
+	function renderArticleCard(post) {
+		const cat = CAT_MAP[post.categoryId] || { name: post.categoryId, color: '#8B7CB3' };
+		const date = formatDate(post.publishedAt);
+		const excerpt = post.excerpt || '';
+		return `
+			<a href="/blog/${encodeURIComponent(post.slug)}" class="block no-underline">
+				<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
+					<div class="flex-1 flex flex-col justify-center">
+						<div class="flex items-center gap-3 mb-3">
+							<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style="background-color:${cat.color}18;color:${cat.color}">${escapeHtml(cat.name)}</span>
+							<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+								${date}
+							</span>
+						</div>
+						
+						<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">${escapeHtml(post.title)}</h3>
+						${excerpt ? `<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">${escapeHtml(excerpt)}</p>` : ''}
+						
+						<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+							Read Article 
+							<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+						</div>
+					</div>
+					<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+						${post.coverImage 
+							? `<img src="${escapeHtml(post.coverImage)}" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />`
+							: `<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							</div>`
+						}
+					</div>
+				</article>
+			</a>
+		`;
+	}
+
+	function renderCategory(catId) {
+		const container = document.getElementById(`posts-${catId}`);
+		const emptyEl = document.getElementById(`empty-${catId}`);
+		const loadMoreEl = document.getElementById(`load-more-${catId}`);
+		if (!container) return;
+
+		const posts = postsByCategory[catId] || [];
+		
+		if (posts.length === 0) {
+			container.innerHTML = '';
+			if (emptyEl) emptyEl.classList.remove('hidden');
+			if (loadMoreEl) loadMoreEl.classList.add('hidden');
+			return;
+		}
+
+		if (emptyEl) emptyEl.classList.add('hidden');
+
+		// 初始化展示数量
+		if (!(catId in displayCount)) {
+			displayCount[catId] = POSTS_PER_PAGE;
+		}
+
+		const visible = posts.slice(0, displayCount[catId]);
+		container.innerHTML = visible.map(renderArticleCard).join('');
+
+		// 加载更多按钮
+		if (loadMoreEl) {
+			if (displayCount[catId] < posts.length) {
+				loadMoreEl.classList.remove('hidden');
+			} else {
+				loadMoreEl.classList.add('hidden');
+			}
+		}
+	}
+
+	// 初始渲染默认分类（札记）
+	renderCategory('notes');
+
+	// 更新 System Status 文章计数
+	const statPostsEl = document.getElementById('stat-posts');
+	if (statPostsEl) statPostsEl.textContent = POSTS.length + '篇';
+
+	// ============================================================
 	// Tab 切换、果冻滑块与面板动画
+	// ============================================================
 	const tabButtons = document.querySelectorAll('[data-tab]');
 	const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
 
@@ -361,6 +428,7 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 
 			syncSliders();
 
+			// 切换面板
 			panelClasses.forEach(cls => {
 				const panel = document.querySelector('.' + cls);
 				if (panel) panel.style.display = 'none';
@@ -369,6 +437,8 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 			const target = document.querySelector('.panel-' + tabId);
 			if (target) {
 				target.style.display = 'block';
+				// 按需渲染（首次切换到该分类时）
+				renderCategory(tabId);
 				target.animate([
 					{ opacity: 0, transform: 'translateY(10px)' }, 
 					{ opacity: 1, transform: 'translateY(0)' }
@@ -376,6 +446,17 @@ import CalendarIcon from '../components/icons/CalendarIcon.astro';
 					duration: 400, 
 					easing: 'cubic-bezier(0.16, 1, 0.3, 1)' 
 				});
+			}
+		});
+	});
+
+	// "加载更多"按钮事件
+	document.querySelectorAll('.load-more-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const catId = btn.dataset.cat;
+			if (catId && displayCount[catId]) {
+				displayCount[catId] += POSTS_PER_PAGE;
+				renderCategory(catId);
 			}
 		});
 	});

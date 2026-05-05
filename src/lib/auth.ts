@@ -15,6 +15,7 @@ import type { APIContext } from "astro";
 export interface Env {
   CONFIG: KVNamespace;
   DB: D1Database;
+  IMAGES: R2Bucket;
 }
 
 function getEnv(locals: APIContext["locals"]): Env | undefined {

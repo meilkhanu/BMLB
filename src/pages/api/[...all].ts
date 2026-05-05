@@ -13,6 +13,7 @@
 import type { APIContext } from "astro";
 import { handleAuth } from "../../lib/auth";
 import { handlePosts } from "../../lib/posts";
+import { handleUpload } from "../../lib/upload";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const { url } = ctx;
@@ -26,6 +27,11 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
   // —— 文章接口 ——
   if (pathname.startsWith("/api/posts")) {
     return handlePosts(ctx);
+  }
+
+  // —— 图片上传接口 ——
+  if (pathname.startsWith("/api/upload")) {
+    return handleUpload(ctx);
   }
 
   // —— 未知路由 ——

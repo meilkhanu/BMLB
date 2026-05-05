@@ -1,23 +1,63 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPostBySlug, getAdjacentPosts } from '../../data/posts';
 import { SITE_CONFIG } from '../../config.ts';
 
 const { slug } = Astro.params;
 
-// 1. 新增：前置检查 slug 是否存在，消除 undefined 的可能性
 if (!slug) {
   return Astro.redirect('/404');
 }
 
-// 此时 TypeScript 已经明确知道 slug 是 string 类型了
-const post = getPostBySlug(slug); // 行 7 报错解除
+// —— 服务端调用内部 API 获取文章数据 ——
+// Astro SSR 在 Cloudflare Worker 中运行，fetch 同源 API 无额外延迟
 
-if (!post) {
+interface ApiPost {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  categoryId: string;
+  tags: string[];
+  coverImage: string;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+}
+
+let postData: ApiPost | null = null;
+let allPublished: ApiPost[] = [];
+
+try {
+  // 并行获取：单篇文章 + 全部已发布列表（用于计算上下篇）
+  const [postRes, listRes] = await Promise.all([
+    fetch(`/api/posts?slug=${encodeURIComponent(slug)}`),
+    fetch('/api/posts?limit=50'),
+  ]);
+
+  if (postRes.ok) {
+    postData = await postRes.json();
+  }
+
+  if (listRes.ok) {
+    allPublished = await listRes.json();
+  }
+} catch {
+  // fetch 失败 → 404
+}
+
+if (!postData || !postData.title) {
   return Astro.redirect('/404');
 }
 
-const { prev, next } = getAdjacentPosts(slug); // 行 13 报错解除
+// —— 映射到模板变量 ——
+const post = postData;
+
+// 计算上下篇（按 publishedAt 降序排列）
+const currentIdx = allPublished.findIndex((p: ApiPost) => p.slug === slug);
+const prev = currentIdx > 0 ? allPublished[currentIdx - 1] : null;
+const next = currentIdx >= 0 && currentIdx < allPublished.length - 1 ? allPublished[currentIdx + 1] : null;
 
 // 计算阅读时间（中文约 400 字/分钟）
 function estimateReadingTime(html: string): number {
@@ -27,13 +67,18 @@ function estimateReadingTime(html: string): number {
 }
 const readingTime = estimateReadingTime(post.content);
 
-// 查找分类颜色
-const categoryInfo = SITE_CONFIG.categories.find(c => c.name === post.category);
+// 分类信息映射
+const categoryInfo = SITE_CONFIG.categories.find(c => c.id === post.categoryId);
+const catName = categoryInfo?.name ?? post.categoryId;
 const catColor = categoryInfo?.color ?? '#8B7CB3';
 
 // 格式化日期
-const dateObj = new Date(post.date);
-const dateFormatted = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
+const dateStr = post.publishedAt || post.createdAt;
+const dateObj = new Date(dateStr);
+const isValidDate = !isNaN(dateObj.getTime());
+const dateFormatted = isValidDate
+  ? `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`
+  : dateStr;
 ---
 
 <BaseLayout title={`${post.title} — ${SITE_CONFIG.siteName}`}>
@@ -61,7 +106,7 @@ const dateFormatted = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${
           class="px-3 py-1 rounded-lg text-[11px] font-bold tracking-widest uppercase"
           style={`background-color: ${catColor}18; color: ${catColor}`}
         >
-          {post.category}
+          {catName}
         </span>
         <span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +172,7 @@ const dateFormatted = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${
 
     <!-- ========== 标签 ========== -->
     {
-      post.tags.length > 0 && (
+      post.tags && post.tags.length > 0 && (
         <div class="flex flex-wrap gap-2.5 mt-12 pt-8 border-t border-[#E8E8E8] dark:border-[#2A2A2A]">
           {post.tags.map(tag => (
             <span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-default">

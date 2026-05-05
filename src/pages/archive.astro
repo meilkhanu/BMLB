@@ -1,5 +1,97 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../config.ts';
+
+// —— 服务端获取全部已发布文章 ——
+interface ApiPost {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  categoryId: string;
+  tags: string[];
+  coverImage: string;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+}
+
+let allPosts: ApiPost[] = [];
+try {
+  const res = await fetch('/api/posts?limit=100');
+  if (res.ok) {
+    allPosts = await res.json();
+    allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  }
+} catch {
+  // 空状态
+}
+
+// 分类映射
+const catMap = Object.fromEntries(
+  SITE_CONFIG.categories.map(c => [c.id, { name: c.name, color: c.color }])
+);
+
+// 按年月分组
+interface MonthGroup {
+  month: number;   // 1-12
+  label: string;   // "04 月"
+  posts: ApiPost[];
+}
+
+interface YearGroup {
+  year: number;
+  months: MonthGroup[];
+  total: number;
+}
+
+const yearGroups: YearGroup[] = [];
+const yearMap = new Map<number, Map<number, ApiPost[]>>();
+
+allPosts.forEach(p => {
+  const dateStr = p.publishedAt || p.createdAt;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return;
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  if (!yearMap.has(y)) yearMap.set(y, new Map());
+  const monthMap = yearMap.get(y)!;
+  if (!monthMap.has(m)) monthMap.set(m, []);
+  monthMap.get(m)!.push(p);
+});
+
+// 按年份降序排
+const sortedYears = Array.from(yearMap.keys()).sort((a, b) => b - a);
+sortedYears.forEach(y => {
+  const monthMap = yearMap.get(y)!;
+  const sortedMonths = Array.from(monthMap.keys()).sort((a, b) => b - a);
+  const months: MonthGroup[] = sortedMonths.map(m => ({
+    month: m,
+    label: `${String(m).padStart(2, '0')} 月`,
+    posts: monthMap.get(m)!,
+  }));
+  yearGroups.push({
+    year: y,
+    months,
+    total: months.reduce((sum, mg) => sum + mg.posts.length, 0),
+  });
+});
+
+// 统计标签（全部文章）
+const tagCounts: Record<string, number> = {};
+allPosts.forEach(p => {
+  (p.tags || []).forEach(t => {
+    tagCounts[t] = (tagCounts[t] || 0) + 1;
+  });
+});
+const topTags = Object.entries(tagCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+
+// 年份节点颜色轮换
+const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8B8B'];
 ---
 
 <BaseLayout title="归档">
@@ -19,124 +111,105 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 				<div class="sticky top-24">
 					<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-4">年份</h3>
 					<nav class="flex flex-col gap-2">
-						<!-- 锚点链接 -->
-						<a href="#year-2026" class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">2026</a>
-						<a href="#year-2025" class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">2025</a>
+						{yearGroups.length > 0 ? yearGroups.map(yg => (
+							<a href={`#year-${yg.year}`} class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">{yg.year}</a>
+						)) : (
+							<span class="text-sm text-[#999]">暂无</span>
+						)}
 					</nav>
 				</div>
 			</aside>
 
 			<!-- 中间：主时间轴 -->
 			<main class="relative">
-				<!-- 时间轴纵向竖线（绝对定位，偏左） -->
+				<!-- 时间轴纵向竖线 -->
 				<div class="absolute left-[12px] top-0 bottom-0 w-0 border-l-2 border-dashed border-[#E5E5E5] dark:border-[#222]"></div>
 
-				<!-- 2026 年份节点 -->
-				<section id="year-2026" class="relative mb-12">
-					<!-- 年份大节点 -->
-					<div class="sticky top-16 z-20 flex items-center gap-4 py-4 -ml-2 px-2 bg-[#FAFAFA] dark:bg-[#0F0F0F] mb-4 relative transition-colors duration-300">
-						<div class="w-6 h-6 rounded-full bg-[#8B7CB3] border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10"></div>
-						<h2 class="text-2xl font-bold">2026</h2>
-						<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
-					</div>
-
-					<!-- 月份分组：04月 -->
-					<div class="ml-8 mb-8 relative">
-						<h3 class="text-sm font-medium text-[#999] mb-4 relative">
-							<span class="absolute left-[-20px] top-[50%] w-4 h-[2px] rounded-full bg-[#E5E5E5] dark:bg-[#222]"></span>
-							04 月
-						</h3>
-
-						<!-- 文章卡片（只显示标题+标签，点击跳转） -->
-						<div class="flex flex-col gap-3">
-							<a href="/blog/chun-ye-du-shu-ji" class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
-								<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0D0D0] dark:bg-[#3A3A3A] group-hover:bg-[#8B7CB3] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
-								<div class="flex items-center gap-2 mb-2">
-									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
-									<span class="text-xs text-[#999]">04-20</span>
-								</div>
-								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">半封闭景观水体碳酸盐系统与碳汇观测日志</h4>
-							</a>
-
-							<a href="/blog/ka-fei-yu-dai-ma" class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
-								<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0D0D0] dark:bg-[#3A3A3A] group-hover:bg-[#8B7CB3] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
-								<div class="flex items-center gap-2 mb-2">
-									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
-									<span class="text-xs text-[#999]">04-15</span>
-								</div>
-								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">咖啡与代码</h4>
-							</a>
+				{yearGroups.length > 0 ? yearGroups.map((yg, yi) => (
+					<section id={`year-${yg.year}`} class="relative mb-12">
+						<!-- 年份大节点 -->
+						<div class="sticky top-16 z-20 flex items-center gap-4 py-4 -ml-2 px-2 bg-[#FAFAFA] dark:bg-[#0F0F0F] mb-4 relative transition-colors duration-300">
+							<div class="w-6 h-6 rounded-full border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10" style={`background-color: ${yearColors[yi % yearColors.length]}`}></div>
+							<h2 class="text-2xl font-bold">{yg.year}</h2>
+							<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
 						</div>
-					</div>
 
-					<!-- 月份分组：03月 -->
-					<div class="ml-8 mb-8 relative">
-						<h3 class="text-sm font-medium text-[#999] mb-4 relative">
-							<span class="absolute left-[-20px] top-[50%] w-4 h-[2px] rounded-full bg-[#E5E5E5] dark:bg-[#222]"></span>
-							03 月
-						</h3>
-						<div class="flex flex-col gap-3">
-							<a href="/blog/cheng-shi-man-bu-bi-ji" class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
-								<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0D0D0] dark:bg-[#3A3A3A] group-hover:bg-[#8B7CB3] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
-								<div class="flex items-center gap-2 mb-2">
-									<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-[#8B7CB3]/10 text-[#8B7CB3]">札记</span>
-									<span class="text-xs text-[#999]">03-10</span>
+						{yg.months.map(mg => (
+							<div class="ml-8 mb-8 relative">
+								<h3 class="text-sm font-medium text-[#999] mb-4 relative">
+									<span class="absolute left-[-20px] top-[50%] w-4 h-[2px] rounded-full bg-[#E5E5E5] dark:bg-[#222]"></span>
+									{mg.label}
+								</h3>
+
+								<div class="flex flex-col gap-3">
+									{mg.posts.map(p => {
+										const cat = catMap[p.categoryId] || { name: p.categoryId, color: '#8B7CB3' };
+										const dateStr = p.publishedAt || '';
+										const d = new Date(dateStr);
+										const mmdd = isNaN(d.getTime()) ? '' : `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+										return (
+											<a href={`/blog/${p.slug}`} class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+												<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0D0D0] dark:bg-[#3A3A3A] group-hover:bg-[#8B7CB3] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
+												<div class="flex items-center gap-2 mb-2">
+													<span class="px-2 py-0.5 rounded-md text-xs font-medium" style={`background-color:${cat.color}18;color:${cat.color}`}>{cat.name}</span>
+													<span class="text-xs text-[#999]">{mmdd}</span>
+												</div>
+												<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{p.title}</h4>
+											</a>
+										);
+									})}
 								</div>
-								<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">城市漫步笔记</h4>
-							</a>
-						</div>
-					</div>
-				</section>
-
-				<!-- 2025 年份节点（占位） -->
-				<section id="year-2025" class="relative mb-12">
-					<div class="sticky top-16 z-20 flex items-center gap-4 py-4 -ml-2 px-2 bg-[#FAFAFA] dark:bg-[#0F0F0F] mb-4 relative transition-colors duration-300">
-						<div class="w-6 h-6 rounded-full bg-[#E8913A] border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10"></div>
-						<h2 class="text-2xl font-bold">2025</h2>
-						<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
-					</div>
-					<div class="ml-8 text-sm text-[#999]">暂无文章</div>
-				</section>
+							</div>
+						))}
+					</section>
+				)) : (
+					<div class="ml-8 text-sm text-[#999] py-12">暂无已发布文章</div>
+				)}
 			</main>
 
 			<!-- 右侧：年度摘要卡片 -->
 			<aside class="hidden md:block">
 				<div class="sticky top-24 space-y-6">
-					
-					<div class="group bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-transparent hover:border-[#8B7CB3]/20">
-						<div class="flex items-center justify-between mb-5">
-							<h3 class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">2026 Overview</h3>
-							<span class="relative flex h-2 w-2">
-								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
-								<span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
-							</span>
-						</div>
-						
-						<div class="grid grid-cols-2 gap-3">
-							<div class="p-3.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#252525] group-hover:bg-[#8B7CB3]/5 transition-colors duration-300">
-								<div class="text-3xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-1 group-hover:text-[#8B7CB3] transition-colors">3</div>
-								<div class="text-[10px] font-medium text-[#999]">已发文章</div>
+					{yearGroups.slice(0, 1).map(yg => (
+						<div class="group bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-transparent hover:border-[#8B7CB3]/20">
+							<div class="flex items-center justify-between mb-5">
+								<h3 class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">{yg.year} Overview</h3>
+								<span class="relative flex h-2 w-2">
+									<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
+									<span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
+								</span>
 							</div>
-							<div class="p-3.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#252525] group-hover:bg-[#8B7CB3]/5 transition-colors duration-300">
-								<div class="text-3xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-1 group-hover:text-[#8B7CB3] transition-colors">1</div>
-								<div class="text-[10px] font-medium text-[#999]">分类</div>
+							
+							<div class="grid grid-cols-2 gap-3">
+								<div class="p-3.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#252525] group-hover:bg-[#8B7CB3]/5 transition-colors duration-300">
+									<div class="text-3xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-1 group-hover:text-[#8B7CB3] transition-colors">{yg.total}</div>
+									<div class="text-[10px] font-medium text-[#999]">已发文章</div>
+								</div>
+								<div class="p-3.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#252525] group-hover:bg-[#8B7CB3]/5 transition-colors duration-300">
+									<div class="text-3xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-1 group-hover:text-[#8B7CB3] transition-colors">{yg.months.length}</div>
+									<div class="text-[10px] font-medium text-[#999]">活跃月份</div>
+								</div>
 							</div>
 						</div>
-					</div>
+					))}
 
-					<div class="group bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-transparent hover:border-[#8B7CB3]/20">
-						<h3 class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-4">Top Tags</h3>
-						<div class="flex flex-wrap gap-2.5">
-							<span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FAFAFA] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-pointer active:scale-95 shadow-sm border border-transparent hover:shadow-md">碳汇</span>
-							<span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FAFAFA] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-pointer active:scale-95 shadow-sm border border-transparent hover:shadow-md">阅读</span>
-							<span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FAFAFA] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-pointer active:scale-95 shadow-sm border border-transparent hover:shadow-md">代码</span>
+					{topTags.length > 0 && (
+						<div class="group bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-transparent hover:border-[#8B7CB3]/20">
+							<h3 class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-4">Top Tags</h3>
+							<div class="flex flex-wrap gap-2.5">
+								{topTags.map(([tag, count]) => (
+									<span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FAFAFA] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-default active:scale-95 shadow-sm border border-transparent hover:shadow-md">
+										{tag} <span class="text-[10px] opacity-50 ml-0.5">{count}</span>
+									</span>
+								))}
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</aside>
 		</div>
 
-		<!-- 底部年度总结入口 -->
+		<!-- 底部年度总结入口（保留） -->
 		<div class="mt-20 mb-12 text-center">
 			<button class="annual-review-btn">
 				<span class="relative z-10">2026 Review →</span>
