@@ -1,6 +1,6 @@
 // ============================================================
-// src/pages/api/posts.ts
-// 文章 CRUD 接口（Astro API 路由，读写 Cloudflare D1）
+// src/lib/posts.ts
+// 文章 CRUD 业务逻辑 — 纯handler函数，由 [...all].ts 调用
 //
 // GET    /api/posts              → 公开列表（仅 published）
 // GET    /api/posts?admin=1      → 管理列表（含草稿，需登录）
@@ -10,8 +10,8 @@
 // DELETE /api/posts?slug=xxx     → 删除文章（需登录）
 // ============================================================
 
-import type { APIRoute } from "astro";
-import { verifySession } from "./auth";
+import type { APIContext } from "astro";
+import { verifySession, type Env } from "./auth";
 
 // ============================================================
 // 工具函数
@@ -24,11 +24,11 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: any) {
-  return locals.runtime?.env;
+function getEnv(locals: APIContext["locals"]): Env | undefined {
+  return (locals as any).runtime?.env as Env | undefined;
 }
 
-async function requireAuth(request: Request, env: any) {
+async function requireAuth(request: Request, env: Env) {
   const authed = await verifySession(request, env);
   if (!authed) {
     throw new Response(JSON.stringify({ error: "未登录" }), {
@@ -60,10 +60,11 @@ function rowToPost(row: any) {
 // GET /api/posts
 // ============================================================
 
-export const GET: APIRoute = async ({ request, locals, url }) => {
-  const env = getEnv(locals);
+async function handleGetPosts(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
   if (!env) return json({ error: "运行时不可用" }, 500);
 
+  const { request, url } = ctx;
   const slug = url.searchParams.get("slug");
   const admin = url.searchParams.get("admin") === "1";
 
@@ -122,18 +123,18 @@ export const GET: APIRoute = async ({ request, locals, url }) => {
     console.error("GET /api/posts error:", e);
     return json({ error: "服务器内部错误" }, 500);
   }
-};
+}
 
 // ============================================================
 // POST /api/posts — 创建文章
 // ============================================================
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const env = getEnv(locals);
+async function handlePostPosts(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(request, env);
+    await requireAuth(ctx.request, env);
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -141,7 +142,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   let body: any;
   try {
-    body = await request.json();
+    body = await ctx.request.json();
   } catch {
     return json({ error: "无效的请求体" }, 400);
   }
@@ -166,18 +167,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // 返回新建的文章
   const row = await env.DB.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
   return json(rowToPost(row), 201);
-};
+}
 
 // ============================================================
 // PUT /api/posts — 更新文章
 // ============================================================
 
-export const PUT: APIRoute = async ({ request, locals }) => {
-  const env = getEnv(locals);
+async function handlePutPosts(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(request, env);
+    await requireAuth(ctx.request, env);
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -185,7 +186,7 @@ export const PUT: APIRoute = async ({ request, locals }) => {
 
   let body: any;
   try {
-    body = await request.json();
+    body = await ctx.request.json();
   } catch {
     return json({ error: "无效的请求体" }, 400);
   }
@@ -234,24 +235,24 @@ export const PUT: APIRoute = async ({ request, locals }) => {
 
   const row = await env.DB.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
   return json(rowToPost(row));
-};
+}
 
 // ============================================================
 // DELETE /api/posts?slug=xxx — 删除文章
 // ============================================================
 
-export const DELETE: APIRoute = async ({ request, locals, url }) => {
-  const env = getEnv(locals);
+async function handleDeletePosts(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(request, env);
+    await requireAuth(ctx.request, env);
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
   }
 
-  const slug = url.searchParams.get("slug");
+  const slug = ctx.url.searchParams.get("slug");
   if (!slug) return json({ error: "缺少 slug 参数" }, 400);
 
   const existing = await env.DB.prepare("SELECT id FROM posts WHERE slug = ?").bind(slug).first();
@@ -260,4 +261,29 @@ export const DELETE: APIRoute = async ({ request, locals, url }) => {
   await env.DB.prepare("DELETE FROM posts WHERE slug = ?").bind(slug).run();
 
   return json({ success: true, deleted: slug });
-};
+}
+
+// ============================================================
+// 主入口 — handlePosts
+// ============================================================
+
+export async function handlePosts(ctx: APIContext): Promise<Response> {
+  // 启动时断言
+  const env = getEnv(ctx.locals);
+  if (!env) {
+    console.error("[posts] FATAL: runtime.env is undefined — D1 binding missing");
+  }
+
+  switch (ctx.request.method) {
+    case "GET":
+      return handleGetPosts(ctx);
+    case "POST":
+      return handlePostPosts(ctx);
+    case "PUT":
+      return handlePutPosts(ctx);
+    case "DELETE":
+      return handleDeletePosts(ctx);
+    default:
+      return json({ error: "Method Not Allowed" }, 405);
+  }
+}

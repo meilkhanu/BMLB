@@ -1,23 +1,34 @@
 // ============================================================
-// src/pages/api/auth.ts
-// 认证接口（Astro API 路由，自动获得 Cloudflare bindings）
+// src/lib/auth.ts
+// 认证业务逻辑 — 纯handler函数，由 [...all].ts 调用
 //
 // GET  /api/auth  → 检查登录状态
-// POST /api/auth  → 登录 / 首次 SETUP
-//        body: { password }  → 登录
-//        body: { action: "logout" }  → 登出
+// POST /api/auth  → 登录 / 首次 SETUP / 登出
 // ============================================================
 
-import type { APIRoute } from "astro";
+import type { APIContext } from "astro";
+
+// ============================================================
+// Env 类型
+// ============================================================
+
+export interface Env {
+  CONFIG: KVNamespace;
+  DB: D1Database;
+}
+
+function getEnv(locals: APIContext["locals"]): Env | undefined {
+  return (locals as any).runtime?.env as Env | undefined;
+}
 
 // ============================================================
 // 工具函数
 // ============================================================
 
-function json(data: unknown, status = 200) {
+function json(data: unknown, status = 200, extraHeaders?: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...extraHeaders },
   });
 }
 
@@ -41,7 +52,7 @@ function clearCookie() {
 // Session 管理
 // ============================================================
 
-async function createSession(env: any) {
+async function createSession(env: Env) {
   const token = crypto.randomUUID();
   await env.CONFIG.put(
     `session:${token}`,
@@ -51,7 +62,7 @@ async function createSession(env: any) {
   return token;
 }
 
-export async function verifySession(request: Request, env: any): Promise<boolean> {
+export async function verifySession(request: Request, env: Env): Promise<boolean> {
   const cookieHeader = request.headers.get("Cookie") || "";
   const match = cookieHeader.match(/auth_token=([^;]+)/);
   if (!match) return false;
@@ -63,25 +74,31 @@ export async function verifySession(request: Request, env: any): Promise<boolean
 // GET /api/auth — 检查登录状态
 // ============================================================
 
-export const GET: APIRoute = async ({ request, locals }) => {
-  const env = (locals as any).runtime?.env;
-  if (!env) return json({ error: "运行时不可用" }, 500);
+async function handleGetAuth(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
+  if (!env) {
+    console.error("[auth] D1 binding missing — env is undefined");
+    return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
+  }
 
-  const authed = await verifySession(request, env);
+  const authed = await verifySession(ctx.request, env);
   return json({ logged_in: authed });
-};
+}
 
 // ============================================================
 // POST /api/auth — 登录 / 登出 / 首次 SETUP
 // ============================================================
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const env = (locals as any).runtime?.env;
-  if (!env) return json({ error: "运行时不可用" }, 500);
+async function handlePostAuth(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
+  if (!env) {
+    console.error("[auth] D1 binding missing — env is undefined");
+    return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
+  }
 
   let body: Record<string, string>;
   try {
-    body = await request.json();
+    body = await ctx.request.json();
   } catch {
     return json({ error: "无效的请求体" }, 400);
   }
@@ -90,7 +107,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (body.action === "logout") {
     return json(
       { success: true },
-      { status: 200, headers: { "Set-Cookie": clearCookie() } }
+      200,
+      { "Set-Cookie": clearCookie() }
     );
   }
 
@@ -109,7 +127,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const token = await createSession(env);
     return json(
       { success: true, setup: true },
-      { status: 200, headers: { "Set-Cookie": setCookie(token) } }
+      200,
+      { "Set-Cookie": setCookie(token) }
     );
   }
 
@@ -122,6 +141,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const token = await createSession(env);
   return json(
     { success: true },
-    { status: 200, headers: { "Set-Cookie": setCookie(token) } }
+    200,
+    { "Set-Cookie": setCookie(token) }
   );
-};
+}
+
+// ============================================================
+// 主入口 — handleAuth
+// ============================================================
+
+export async function handleAuth(ctx: APIContext): Promise<Response> {
+  // 启动时断言
+  const env = getEnv(ctx.locals);
+  if (!env) {
+    console.error("[auth] FATAL: runtime.env is undefined — D1/KV bindings missing");
+  }
+
+  switch (ctx.request.method) {
+    case "GET":
+      return handleGetAuth(ctx);
+    case "POST":
+      return handlePostAuth(ctx);
+    default:
+      return json({ error: "Method Not Allowed" }, 405);
+  }
+}
