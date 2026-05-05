@@ -50,6 +50,12 @@ async function doUpload(ctx: APIContext): Promise<Response> {
     return json({ error: "运行时不可用（R2 binding 缺失）" }, 500);
   }
 
+  // 检查 R2 绑定
+  if (!env.IMAGES) {
+    console.error("[upload] IMAGES binding missing — 请在 Cloudflare Pages 设置中绑定 R2 bucket");
+    return json({ error: "存储服务未配置（R2 binding 缺失）" }, 500);
+  }
+
   // 鉴权
   const authed = await verifySession(ctx.request, env);
   if (!authed) {
