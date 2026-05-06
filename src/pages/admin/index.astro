@@ -213,6 +213,58 @@
           <label class="block text-xs font-medium text-[#999] mb-1.5">事项描述 *</label>
           <textarea id="now-description" rows="4" required placeholder="描述当前正在进行的事项..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
         </div>
+
+        <!-- 并行卡片矩阵编辑 -->
+        <div class="mb-4">
+          <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">并行卡片矩阵</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 正在阅读 -->
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">📖</span>
+                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在阅读</span>
+              </div>
+              <div class="space-y-2">
+                <input type="text" id="now-reading-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-reading-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+            </div>
+            <!-- 正在学习 -->
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">💻</span>
+                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在学习</span>
+              </div>
+              <div class="space-y-2">
+                <input type="text" id="now-learning-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-learning-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+            </div>
+            <!-- 正在研究 -->
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">🔬</span>
+                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在研究</span>
+              </div>
+              <div class="space-y-2">
+                <input type="text" id="now-researching-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-researching-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+            </div>
+            <!-- 正在听 -->
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">🎵</span>
+                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在听</span>
+              </div>
+              <div class="space-y-2">
+                <input type="text" id="now-listening-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-listening-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
           <button type="button" id="save-now-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
           <span id="now-save-status" class="text-xs text-[#999]"></span>
@@ -280,6 +332,14 @@
         document.getElementById('now-phase').value = data.phase || '';
         document.getElementById('now-progress').value = data.progress ?? '';
         document.getElementById('now-description').value = data.description || '';
+        document.getElementById('now-reading-title').value = data.readingTitle || '';
+        document.getElementById('now-reading-subtitle').value = data.readingSubtitle || '';
+        document.getElementById('now-learning-title').value = data.learningTitle || '';
+        document.getElementById('now-learning-subtitle').value = data.learningSubtitle || '';
+        document.getElementById('now-researching-title').value = data.researchingTitle || '';
+        document.getElementById('now-researching-subtitle').value = data.researchingSubtitle || '';
+        document.getElementById('now-listening-title').value = data.listeningTitle || '';
+        document.getElementById('now-listening-subtitle').value = data.listeningSubtitle || '';
         updateNowPreview();
       } catch (e) {
         document.getElementById('now-save-status').textContent = '加载失败: ' + e.message;
@@ -303,6 +363,14 @@
         phase: document.getElementById('now-phase').value.trim(),
         description: document.getElementById('now-description').value.trim(),
         progress: parseInt(document.getElementById('now-progress').value || '0', 10),
+        readingTitle: document.getElementById('now-reading-title').value.trim(),
+        readingSubtitle: document.getElementById('now-reading-subtitle').value.trim(),
+        learningTitle: document.getElementById('now-learning-title').value.trim(),
+        learningSubtitle: document.getElementById('now-learning-subtitle').value.trim(),
+        researchingTitle: document.getElementById('now-researching-title').value.trim(),
+        researchingSubtitle: document.getElementById('now-researching-subtitle').value.trim(),
+        listeningTitle: document.getElementById('now-listening-title').value.trim(),
+        listeningSubtitle: document.getElementById('now-listening-subtitle').value.trim(),
       };
 
       if (!data.startDate || !data.endDate || !data.phase || !data.description) {

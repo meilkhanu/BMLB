@@ -1,6 +1,6 @@
 // ============================================================
 // src/lib/now.ts
-// /now 页面状态面板 CRUD — 纯 handler 函数，由 [...all].ts 调用
+// /now 页面状态面板 + 并行卡片矩阵 CRUD — 纯 handler 函数，由 [...all].ts 调用
 //
 // GET  /api/now  → 获取当前状态（公开）
 // PUT  /api/now  → 更新状态（需登录）
@@ -43,6 +43,14 @@ function rowToStatus(row: any) {
     phase: row.phase,
     description: row.description,
     progress: row.progress ?? 0,
+    readingTitle: row.reading_title,
+    readingSubtitle: row.reading_subtitle,
+    learningTitle: row.learning_title,
+    learningSubtitle: row.learning_subtitle,
+    researchingTitle: row.researching_title,
+    researchingSubtitle: row.researching_subtitle,
+    listeningTitle: row.listening_title,
+    listeningSubtitle: row.listening_subtitle,
     updatedAt: row.updated_at,
   };
 }
@@ -55,6 +63,14 @@ const DEFAULT_STATUS = {
   phase: "Phase 2",
   description: "目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。",
   progress: 72,
+  readingTitle: "《追忆似水年华》",
+  readingSubtitle: "第三卷，缓慢推进中",
+  learningTitle: "Astro + CF 全栈",
+  learningSubtitle: "进度 45%",
+  researchingTitle: "半封闭水体碳汇",
+  researchingSubtitle: "数据整理阶段",
+  listeningTitle: "浮遊大陸アルジェス",
+  listeningSubtitle: "Falcom Sound Team",
   updatedAt: new Date().toISOString(),
 };
 
@@ -100,7 +116,13 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
     return json({ error: "无效的请求体" }, 400);
   }
 
-  const { startDate, endDate, phase, description, progress } = body;
+  const {
+    startDate, endDate, phase, description, progress,
+    readingTitle, readingSubtitle,
+    learningTitle, learningSubtitle,
+    researchingTitle, researchingSubtitle,
+    listeningTitle, listeningSubtitle,
+  } = body;
 
   // 校验必填字段
   if (!startDate || !endDate || !phase || !description) {
@@ -115,15 +137,45 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
       // 更新
       await env.DB.prepare(
         `UPDATE now_status
-         SET start_date = ?, end_date = ?, phase = ?, description = ?, progress = ?, updated_at = datetime('now')
+         SET start_date = ?, end_date = ?, phase = ?, description = ?, progress = ?,
+             reading_title = ?, reading_subtitle = ?,
+             learning_title = ?, learning_subtitle = ?,
+             researching_title = ?, researching_subtitle = ?,
+             listening_title = ?, listening_subtitle = ?,
+             updated_at = datetime('now')
          WHERE id = 1`
-      ).bind(startDate, endDate, phase, description, progress ?? 0).run();
+      ).bind(
+        startDate, endDate, phase, description, progress ?? 0,
+        readingTitle ?? DEFAULT_STATUS.readingTitle,
+        readingSubtitle ?? DEFAULT_STATUS.readingSubtitle,
+        learningTitle ?? DEFAULT_STATUS.learningTitle,
+        learningSubtitle ?? DEFAULT_STATUS.learningSubtitle,
+        researchingTitle ?? DEFAULT_STATUS.researchingTitle,
+        researchingSubtitle ?? DEFAULT_STATUS.researchingSubtitle,
+        listeningTitle ?? DEFAULT_STATUS.listeningTitle,
+        listeningSubtitle ?? DEFAULT_STATUS.listeningSubtitle,
+      ).run();
     } else {
       // 插入
       await env.DB.prepare(
-        `INSERT INTO now_status (id, start_date, end_date, phase, description, progress)
-         VALUES (1, ?, ?, ?, ?, ?)`
-      ).bind(startDate, endDate, phase, description, progress ?? 0).run();
+        `INSERT INTO now_status (
+           id, start_date, end_date, phase, description, progress,
+           reading_title, reading_subtitle,
+           learning_title, learning_subtitle,
+           researching_title, researching_subtitle,
+           listening_title, listening_subtitle
+         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        startDate, endDate, phase, description, progress ?? 0,
+        readingTitle ?? DEFAULT_STATUS.readingTitle,
+        readingSubtitle ?? DEFAULT_STATUS.readingSubtitle,
+        learningTitle ?? DEFAULT_STATUS.learningTitle,
+        learningSubtitle ?? DEFAULT_STATUS.learningSubtitle,
+        researchingTitle ?? DEFAULT_STATUS.researchingTitle,
+        researchingSubtitle ?? DEFAULT_STATUS.researchingSubtitle,
+        listeningTitle ?? DEFAULT_STATUS.listeningTitle,
+        listeningSubtitle ?? DEFAULT_STATUS.listeningSubtitle,
+      ).run();
     }
 
     const row = await env.DB.prepare("SELECT * FROM now_status WHERE id = 1").first();

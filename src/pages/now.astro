@@ -9,6 +9,14 @@ interface NowStatus {
   phase: string;
   description: string;
   progress: number;
+  readingTitle: string;
+  readingSubtitle: string;
+  learningTitle: string;
+  learningSubtitle: string;
+  researchingTitle: string;
+  researchingSubtitle: string;
+  listeningTitle: string;
+  listeningSubtitle: string;
   updatedAt: string;
 }
 
@@ -19,6 +27,14 @@ let status: NowStatus = {
   phase: 'Phase 2',
   description: '目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。',
   progress: 72,
+  readingTitle: '《追忆似水年华》',
+  readingSubtitle: '第三卷，缓慢推进中',
+  learningTitle: 'Astro + CF 全栈',
+  learningSubtitle: '进度 45%',
+  researchingTitle: '半封闭水体碳汇',
+  researchingSubtitle: '数据整理阶段',
+  listeningTitle: '浮遊大陸アルジェス',
+  listeningSubtitle: 'Falcom Sound Team',
   updatedAt: new Date().toISOString(),
 };
 
@@ -105,8 +121,8 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">📖</div>
           <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在阅读</h3>
-          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">《追忆似水年华》</p>
-          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">第三卷，缓慢推进中</p>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.readingTitle}</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.readingSubtitle}</p>
         </div>
       </div>
 
@@ -116,8 +132,8 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">💻</div>
           <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在学习</h3>
-          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">Astro + CF 全栈</p>
-          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">进度 45%</p>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.learningTitle}</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.learningSubtitle}</p>
         </div>
       </div>
 
@@ -127,8 +143,8 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🔬</div>
           <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在研究</h3>
-          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">半封闭水体碳汇</p>
-          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">数据整理阶段</p>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.researchingTitle}</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.researchingSubtitle}</p>
         </div>
       </div>
 
@@ -138,8 +154,8 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🎵</div>
           <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在听</h3>
-          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">浮遊大陸アルジェス</p>
-          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">Falcom Sound Team</p>
+          <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.listeningTitle}</p>
+          <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.listeningSubtitle}</p>
         </div>
       </div>
       
