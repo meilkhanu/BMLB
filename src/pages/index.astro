@@ -21,7 +21,9 @@ interface ApiPost {
 
 let allPosts: ApiPost[] = [];
 try {
-  const res = await fetch('/api/posts?limit=50');
+  // 使用绝对 URL — Cloudflare Worker 中相对 URL fetch 可能失败
+  const apiUrl = new URL('/api/posts?limit=50', Astro.url);
+  const res = await fetch(apiUrl.toString());
   if (res.ok) {
     allPosts = await res.json();
     // 按 publishedAt 降序排列（API 已排，但确保一致）

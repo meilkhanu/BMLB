@@ -31,9 +31,10 @@ let allPublished: ApiPost[] = [];
 
 try {
   // 并行获取：单篇文章 + 全部已发布列表（用于计算上下篇）
+  // 使用绝对 URL — Cloudflare Worker 中相对 URL fetch 可能失败
   const [postRes, listRes] = await Promise.all([
-    fetch(`/api/posts?slug=${encodeURIComponent(slug)}`),
-    fetch('/api/posts?limit=50'),
+    fetch(new URL(`/api/posts?slug=${encodeURIComponent(slug)}`, Astro.url).toString()),
+    fetch(new URL('/api/posts?limit=50', Astro.url).toString()),
   ]);
 
   if (postRes.ok) {
