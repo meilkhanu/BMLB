@@ -21,12 +21,10 @@ interface ApiPost {
 
 let allPosts: ApiPost[] = [];
 try {
-  // 使用绝对 URL — Cloudflare Worker 中相对 URL fetch 可能失败
   const apiUrl = new URL('/api/posts?limit=50', Astro.url);
   const res = await fetch(apiUrl.toString());
   if (res.ok) {
     allPosts = await res.json();
-    // 按 publishedAt 降序排列（API 已排，但确保一致）
     allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
   } else {
     const errText = await res.text().catch(() => '无法读取响应');
@@ -36,12 +34,25 @@ try {
   console.error('[index] GET /api/posts 请求失败:', e?.message || e);
 }
 
-// 序列化为 JSON 供客户端使用
-const postsJson = JSON.stringify(allPosts);
-const catMap = Object.fromEntries(
-  SITE_CONFIG.categories.map(c => [c.id, { name: c.name, color: c.color }])
-);
-const catMapJson = JSON.stringify(catMap);
+// —— 按分类分组 ——
+const postsByCategory: Record<string, ApiPost[]> = {};
+allPosts.forEach(p => {
+  const cid = p.categoryId || 'notes';
+  if (!postsByCategory[cid]) postsByCategory[cid] = [];
+  postsByCategory[cid].push(p);
+});
+
+// —— 工具函数 ——
+const POSTS_PER_PAGE = 6;
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// 分类映射直接通过 SITE_CONFIG.categories 遍历获取，无需额外变量
 ---
 
 <BaseLayout title="贝谟拉比">
@@ -81,9 +92,9 @@ const catMapJson = JSON.stringify(catMap);
 
 			<!-- 3.2 PC Tab 长条栏 -->
 			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-full bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
- 				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
- 				<div class="relative flex gap-1 z-0">
- 					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-white/80 dark:bg-[#2A2A2A]/80 backdrop-blur-md shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white/50 dark:border-white/5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
+				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
+				<div class="relative flex gap-1 z-0">
+					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-white/80 dark:bg-[#2A2A2A]/80 backdrop-blur-md shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white/50 dark:border-white/5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
@@ -264,143 +275,90 @@ const catMapJson = JSON.stringify(catMap);
 				</div>
 			</div>
 
-			<!-- 3.4 右侧主容器区 —— 动态渲染 -->
+			<!-- 3.5 右侧主容器区 —— 服务端渲染文章卡片 -->
 			<div id="tab-panel-container" class="flex-1 min-h-[400px] w-full mt-4 md:mt-0">
-				{SITE_CONFIG.categories.map(cat => (
-					<div class="panel-{cat.id}" data-panel={cat.id} style={`display: ${cat.id === 'notes' ? 'block' : 'none'}`}>
-						<div id={`posts-${cat.id}`} class="flex flex-col gap-6"></div>
-						<div id={`empty-${cat.id}`} class="hidden w-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999] text-sm">
-							暂无文章
+				{SITE_CONFIG.categories.map(cat => {
+					const catPosts = postsByCategory[cat.id] || [];
+					const hasMore = catPosts.length > POSTS_PER_PAGE;
+					return (
+						<div class={`panel-${cat.id}`} data-panel={cat.id} style={`display: ${cat.id === 'notes' ? 'block' : 'none'}`}>
+							<div id={`posts-${cat.id}`} class="flex flex-col gap-6">
+								{catPosts.map((p, idx) => {
+									const date = formatDate(p.publishedAt);
+									const excerpt = p.excerpt || '';
+									return (
+										<a
+											href={`/blog/${encodeURIComponent(p.slug)}`}
+											class={`block no-underline post-card-item ${idx >= POSTS_PER_PAGE ? 'hidden post-card-hidden' : ''}`}
+											data-cat={cat.id}
+										>
+											<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
+												<div class="flex-1 flex flex-col justify-center">
+													<div class="flex items-center gap-3 mb-3">
+														<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style={`background-color:${cat.color}18;color:${cat.color}`}>
+															{cat.name}
+														</span>
+														<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+															<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+															{date}
+														</span>
+													</div>
+
+													<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">
+														{p.title}
+													</h3>
+													{excerpt && (
+														<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">
+															{excerpt}
+														</p>
+													)}
+
+													<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+														Read Article
+														<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+													</div>
+												</div>
+												<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+													{p.coverImage ? (
+														<img src={p.coverImage} alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+													) : (
+														<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+															<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+														</div>
+													)}
+												</div>
+											</article>
+										</a>
+									);
+								})}
+							</div>
+
+							{catPosts.length === 0 && (
+								<div id={`empty-${cat.id}`} class="w-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999] text-sm">
+									暂无文章
+								</div>
+							)}
+
+							{hasMore && (
+								<div id={`load-more-${cat.id}`} class="w-full flex justify-center mt-8 mb-4">
+									<button
+										class="load-more-btn group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none"
+										data-cat={cat.id}
+									>
+										<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+										<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多</span>
+									</button>
+								</div>
+							)}
 						</div>
-						<div id={`load-more-${cat.id}`} class="hidden w-full flex justify-center mt-8 mb-4">
-							<button class="load-more-btn group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none" data-cat={cat.id}>
-								<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-								<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多</span>
-							</button>
-						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		</div>
 	</div>
 </BaseLayout>
 
-<!-- 嵌入文章数据供客户端 JS 使用 -->
 <script is:inline>
-	window.__POSTS__ = {postsJson};
-	window.__CAT_MAP__ = {catMapJson};
-</script>
-
-<script is:inline>
-	// ============================================================
-	// 文章卡片渲染引擎
-	// ============================================================
-	const POSTS = window.__POSTS__ || [];
-	const CAT_MAP = window.__CAT_MAP__ || {};
-	const POSTS_PER_PAGE = 6;
-
-	// 每分类的文章缓存（按 publishedAt 降序）
-	const postsByCategory = {};
-	POSTS.forEach(p => {
-		const cid = p.categoryId || 'notes';
-		if (!postsByCategory[cid]) postsByCategory[cid] = [];
-		postsByCategory[cid].push(p);
-	});
-
-	// 每分类当前展示数量
-	const displayCount = {};
-
-	function formatDate(dateStr) {
-		if (!dateStr) return '';
-		const d = new Date(dateStr);
-		if (isNaN(d.getTime())) return dateStr;
-		return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-	}
-
-	function escapeHtml(s) {
-		if (!s) return '';
-		return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-	}
-
-	function renderArticleCard(post) {
-		const cat = CAT_MAP[post.categoryId] || { name: post.categoryId, color: '#8B7CB3' };
-		const date = formatDate(post.publishedAt);
-		const excerpt = post.excerpt || '';
-		return `
-			<a href="/blog/${encodeURIComponent(post.slug)}" class="block no-underline">
-				<article class="group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden">
-					<div class="flex-1 flex flex-col justify-center">
-						<div class="flex items-center gap-3 mb-3">
-							<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style="background-color:${cat.color}18;color:${cat.color}">${escapeHtml(cat.name)}</span>
-							<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
-								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-								${date}
-							</span>
-						</div>
-						
-						<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">${escapeHtml(post.title)}</h3>
-						${excerpt ? `<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">${escapeHtml(excerpt)}</p>` : ''}
-						
-						<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-							Read Article 
-							<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-						</div>
-					</div>
-					<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
-						${post.coverImage 
-							? `<img src="${escapeHtml(post.coverImage)}" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />`
-							: `<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
-								<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							</div>`
-						}
-					</div>
-				</article>
-			</a>
-		`;
-	}
-
-	function renderCategory(catId) {
-		const container = document.getElementById(`posts-${catId}`);
-		const emptyEl = document.getElementById(`empty-${catId}`);
-		const loadMoreEl = document.getElementById(`load-more-${catId}`);
-		if (!container) return;
-
-		const posts = postsByCategory[catId] || [];
-		
-		if (posts.length === 0) {
-			container.innerHTML = '';
-			if (emptyEl) emptyEl.classList.remove('hidden');
-			if (loadMoreEl) loadMoreEl.classList.add('hidden');
-			return;
-		}
-
-		if (emptyEl) emptyEl.classList.add('hidden');
-
-		// 初始化展示数量
-		if (!(catId in displayCount)) {
-			displayCount[catId] = POSTS_PER_PAGE;
-		}
-
-		const visible = posts.slice(0, displayCount[catId]);
-		container.innerHTML = visible.map(renderArticleCard).join('');
-
-		// 加载更多按钮
-		if (loadMoreEl) {
-			if (displayCount[catId] < posts.length) {
-				loadMoreEl.classList.remove('hidden');
-			} else {
-				loadMoreEl.classList.add('hidden');
-			}
-		}
-	}
-
-	// 初始渲染默认分类（札记）
-	renderCategory('notes');
-
-	// 更新 System Status 文章计数
-	const statPostsEl = document.getElementById('stat-posts');
-	if (statPostsEl) statPostsEl.textContent = POSTS.length + '篇';
-
 	// ============================================================
 	// Tab 切换、果冻滑块与面板动画
 	// ============================================================
@@ -410,14 +368,14 @@ const catMapJson = JSON.stringify(catMap);
 	function syncSliders() {
 		const activePcBtn = document.querySelector('.hidden.md\\:flex [data-tab][data-active="true"]');
 		const pcSlider = document.getElementById('pc-tab-slider');
-		if(activePcBtn && pcSlider) {
+		if (activePcBtn && pcSlider) {
 			pcSlider.style.transform = `translateX(${activePcBtn.offsetLeft}px)`;
 			pcSlider.style.width = `${activePcBtn.offsetWidth}px`;
 		}
-		
+
 		const activeMobileBtn = document.querySelector('.md\\:hidden [data-tab][data-active="true"]');
 		const mobileSlider = document.getElementById('mobile-tab-slider');
-		if(activeMobileBtn && mobileSlider) {
+		if (activeMobileBtn && mobileSlider) {
 			mobileSlider.style.transform = `translateX(${activeMobileBtn.offsetLeft}px)`;
 			mobileSlider.style.width = `${activeMobileBtn.offsetWidth}px`;
 		}
@@ -442,36 +400,45 @@ const catMapJson = JSON.stringify(catMap);
 			const target = document.querySelector('.panel-' + tabId);
 			if (target) {
 				target.style.display = 'block';
-				// 按需渲染（首次切换到该分类时）
-				renderCategory(tabId);
 				target.animate([
-					{ opacity: 0, transform: 'translateY(10px)' }, 
+					{ opacity: 0, transform: 'translateY(10px)' },
 					{ opacity: 1, transform: 'translateY(0)' }
-				], { 
-					duration: 400, 
-					easing: 'cubic-bezier(0.16, 1, 0.3, 1)' 
+				], {
+					duration: 400,
+					easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
 				});
 			}
 		});
 	});
 
-	// "加载更多"按钮事件
+	// "加载更多"按钮事件 —— 显示隐藏的卡片
+	const POSTS_PER_PAGE = 6;
 	document.querySelectorAll('.load-more-btn').forEach(btn => {
 		btn.addEventListener('click', () => {
 			const catId = btn.dataset.cat;
-			if (catId && displayCount[catId]) {
-				displayCount[catId] += POSTS_PER_PAGE;
-				renderCategory(catId);
+			if (!catId) return;
+
+			const hiddenCards = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`);
+			const toShow = Math.min(hiddenCards.length, POSTS_PER_PAGE);
+
+			for (let i = 0; i < toShow; i++) {
+				hiddenCards[i].classList.remove('hidden', 'post-card-hidden');
+			}
+
+			// 如果已全部显示，隐藏"加载更多"按钮
+			const remaining = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`).length;
+			if (remaining === 0) {
+				btn.closest('[id^="load-more-"]')?.classList.add('hidden');
 			}
 		});
 	});
 
 	window.addEventListener('resize', syncSliders);
 	document.addEventListener('DOMContentLoaded', () => {
-		setTimeout(syncSliders, 50); 
+		setTimeout(syncSliders, 50);
 	});
 
-	//日期时间更新
+	// 日期时间更新
 	function updateDateTime() {
 		const now = new Date();
 		const year = now.getFullYear();
