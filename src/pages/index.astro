@@ -26,9 +26,12 @@ try {
     allPosts = await res.json();
     // 按 publishedAt 降序排列（API 已排，但确保一致）
     allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  } else {
+    const errText = await res.text().catch(() => '无法读取响应');
+    console.error('[index] GET /api/posts 返回非 OK:', res.status, errText.slice(0, 200));
   }
-} catch {
-  // API 不可用时页面正常展示（空状态）
+} catch (e: any) {
+  console.error('[index] GET /api/posts 请求失败:', e?.message || e);
 }
 
 // 序列化为 JSON 供客户端使用

@@ -24,9 +24,12 @@ try {
   if (res.ok) {
     allPosts = await res.json();
     allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  } else {
+    const errText = await res.text().catch(() => '无法读取响应');
+    console.error('[archive] GET /api/posts 返回非 OK:', res.status, errText.slice(0, 200));
   }
-} catch {
-  // 空状态
+} catch (e: any) {
+  console.error('[archive] GET /api/posts 请求失败:', e?.message || e);
 }
 
 // 分类映射
