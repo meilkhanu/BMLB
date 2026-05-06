@@ -8,6 +8,7 @@ import type { APIContext } from "astro";
 import { handleAuth } from "../../lib/auth";
 import { handlePosts } from "../../lib/posts";
 import { handleUpload } from "../../lib/upload";
+import { handleNow } from "../../lib/now";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
@@ -22,6 +23,10 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
 
   if (url.pathname.startsWith("/api/upload")) {
     return handleUpload(ctx);
+  }
+
+  if (url.pathname.startsWith("/api/now")) {
+    return handleNow(ctx);
   }
 
   return new Response("Not Found", { status: 404 });

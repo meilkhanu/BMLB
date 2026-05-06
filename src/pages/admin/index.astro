@@ -22,6 +22,7 @@
         <span class="text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
       </div>
       <div class="flex items-center gap-3">
+        <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">编辑 /now</button>
         <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
         <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
       </div>
@@ -140,6 +141,85 @@
       </form>
     </div>
 
+    <!-- —— /now 状态面板编辑器（隐藏） —— -->
+    <div id="now-editor-view" class="hidden">
+      <button type="button" id="now-back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
+
+      <!-- 预览卡片：与 /now 页面状态面板同样式 -->
+      <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm p-6 md:p-8 relative overflow-hidden mb-8">
+        <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 z-0"></div>
+        <div class="flex flex-col md:flex-row gap-6 relative z-10">
+          <div class="md:w-[35%] flex flex-col justify-center">
+            <p class="text-xs font-medium text-[#999] uppercase tracking-widest mb-1">Now</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
+            <p class="text-sm text-[#999] mt-2">Current Focus</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
+            <p class="text-sm text-[#999]">Building</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
+          </div>
+          <div class="md:w-[30%]">
+            <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">The Flowing of Becoming</p>
+            <div class="text-sm space-y-1">
+              <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg">
+                <span class="text-[#999]">开始时间</span>
+                <span id="preview-start-date" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+              </div>
+              <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg">
+                <span class="text-[#999]">预计结束</span>
+                <span id="preview-end-date" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+              </div>
+              <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg">
+                <span class="text-[#999]">当前阶段</span>
+                <span id="preview-phase" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+              </div>
+              <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg">
+                <span class="text-[#999]">进度</span>
+                <span id="preview-progress" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-[35%]">
+            <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">事项描述</p>
+            <p id="preview-description" class="text-sm text-[#666] dark:text-[#888] leading-relaxed">...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 编辑表单 -->
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-6">编辑 /now 状态面板</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">开始时间 *</label>
+            <input type="text" id="now-start-date" required placeholder="如 2026-04-30" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">预计结束 *</label>
+            <input type="text" id="now-end-date" required placeholder="如 2026-05-20" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">当前阶段 *</label>
+            <input type="text" id="now-phase" required placeholder="如 Phase 2" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">进度（0-100）</label>
+            <input type="number" id="now-progress" min="0" max="100" placeholder="72" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-[#999] mb-1.5">事项描述 *</label>
+          <textarea id="now-description" rows="4" required placeholder="描述当前正在进行的事项..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        </div>
+        <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <button type="button" id="save-now-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
+          <span id="now-save-status" class="text-xs text-[#999]"></span>
+        </div>
+      </div>
+    </div>
+
     <!-- —— 删除确认弹窗 —— -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
@@ -161,6 +241,105 @@
     let currentSlug = null;    // null = 新建模式，有值 = 编辑模式
     let tinymceReady = false;
     let deleteTarget = null;
+    let nowStatusData = null;
+
+    // ============================================================
+    // /now 状态面板编辑器
+    // ============================================================
+    document.getElementById('edit-now-btn').addEventListener('click', () => openNowEditor());
+    document.getElementById('now-back-btn').addEventListener('click', () => closeNowEditor());
+    document.getElementById('save-now-btn').addEventListener('click', () => saveNowStatus());
+
+    // 实时预览
+    ['now-start-date','now-end-date','now-phase','now-progress','now-description'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateNowPreview);
+    });
+
+    async function openNowEditor() {
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.remove('hidden');
+      document.getElementById('save-status').textContent = '';
+      await loadNowStatus();
+    }
+
+    function closeNowEditor() {
+      document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      loadPosts();
+    }
+
+    async function loadNowStatus() {
+      try {
+        const res = await fetch('/api/now');
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        nowStatusData = data;
+        document.getElementById('now-start-date').value = data.startDate || '';
+        document.getElementById('now-end-date').value = data.endDate || '';
+        document.getElementById('now-phase').value = data.phase || '';
+        document.getElementById('now-progress').value = data.progress ?? '';
+        document.getElementById('now-description').value = data.description || '';
+        updateNowPreview();
+      } catch (e) {
+        document.getElementById('now-save-status').textContent = '加载失败: ' + e.message;
+        document.getElementById('now-save-status').className = 'text-xs text-red-500';
+      }
+    }
+
+    function updateNowPreview() {
+      document.getElementById('preview-start-date').textContent = document.getElementById('now-start-date').value || '...';
+      document.getElementById('preview-end-date').textContent = document.getElementById('now-end-date').value || '...';
+      document.getElementById('preview-phase').textContent = document.getElementById('now-phase').value || '...';
+      const p = document.getElementById('now-progress').value;
+      document.getElementById('preview-progress').textContent = (p !== '' ? p : '...') + '%';
+      document.getElementById('preview-description').textContent = document.getElementById('now-description').value || '...';
+    }
+
+    async function saveNowStatus() {
+      const data = {
+        startDate: document.getElementById('now-start-date').value.trim(),
+        endDate: document.getElementById('now-end-date').value.trim(),
+        phase: document.getElementById('now-phase').value.trim(),
+        description: document.getElementById('now-description').value.trim(),
+        progress: parseInt(document.getElementById('now-progress').value || '0', 10),
+      };
+
+      if (!data.startDate || !data.endDate || !data.phase || !data.description) {
+        document.getElementById('now-save-status').textContent = '请填写所有必填字段';
+        document.getElementById('now-save-status').className = 'text-xs text-red-500';
+        return;
+      }
+
+      const statusEl = document.getElementById('now-save-status');
+      statusEl.textContent = '保存中...';
+      statusEl.className = 'text-xs text-[#999]';
+
+      try {
+        const res = await fetch('/api/now', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-xs text-red-500';
+        } else {
+          statusEl.textContent = '✓ 已保存';
+          statusEl.className = 'text-xs text-[#7CB38B]';
+          nowStatusData = result;
+          updateNowPreview();
+          setTimeout(() => {
+            if (statusEl.textContent.includes('✓')) statusEl.textContent = '';
+          }, 2000);
+        }
+      } catch (e) {
+        statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'text-xs text-red-500';
+      }
+    }
 
     // ============================================================
     // 初始化
@@ -253,6 +432,7 @@
 
       // 切换视图
       document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
 
@@ -279,6 +459,7 @@
       }
       currentSlug = null;
       document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
     }

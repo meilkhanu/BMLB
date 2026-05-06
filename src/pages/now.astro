@@ -1,22 +1,61 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+// —— 服务端获取 /now 状态面板数据 ——
+interface NowStatus {
+  id: number;
+  startDate: string;
+  endDate: string;
+  phase: string;
+  description: string;
+  progress: number;
+  updatedAt: string;
+}
+
+let status: NowStatus = {
+  id: 1,
+  startDate: '2026-04-30',
+  endDate: '2026-05-20',
+  phase: 'Phase 2',
+  description: '目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。',
+  progress: 72,
+  updatedAt: new Date().toISOString(),
+};
+
+try {
+  const apiUrl = new URL('/api/now', Astro.url);
+  const res = await fetch(apiUrl.toString());
+  if (res.ok) {
+    const data = await res.json();
+    if (!data.error) {
+      status = data as NowStatus;
+    }
+  } else {
+    const errText = await res.text().catch(() => '无法读取响应');
+    console.error('[now] GET /api/now 返回非 OK:', res.status, errText.slice(0, 200));
+  }
+} catch (e: any) {
+  console.error('[now] GET /api/now 请求失败:', e?.message || e);
+}
+
+const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
 ---
 
 <BaseLayout title="/now">
   <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-[100px] pb-16 space-y-8">
     <!-- 第一行：状态面板 -->
     <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 p-6 md:p-8 relative overflow-hidden">
-		<!-- 装饰性光晕（在左上角放置环境光，与下方超大卡片的右上角光晕形成对角呼应） -->
+			<!-- 装饰性光晕（在左上角放置环境光，与下方超大卡片的右上角光晕形成对角呼应） -->
       <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0"></div>
-	  	<div class="flex flex-col md:flex-row gap-6 relative z-10">
+	  		<div class="flex flex-col md:flex-row gap-6 relative z-10">
         <!-- 左侧 35% 视觉文案 -->
         <div class="md:w-[35%] flex flex-col justify-center">
           <p class="text-xs font-medium text-[#999] uppercase tracking-widest mb-1">Now</p>
           <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
           <p class="text-sm text-[#999] mt-2">Current Focus</p>
-		  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
+				  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
           <p class="text-sm text-[#999]">Building</p>
-		  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
+				  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
         </div>
         <!-- 中部 30% 时间河流 -->
         <div class="md:w-[30%]">
@@ -25,7 +64,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <!-- 给每一行数据增加 -mx-2 和 px-2，实现鼠标悬浮时行内高亮的微反馈 -->
             <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">开始时间</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-04-30</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
             </div>
             <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">已持续</span>
@@ -33,7 +72,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
             <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">预计结束</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-05-20</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
             </div>
             <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">已投入天数</span>
@@ -41,7 +80,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
             <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">当前阶段</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">Phase 2</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.phase}</span>
             </div>
           </div>
         </div>
@@ -49,7 +88,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div class="md:w-[35%]">
           <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">事项描述</p>
           <p class="text-sm text-[#666] dark:text-[#888] group-hover:text-[#444] dark:group-hover:text-[#AAA] leading-relaxed transition-colors duration-500">
-            目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。
+            {status.description}
           </p>
         </div>
       </div>
@@ -108,9 +147,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <!-- 第三行：Current Project 超大卡片 -->
     <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden">
-		<!-- 装饰性光晕（在卡片右上角微微发光，增加空间感） -->
-		<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-      	<div class="flex flex-col md:flex-row gap-8">
+			<!-- 装饰性光晕（在卡片右上角微微发光，增加空间感） -->
+			<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+      		<div class="flex flex-col md:flex-row gap-8">
         <!-- 左侧 55% -->
         <div class="md:w-[55%]">
           <p class="text-xs text-[#999] uppercase tracking-widest mb-2">Current Project</p>
@@ -118,7 +157,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div>
               <span class="text-[#999] block">Started</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-04-30</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
             </div>
             <div>
               <span class="text-[#999] block">Running</span>
@@ -126,34 +165,36 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
             <div>
               <span class="text-[#999] block">ETA</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">2026-05-20</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
             </div>
             <div>
               <span class="text-[#999] block">Progress</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">72%</span>
+              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.progress}%</span>
             </div>
           </div>
           <!-- 动态流光进度条（Animated Gradient + 头部发光点） -->
           <div class="w-full h-2.5 bg-[#E0E0E0]/80 dark:bg-[#2A2A2A] rounded-full overflow-visible mb-5 relative shadow-inner">
-			<div class="absolute top-0 left-0 h-full rounded-full w-[72%] bg-gradient-to-r from-[#8B7CB3] via-[#B26A8B] to-[#8B7CB3] bg-[length:200%_200%] animate-gradient-x shadow-[0_0_10px_rgba(139,124,179,0.5)]">
-				<!-- 进度条推进末端的发光点 -->
-				<div class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_8px_rgba(139,124,179,0.8)] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-			</div>
+					<div class="absolute top-0 left-0 h-full rounded-full" style={`width: ${progressPercent}%;`}>
+              <div class="h-full w-full bg-gradient-to-r from-[#8B7CB3] via-[#B26A8B] to-[#8B7CB3] bg-[length:200%_200%] animate-gradient-x shadow-[0_0_10px_rgba(139,124,179,0.5)] rounded-full">
+							<!-- 进度条推进末端的发光点 -->
+							<div class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_8px_rgba(139,124,179,0.8)] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+						</div>
+            </div>
           </div>
           <!-- 状态标签 -->
           <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default">
           <span class="relative z-10">高投入推进中</span>
-		  <!-- 标签内的一道扫光 -->
-		  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
-		  </span>
-		  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 2026-05-20 前完成上线。</p>
+				  <!-- 标签内的一道扫光 -->
+				  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
+				  </span>
+				  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 {status.endDate} 前完成上线。</p>
         </div>
         <!-- 右侧 45% -->
         <div class="md:w-[45%]">
           <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F5F5F5] dark:bg-[#111111] border border-black/5 dark:border-white/5 shadow-inner flex items-center justify-center overflow-hidden relative group/screen">
             <!-- 模拟屏幕玻璃反光 -->
-			<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none z-10"></div>
-			<span class="text-sm text-[#999]">项目截图占位</span>
+						<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none z-10"></div>
+						<span class="text-sm text-[#999]">项目截图占位</span>
           </div>
         </div>
       </div>
@@ -224,70 +265,70 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <!-- 留言板输入区（修正版：结构清晰、统一风格、无重复 textarea） -->
-		<div class="mb-6">
-  			<div
-    		class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300
-    		dark:border-[#2B2B2B] dark:bg-[#141414]/80
-    		focus-within:border-[#8B7CB3]/45
-    		focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)]
-    		focus-within:ring-4 focus-within:ring-[#8B7CB3]/8"
-  			>
+				<div class="mb-6">
+  					<div
+    					class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300
+    					dark:border-[#2B2B2B] dark:bg-[#141414]/80
+    					focus-within:border-[#8B7CB3]/45
+    					focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)]
+    					focus-within:ring-4 focus-within:ring-[#8B7CB3]/8"
+  					>
 
-    		<!-- 输入区域 -->
-    		<textarea
-      		rows="3"
-      		placeholder="给现在的我留句话..."
-      		class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none
-      		dark:text-[#EAEAEA] dark:placeholder:text-[#666]"
-    		></textarea>
+    					<!-- 输入区域 -->
+    					<textarea
+      						rows="3"
+      						placeholder="给现在的我留句话..."
+      						class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none
+      						dark:text-[#EAEAEA] dark:placeholder:text-[#666]"
+    					></textarea>
 
-    		<!-- 分割线 -->
-    		<div
-      		class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300
-      		dark:bg-[#2F2F2F]
-      		group-focus-within:bg-[#8B7CB3]/25"
-    	></div>
+    					<!-- 分割线 -->
+    					<div
+      						class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300
+      						dark:bg-[#2F2F2F]
+      						group-focus-within:bg-[#8B7CB3]/25"
+    					></div>
 
-    	<!-- 发送按钮 -->
-    	<button
-      	type="button"
-      	class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98]"
-    	>
-      	<!-- hover 扫光 -->
-      	<span class="absolute inset-0 overflow-hidden">
-        	<span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
-      	</span>
+    					<!-- 发送按钮 -->
+    					<button
+      						type="button"
+      						class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98]"
+    					>
+      						<!-- hover 扫光 -->
+      						<span class="absolute inset-0 overflow-hidden">
+        							<span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
+      						</span>
 
-      	<!-- 内容 -->
-      	<span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
-        	发送
-        	<svg
-          	class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
-          	fill="none"
-          	stroke="currentColor"
-          	viewBox="0 0 24 24"
-        	>
-          	<path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-          	/>
-        	</svg>
-      	</span>
-    	</button>
-  		</div>
+      						<!-- 内容 -->
+      						<span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
+        						发送
+        						<svg
+          							class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+          							fill="none"
+          							stroke="currentColor"
+          							viewBox="0 0 24 24"
+        						>
+          							<path
+            							stroke-linecap="round"
+            							stroke-linejoin="round"
+            							stroke-width="2"
+            							d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+          							/>
+        						</svg>
+      						</span>
+    					</button>
+  					</div>
 
-		<!-- 底部提示信息 -->
-  		<div class="mt-2 flex items-center justify-between px-1">
-    		<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
-      		留下此刻想说的话
-    		</span>
-    		<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
-      		Ctrl + Enter 发送
-    		</span>
-  		</div>
-		</div>
+					<!-- 底部提示信息 -->
+  					<div class="mt-2 flex items-center justify-between px-1">
+    					<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
+      						留下此刻想说的话
+    					</span>
+    					<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
+      						Ctrl + Enter 发送
+    					</span>
+  					</div>
+					</div>
 
         <!-- 留言列表：统一磨砂玻璃与微交互体验 -->
         <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1 pl-2 px-2 pt-2">
@@ -345,13 +386,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
           
         </div>
-      		</div>
-    		</div>
-  		</div>
+      			</div>
+    			</div>
+  			</div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ startDate: status.startDate }}>
     (function () {
-      const start = new Date('2026-04-26T00:00:00');
+      const start = new Date(startDate + 'T00:00:00');
 
       function formatDuration(ms) {
         const totalMinutes = Math.floor(ms / 60000);
