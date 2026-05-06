@@ -43,17 +43,11 @@ function generateKey(originalName: string): string {
   return `uploads/${ts}-${random}.${ext}`;
 }
 
-// —— POST /api/upload 内部实现 ——
-async function doUpload(ctx: APIContext): Promise<Response> {
+// —— POST /api/upload ——
+async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   const env = getEnv(ctx.locals);
   if (!env) {
     return json({ error: "运行时不可用（R2 binding 缺失）" }, 500);
-  }
-
-  // 检查 R2 绑定
-  if (!env.IMAGES) {
-    console.error("[upload] IMAGES binding missing — 请在 Cloudflare Pages 设置中绑定 R2 bucket");
-    return json({ error: "存储服务未配置（R2 binding 缺失）" }, 500);
   }
 
   // 鉴权
@@ -119,5 +113,5 @@ export async function handleUpload(ctx: APIContext): Promise<Response> {
   if (ctx.request.method !== "POST") {
     return json({ error: "Method Not Allowed" }, 405);
   }
-  return doUpload(ctx);
+  return handleUploadRequest(ctx);
 }

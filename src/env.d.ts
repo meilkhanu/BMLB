@@ -1,3 +1,4 @@
+/// <reference types="@cloudflare/workers-types" />
 /// <reference path="../.astro/types.d.ts" />
 
 // ============================================================
@@ -7,6 +8,7 @@
 interface Env {
   CONFIG: KVNamespace;
   DB: D1Database;
+  IMAGES: R2Bucket;
 }
 
 declare namespace App {

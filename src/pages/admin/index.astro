@@ -383,7 +383,7 @@
 
     function getContent() {
       if (tinymceReady) {
-        return tinymce.get('#field-content')?.getContent() || '';
+        return tinymce.get('field-content')?.getContent() || '';
       }
       return '';
     }
@@ -437,7 +437,7 @@
 
       // 先从 TinyMCE 获取最新正文内容（必须在校验之前）
       if (tinymceReady) {
-        data.content = tinymce.get('#field-content')?.getContent() || '';
+        data.content = tinymce.get('field-content')?.getContent() || '';
       }
 
       // 校验
