@@ -43,6 +43,8 @@ function rowToStatus(row: any) {
     phase: row.phase,
     description: row.description,
     progress: row.progress ?? 0,
+    badgeText: row.badge_text || '',
+    projectDescription: row.project_description || '',
     readingTitle: row.reading_title,
     readingSubtitle: row.reading_subtitle,
     learningTitle: row.learning_title,
@@ -63,6 +65,8 @@ const DEFAULT_STATUS = {
   phase: "Phase 2",
   description: "目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。",
   progress: 72,
+  badgeText: "高投入推进中",
+  projectDescription: "目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 2026-05-20 前完成上线。",
   readingTitle: "《追忆似水年华》",
   readingSubtitle: "第三卷，缓慢推进中",
   learningTitle: "Astro + CF 全栈",
@@ -118,6 +122,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 
   const {
     startDate, endDate, phase, description, progress,
+    badgeText, projectDescription,
     readingTitle, readingSubtitle,
     learningTitle, learningSubtitle,
     researchingTitle, researchingSubtitle,
@@ -138,6 +143,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
       await env.DB.prepare(
         `UPDATE now_status
          SET start_date = ?, end_date = ?, phase = ?, description = ?, progress = ?,
+             badge_text = ?, project_description = ?,
              reading_title = ?, reading_subtitle = ?,
              learning_title = ?, learning_subtitle = ?,
              researching_title = ?, researching_subtitle = ?,
@@ -146,6 +152,8 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
          WHERE id = 1`
       ).bind(
         startDate, endDate, phase, description, progress ?? 0,
+        badgeText ?? DEFAULT_STATUS.badgeText,
+        projectDescription ?? DEFAULT_STATUS.projectDescription,
         readingTitle ?? DEFAULT_STATUS.readingTitle,
         readingSubtitle ?? DEFAULT_STATUS.readingSubtitle,
         learningTitle ?? DEFAULT_STATUS.learningTitle,
@@ -160,13 +168,16 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
       await env.DB.prepare(
         `INSERT INTO now_status (
            id, start_date, end_date, phase, description, progress,
+           badge_text, project_description,
            reading_title, reading_subtitle,
            learning_title, learning_subtitle,
            researching_title, researching_subtitle,
            listening_title, listening_subtitle
-         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       ).bind(
         startDate, endDate, phase, description, progress ?? 0,
+        badgeText ?? DEFAULT_STATUS.badgeText,
+        projectDescription ?? DEFAULT_STATUS.projectDescription,
         readingTitle ?? DEFAULT_STATUS.readingTitle,
         readingSubtitle ?? DEFAULT_STATUS.readingSubtitle,
         learningTitle ?? DEFAULT_STATUS.learningTitle,

@@ -9,6 +9,8 @@ interface NowStatus {
   phase: string;
   description: string;
   progress: number;
+  badgeText: string;
+  projectDescription: string;
   readingTitle: string;
   readingSubtitle: string;
   learningTitle: string;
@@ -27,6 +29,8 @@ let status: NowStatus = {
   phase: 'Phase 2',
   description: '目前主要投入个人网站第二阶段建设，优化 /archive、/now、/about 页面，统一视觉系统，完善交互体验，建立长期运营内容框架。',
   progress: 72,
+  badgeText: '高投入推进中',
+  projectDescription: '目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 2026-05-20 前完成上线。',
   readingTitle: '《追忆似水年华》',
   readingSubtitle: '第三卷，缓慢推进中',
   learningTitle: 'Astro + CF 全栈',
@@ -199,11 +203,11 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
           </div>
           <!-- 状态标签 -->
           <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default">
-          <span class="relative z-10">高投入推进中</span>
-				  <!-- 标签内的一道扫光 -->
-				  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
-				  </span>
-				  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 {status.endDate} 前完成上线。</p>
+          <span class="relative z-10">{status.badgeText || '高投入推进中'}</span>
+			  <!-- 标签内的一道扫光 -->
+			  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
+			  </span>
+			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">{status.projectDescription || `目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 ${status.endDate} 前完成上线。`}</p>
         </div>
         <!-- 右侧 45% -->
         <div class="md:w-[45%]">
