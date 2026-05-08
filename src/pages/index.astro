@@ -399,8 +399,9 @@ function formatDate(dateStr: string): string {
 
 <script is:inline>
 	// ============================================================
-	// Tab 切换、果冻滑块与面板动画
+	// Tab 切换、果冻滑块、日历、运行时 —— 包在 page-load 确保 DOM 就绪
 	// ============================================================
+	document.addEventListener('astro:page-load', () => {
 	const tabButtons = document.querySelectorAll('[data-tab]');
 	const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
 
@@ -539,6 +540,7 @@ function formatDate(dateStr: string): string {
 	const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
 	const runtimeEl = document.getElementById('stat-runtime');
 	if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
+	}); // end astro:page-load
 </script>
 
 <script is:inline>
