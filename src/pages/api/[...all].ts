@@ -9,6 +9,7 @@ import { handleAuth } from "../../lib/auth";
 import { handlePosts } from "../../lib/posts";
 import { handleUpload } from "../../lib/upload";
 import { handleNow } from "../../lib/now";
+import { handleNowActivity } from "../../lib/now-activity";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
@@ -23,6 +24,10 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
 
   if (url.pathname.startsWith("/api/upload")) {
     return handleUpload(ctx);
+  }
+
+  if (url.pathname.startsWith("/api/now/activity")) {
+    return handleNowActivity(ctx);
   }
 
   if (url.pathname.startsWith("/api/now")) {

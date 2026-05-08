@@ -23,6 +23,12 @@ interface NowStatus {
   updatedAt: string;
 }
 
+interface NowActivityItem {
+  id: number;
+  content: string;
+  activityDate: string;
+}
+
 let status: NowStatus = {
   id: 1,
   startDate: '2026-04-30',
@@ -58,6 +64,27 @@ try {
   }
 } catch (e: any) {
   console.error('[now] GET /api/now 请求失败:', e?.message || e);
+}
+
+// —— 服务端获取微日志 ——
+let activities: NowActivityItem[] = [
+  { id: 0, content: '完成归档页设计',  activityDate: '04-30' },
+  { id: 0, content: '优化首页卡片层级', activityDate: '04-29' },
+  { id: 0, content: '构思 /now 页面结构', activityDate: '04-28' },
+  { id: 0, content: '统一配色系统',     activityDate: '04-27' },
+];
+
+try {
+  const apiUrl = new URL('/api/now/activity', Astro.url);
+  const res = await fetch(apiUrl.toString());
+  if (res.ok) {
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      activities = data as NowActivityItem[];
+    }
+  }
+} catch (e: any) {
+  console.error('[now] GET /api/now/activity 请求失败:', e?.message || e);
 }
 
 const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
@@ -238,47 +265,37 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
           </div>
   
           <div class="flex flex-col gap-2">
-            <!-- Item 1: 最新动态 (高亮 + 呼吸灯 + 强背景) -->
-            <div class="group flex items-center justify-between p-3 rounded-2xl bg-white/80 dark:bg-[#252525]/80 hover:bg-white dark:hover:bg-[#2A2A2A] transition-all duration-300 shadow-sm hover:shadow-md hover:translate-x-1 cursor-default border border-white dark:border-white/5">
-              <div class="flex items-center gap-3">
-                <!-- 专属呼吸灯 -->
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
-                </span>
-                <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">完成归档页设计</span>
-              </div>
-              <!-- 右侧高亮徽章 -->
-              <span class="text-[10px] font-mono font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-lg">04-30</span>
-            </div>
-  
-            <!-- Item 2: 历史动态 (常态透明，Hover点亮) -->
-            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
-              <div class="flex items-center gap-3">
-                <!-- 默认灰点，Hover变紫 -->
-                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
-                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">优化首页卡片层级</span>
-              </div>
-              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-29</span>
-            </div>
-  
-            <!-- Item 3 -->
-            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
-              <div class="flex items-center gap-3">
-                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
-                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">构思 /now 页面结构</span>
-              </div>
-              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-28</span>
-            </div>
-  
-            <!-- Item 4 -->
-            <div class="group flex items-center justify-between p-3 rounded-2xl bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 transition-all duration-300 hover:translate-x-1 cursor-default border border-transparent hover:border-white/50 dark:hover:border-white/5">
-              <div class="flex items-center gap-3">
-                <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
-                <span class="text-sm font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors">统一配色系统</span>
-              </div>
-              <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10 transition-colors">04-27</span>
-            </div>
+            {activities.map((item, idx) => {
+              const isLatest = idx === 0;
+              return (
+                <div class={`group flex items-center justify-between p-3 rounded-2xl transition-all duration-300 hover:translate-x-1 cursor-default border ${
+                  isLatest
+                    ? 'bg-white/80 dark:bg-[#252525]/80 hover:bg-white dark:hover:bg-[#2A2A2A] shadow-sm hover:shadow-md border-white dark:border-white/5'
+                    : 'bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 border-transparent hover:border-white/50 dark:hover:border-white/5'
+                }`}>
+                  <div class="flex items-center gap-3">
+                    {isLatest ? (
+                      <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
+                      </span>
+                    ) : (
+                      <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
+                    )}
+                    <span class={`text-sm transition-colors ${
+                      isLatest
+                        ? 'font-bold text-[#1A1A1A] dark:text-[#EAEAEA]'
+                        : 'font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA]'
+                    }`}>{item.content}</span>
+                  </div>
+                  <span class={`text-[10px] font-mono transition-colors px-2 py-1 rounded-lg ${
+                    isLatest
+                      ? 'font-bold text-[#8B7CB3] bg-[#8B7CB3]/10'
+                      : 'text-[#999] bg-black/5 dark:bg-white/5 group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10'
+                  }`}>{item.activityDate}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       <!-- 右侧：留言板 -->

@@ -1,0 +1,88 @@
+// ============================================================
+// src/lib/now-activity.ts
+// /now 页面微日志（Activity Feed）— 由 [...all].ts 调用
+//
+// GET  /api/now/activity  → 获取全部活动记录（按日期倒序，公开）
+// ============================================================
+
+import type { APIContext } from "astro";
+import { type Env } from "./auth";
+
+// ============================================================
+// 工具函数
+// ============================================================
+
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function getEnv(locals: APIContext["locals"]): Env | undefined {
+  return (locals as any).runtime?.env as Env | undefined;
+}
+
+// ============================================================
+// Activity 接口
+// ============================================================
+
+interface NowActivity {
+  id: number;
+  content: string;
+  activityDate: string;
+  createdAt: string;
+}
+
+// 默认种子数据（表为空时返回，首次写入后不再使用）
+const DEFAULT_ACTIVITIES: NowActivity[] = [
+  { id: 0, content: "完成归档页设计",  activityDate: "04-30", createdAt: "" },
+  { id: 0, content: "优化首页卡片层级", activityDate: "04-29", createdAt: "" },
+  { id: 0, content: "构思 /now 页面结构", activityDate: "04-28", createdAt: "" },
+  { id: 0, content: "统一配色系统",     activityDate: "04-27", createdAt: "" },
+];
+
+// ============================================================
+// GET /api/now/activity — 获取全部活动（公开）
+// ============================================================
+
+async function handleGetActivity(ctx: APIContext): Promise<Response> {
+  const env = getEnv(ctx.locals);
+  if (!env) return json({ error: "运行时不可用" }, 500);
+
+  try {
+
+    const rows = await env.DB.prepare(
+      "SELECT * FROM now_activity ORDER BY activity_date DESC, id DESC"
+    ).all();
+
+    if (!rows.results || rows.results.length === 0) {
+      return json(DEFAULT_ACTIVITIES);
+    }
+
+    const activities: NowActivity[] = rows.results.map((row: any) => ({
+      id: row.id,
+      content: row.content,
+      activityDate: row.activity_date,
+      createdAt: row.created_at,
+    }));
+
+    return json(activities);
+  } catch (e: any) {
+    console.error("GET /api/now/activity error:", e);
+    return json(DEFAULT_ACTIVITIES);
+  }
+}
+
+// ============================================================
+// 主入口 — handleNowActivity
+// ============================================================
+
+export async function handleNowActivity(ctx: APIContext): Promise<Response> {
+  switch (ctx.request.method) {
+    case "GET":
+      return handleGetActivity(ctx);
+    default:
+      return json({ error: "Method Not Allowed" }, 405);
+  }
+}

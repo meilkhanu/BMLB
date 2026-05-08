@@ -138,13 +138,6 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
   }
 
   try {
-    // 自动迁移：添加 project_screenshot 列（若不存在）
-    try {
-      await env.DB.prepare(
-        "ALTER TABLE now_status ADD COLUMN project_screenshot TEXT DEFAULT ''"
-      ).run();
-    } catch (_) { /* 列已存在，忽略 */ }
-
     // 检查记录是否存在
     const existing = await env.DB.prepare("SELECT id FROM now_status WHERE id = 1").first();
 
