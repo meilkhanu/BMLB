@@ -53,6 +53,7 @@ function rowToStatus(row: any) {
     researchingSubtitle: row.researching_subtitle,
     listeningTitle: row.listening_title,
     listeningSubtitle: row.listening_subtitle,
+    projectScreenshot: row.project_screenshot || '',
     updatedAt: row.updated_at,
   };
 }
@@ -75,6 +76,7 @@ const DEFAULT_STATUS = {
   researchingSubtitle: "数据整理阶段",
   listeningTitle: "浮遊大陸アルジェス",
   listeningSubtitle: "Falcom Sound Team",
+  projectScreenshot: "",
   updatedAt: new Date().toISOString(),
 };
 
@@ -127,6 +129,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
     learningTitle, learningSubtitle,
     researchingTitle, researchingSubtitle,
     listeningTitle, listeningSubtitle,
+    projectScreenshot,
   } = body;
 
   // 校验必填字段
@@ -135,6 +138,13 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
   }
 
   try {
+    // 自动迁移：添加 project_screenshot 列（若不存在）
+    try {
+      await env.DB.prepare(
+        "ALTER TABLE now_status ADD COLUMN project_screenshot TEXT DEFAULT ''"
+      ).run();
+    } catch (_) { /* 列已存在，忽略 */ }
+
     // 检查记录是否存在
     const existing = await env.DB.prepare("SELECT id FROM now_status WHERE id = 1").first();
 
@@ -148,6 +158,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
              learning_title = ?, learning_subtitle = ?,
              researching_title = ?, researching_subtitle = ?,
              listening_title = ?, listening_subtitle = ?,
+             project_screenshot = ?,
              updated_at = datetime('now')
          WHERE id = 1`
       ).bind(
@@ -162,6 +173,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
         researchingSubtitle ?? DEFAULT_STATUS.researchingSubtitle,
         listeningTitle ?? DEFAULT_STATUS.listeningTitle,
         listeningSubtitle ?? DEFAULT_STATUS.listeningSubtitle,
+        projectScreenshot ?? '',
       ).run();
     } else {
       // 插入
@@ -172,8 +184,9 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
            reading_title, reading_subtitle,
            learning_title, learning_subtitle,
            researching_title, researching_subtitle,
-           listening_title, listening_subtitle
-         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+           listening_title, listening_subtitle,
+           project_screenshot
+         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       ).bind(
         startDate, endDate, phase, description, progress ?? 0,
         badgeText ?? DEFAULT_STATUS.badgeText,
@@ -186,6 +199,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
         researchingSubtitle ?? DEFAULT_STATUS.researchingSubtitle,
         listeningTitle ?? DEFAULT_STATUS.listeningTitle,
         listeningSubtitle ?? DEFAULT_STATUS.listeningSubtitle,
+        projectScreenshot ?? '',
       ).run();
     }
 

@@ -223,10 +223,35 @@
         </div>
         <div class="mb-4">
           <label class="block text-xs font-medium text-[#999] mb-1.5">项目描述</label>
-          <textarea id="now-project-description" rows="3" placeholder="描述当前项目的推进状态..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
-        </div>
+            <textarea id="now-project-description" rows="3" placeholder="描述当前项目的推进状态..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+          </div>
 
-        <!-- 并行卡片矩阵编辑 -->
+          <!-- 项目截图上传 -->
+          <div class="mb-4">
+            <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">项目截图</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- 左侧：上传控件 -->
+              <div>
+                <label class="block text-xs font-medium text-[#999] mb-1.5">上传截图</label>
+                <div class="flex gap-2">
+                  <input type="file" id="now-screenshot-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
+                  <button type="button" id="now-screenshot-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+                </div>
+                <span id="now-screenshot-upload-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+                <input type="hidden" id="now-screenshot-url" />
+              </div>
+              <!-- 右侧：预览 -->
+              <div>
+                <label class="block text-xs font-medium text-[#999] mb-1.5">预览</label>
+                <div id="now-screenshot-preview-container" class="w-full aspect-[21/9] rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] flex items-center justify-center overflow-hidden">
+                  <span id="now-screenshot-placeholder" class="text-xs text-[#999]">未上传截图</span>
+                  <img id="now-screenshot-preview" src="" alt="项目截图预览" class="hidden w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 并行卡片矩阵编辑 -->
         <div class="mb-4">
           <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">并行卡片矩阵</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -313,6 +338,7 @@
     document.getElementById('edit-now-btn').addEventListener('click', () => openNowEditor());
     document.getElementById('now-back-btn').addEventListener('click', () => closeNowEditor());
     document.getElementById('save-now-btn').addEventListener('click', () => saveNowStatus());
+    document.getElementById('now-screenshot-upload-btn').addEventListener('click', () => uploadNowScreenshot());
 
     // 实时预览
     ['now-start-date','now-end-date','now-phase','now-progress','now-description'].forEach(id => {
@@ -354,6 +380,9 @@
         document.getElementById('now-researching-subtitle').value = data.researchingSubtitle || '';
         document.getElementById('now-listening-title').value = data.listeningTitle || '';
         document.getElementById('now-listening-subtitle').value = data.listeningSubtitle || '';
+        // 项目截图
+        document.getElementById('now-screenshot-url').value = data.projectScreenshot || '';
+        updateScreenshotPreview(data.projectScreenshot);
         updateNowPreview();
       } catch (e) {
         document.getElementById('now-save-status').textContent = '加载失败: ' + e.message;
@@ -368,6 +397,60 @@
       const p = document.getElementById('now-progress').value;
       document.getElementById('preview-progress').textContent = (p !== '' ? p : '...') + '%';
       document.getElementById('preview-description').textContent = document.getElementById('now-description').value || '...';
+    }
+
+    // 项目截图上传统一方法
+    async function uploadNowScreenshot() {
+      const fileInput = document.getElementById('now-screenshot-file');
+      const file = fileInput.files?.[0];
+      if (!file) {
+        document.getElementById('now-screenshot-upload-status').textContent = '请先选择图片文件';
+        document.getElementById('now-screenshot-upload-status').className = 'text-[11px] text-red-500 mt-1.5 block';
+        return;
+      }
+
+      const statusEl = document.getElementById('now-screenshot-upload-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999] mt-1.5 block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        } else {
+          document.getElementById('now-screenshot-url').value = result.url;
+          updateScreenshotPreview(result.url);
+          statusEl.textContent = '✓ 上传成功';
+          statusEl.className = 'text-[11px] text-[#7CB38B] mt-1.5 block';
+          fileInput.value = '';
+          setTimeout(() => {
+            if (statusEl.textContent.includes('✓')) statusEl.textContent = '';
+          }, 3000);
+        }
+      } catch (e) {
+        statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+      }
+    }
+
+    function updateScreenshotPreview(url) {
+      const placeholder = document.getElementById('now-screenshot-placeholder');
+      const img = document.getElementById('now-screenshot-preview');
+      if (url) {
+        img.src = url;
+        placeholder.classList.add('hidden');
+        img.classList.remove('hidden');
+      } else {
+        img.src = '';
+        placeholder.classList.remove('hidden');
+        img.classList.add('hidden');
+      }
     }
 
     async function saveNowStatus() {
@@ -387,6 +470,7 @@
         researchingSubtitle: document.getElementById('now-researching-subtitle').value.trim(),
         listeningTitle: document.getElementById('now-listening-title').value.trim(),
         listeningSubtitle: document.getElementById('now-listening-subtitle').value.trim(),
+        projectScreenshot: document.getElementById('now-screenshot-url').value.trim(),
       };
 
       if (!data.startDate || !data.endDate || !data.phase || !data.description) {

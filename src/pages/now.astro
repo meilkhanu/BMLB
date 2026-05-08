@@ -19,6 +19,7 @@ interface NowStatus {
   researchingSubtitle: string;
   listeningTitle: string;
   listeningSubtitle: string;
+  projectScreenshot: string;
   updatedAt: string;
 }
 
@@ -39,6 +40,7 @@ let status: NowStatus = {
   researchingSubtitle: '数据整理阶段',
   listeningTitle: '浮遊大陸アルジェス',
   listeningSubtitle: 'Falcom Sound Team',
+  projectScreenshot: '',
   updatedAt: new Date().toISOString(),
 };
 
@@ -209,12 +211,18 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
 			  </span>
 			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">{status.projectDescription || `来到了没有数据的外太空`}</p>
         </div>
-        <!-- 右侧 45% -->
+        <!-- 右侧 45%：项目截图 -->
         <div class="md:w-[45%]">
-          <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F5F5F5] dark:bg-[#111111] border border-black/5 dark:border-white/5 shadow-inner flex items-center justify-center overflow-hidden relative group/screen">
+          <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F5F5F5] dark:bg-[#111111] border border-black/5 dark:border-white/5 shadow-inner overflow-hidden relative">
+            {status.projectScreenshot ? (
+              <img src={status.projectScreenshot} alt="项目截图" class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="text-sm text-[#999]">项目截图占位</span>
+              </div>
+            )}
             <!-- 模拟屏幕玻璃反光 -->
-						<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none z-10"></div>
-						<span class="text-sm text-[#999]">项目截图占位</span>
+            <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none z-10"></div>
           </div>
         </div>
       </div>
