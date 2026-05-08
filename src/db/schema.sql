@@ -37,5 +37,19 @@ CREATE TABLE IF NOT EXISTS now_status (
   researching_subtitle TEXT DEFAULT '数据整理阶段',
   listening_title    TEXT DEFAULT '浮遊大陸アルジェス',
   listening_subtitle TEXT DEFAULT 'Falcom Sound Team',
+  badge_text         TEXT DEFAULT '高投入推进中',
+  project_description TEXT DEFAULT '',
+  project_screenshot TEXT DEFAULT '',
   updated_at         TEXT DEFAULT (datetime('now'))
+);
+
+-- ============================================================
+-- /now 微日志
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS now_activity (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  content TEXT NOT NULL,
+  activity_date TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

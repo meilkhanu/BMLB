@@ -23,6 +23,7 @@
       </div>
       <div class="flex items-center gap-3">
         <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">编辑 /now</button>
+        <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">微日志</button>
         <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
         <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
       </div>
@@ -309,6 +310,37 @@
       </div>
     </div>
 
+    <!-- —— 微日志编辑器 —— -->
+    <div id="activity-editor-view" class="hidden">
+      <button type="button" id="activity-back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
+
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-6">编辑微日志</h3>
+
+        <!-- 新增表单 -->
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_120px_100px] gap-3 mb-6 items-end">
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">内容</label>
+            <input type="text" id="activity-new-content" placeholder="如 完成归档页设计" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">日期</label>
+            <input type="text" id="activity-new-date" placeholder="MM-DD" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <button type="button" id="activity-add-btn" class="w-full py-2.5 rounded-xl bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">添加</button>
+          </div>
+        </div>
+        <span id="activity-add-status" class="text-[11px] text-[#999] block -mt-3 mb-4"></span>
+
+        <!-- 现有列表 -->
+        <div id="activity-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+      </div>
+    </div>
+
     <!-- —— 删除确认弹窗 —— -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
@@ -339,6 +371,9 @@
     document.getElementById('now-back-btn').addEventListener('click', () => closeNowEditor());
     document.getElementById('save-now-btn').addEventListener('click', () => saveNowStatus());
     document.getElementById('now-screenshot-upload-btn').addEventListener('click', () => uploadNowScreenshot());
+    document.getElementById('edit-activity-btn').addEventListener('click', () => openActivityEditor());
+    document.getElementById('activity-back-btn').addEventListener('click', () => closeActivityEditor());
+    document.getElementById('activity-add-btn').addEventListener('click', () => addActivity());
 
     // 实时预览
     ['now-start-date','now-end-date','now-phase','now-progress','now-description'].forEach(id => {
@@ -347,6 +382,7 @@
 
     async function openNowEditor() {
       document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
       await loadNowStatus();
@@ -354,6 +390,7 @@
 
     function closeNowEditor() {
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
@@ -452,6 +489,106 @@
         img.classList.add('hidden');
       }
     }
+
+    // ============================================================
+    // 微日志编辑器
+    // ============================================================
+    async function openActivityEditor() {
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.remove('hidden');
+      await loadActivities();
+    }
+
+    function closeActivityEditor() {
+      document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      loadPosts();
+    }
+
+    async function loadActivities() {
+      try {
+        const res = await fetch('/api/now/activity');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          renderActivityList(data);
+        } else {
+          document.getElementById('activity-list').innerHTML = '<p class="text-sm text-[#999]">加载失败</p>';
+        }
+      } catch (e) {
+        document.getElementById('activity-list').innerHTML = '<p class="text-sm text-[#999]">加载失败</p>';
+      }
+    }
+
+    function renderActivityList(activities) {
+      const list = document.getElementById('activity-list');
+      if (activities.length === 0) {
+        list.innerHTML = '<p class="text-sm text-[#999] text-center py-8">暂无日志，在上方添加第一条</p>';
+        return;
+      }
+      list.innerHTML = activities.map(item => `
+        <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A] group hover:bg-white dark:hover:bg-[#252525] transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">${escapeHtml(item.content)}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-mono text-[#999] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg">${escapeHtml(item.activityDate)}</span>
+            <button onclick="window._deleteActivity(${item.id})" class="text-[10px] font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addActivity() {
+      const content = document.getElementById('activity-new-content').value.trim();
+      const activityDate = document.getElementById('activity-new-date').value.trim();
+      const statusEl = document.getElementById('activity-add-status');
+
+      if (!content || !activityDate) {
+        statusEl.textContent = '请填写内容和日期';
+        statusEl.className = 'text-[11px] text-red-500 block -mt-3 mb-4';
+        return;
+      }
+
+      statusEl.textContent = '添加中...';
+      statusEl.className = 'text-[11px] text-[#999] block -mt-3 mb-4';
+
+      try {
+        const res = await fetch('/api/now/activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content, activityDate }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-[11px] text-red-500 block -mt-3 mb-4';
+        } else {
+          document.getElementById('activity-new-content').value = '';
+          document.getElementById('activity-new-date').value = '';
+          statusEl.textContent = '✓ 已添加';
+          statusEl.className = 'text-[11px] text-[#7CB38B] block -mt-3 mb-4';
+          await loadActivities();
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 2000);
+        }
+      } catch (e) {
+        statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'text-[11px] text-red-500 block -mt-3 mb-4';
+      }
+    }
+
+    async function _deleteActivity(id) {
+      if (!confirm('确认删除这条日志？')) return;
+      try {
+        const res = await fetch(`/api/now/activity?id=${id}`, { method: 'DELETE' });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        await loadActivities();
+      } catch (e) {
+        alert('删除失败，请重试');
+      }
+    }
+    window._deleteActivity = _deleteActivity;
 
     async function saveNowStatus() {
       const data = {
@@ -601,6 +738,7 @@
       // 切换视图
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
 
@@ -628,6 +766,7 @@
       currentSlug = null;
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
     }
