@@ -105,7 +105,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-xs font-medium text-[#999] mb-1.5">标签（逗号分隔）</label>
             <input type="text" id="field-tags" placeholder="建站, Astro" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
@@ -117,15 +117,31 @@
               <option value="published">发布</option>
             </select>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">封面图 URL（可选）</label>
-            <input type="text" id="field-coverImage" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-          </div>
         </div>
 
         <div class="mb-4">
           <label class="block text-xs font-medium text-[#999] mb-1.5">摘要</label>
           <textarea id="field-excerpt" rows="2" placeholder="留空则自动从正文截取..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        </div>
+
+        <!-- 封面图：支持 URL 输入或本地上传 -->
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">封面图（可选）</label>
+            <input type="text" id="field-coverImage" placeholder="https://... 或直接上传" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <div class="flex gap-2 mt-2">
+              <input type="file" id="cover-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
+              <button type="button" id="cover-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+            </div>
+            <span id="cover-upload-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-1.5">预览</label>
+            <div id="cover-preview-container" class="w-full aspect-[16/9] rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] flex items-center justify-center overflow-hidden">
+              <span id="cover-placeholder" class="text-xs text-[#999]">暂无封面</span>
+              <img id="cover-preview" src="" alt="封面预览" class="hidden w-full h-full object-cover" />
+            </div>
+          </div>
         </div>
 
         <div class="mb-4">
@@ -379,6 +395,10 @@
     document.getElementById('now-back-btn').addEventListener('click', () => closeNowEditor());
     document.getElementById('save-now-btn').addEventListener('click', () => saveNowStatus());
     document.getElementById('now-screenshot-upload-btn').addEventListener('click', () => uploadNowScreenshot());
+    document.getElementById('cover-upload-btn').addEventListener('click', () => uploadCoverImage());
+    document.getElementById('field-coverImage').addEventListener('input', function() {
+      updateCoverPreview(this.value.trim());
+    });
     document.getElementById('edit-activity-btn').addEventListener('click', () => openActivityEditor());
     document.getElementById('activity-back-btn').addEventListener('click', () => closeActivityEditor());
     document.getElementById('activity-add-btn').addEventListener('click', () => addActivity());
@@ -480,6 +500,60 @@
         }
       } catch (e) {
         statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+      }
+    }
+
+    function updateCoverPreview(url) {
+      const placeholder = document.getElementById('cover-placeholder');
+      const img = document.getElementById('cover-preview');
+      if (url) {
+        img.src = url;
+        placeholder.classList.add('hidden');
+        img.classList.remove('hidden');
+      } else {
+        img.src = '';
+        placeholder.classList.remove('hidden');
+        img.classList.add('hidden');
+      }
+    }
+
+    async function uploadCoverImage() {
+      const fileInput = document.getElementById('cover-file');
+      const file = fileInput.files?.[0];
+      if (!file) {
+        const statusEl = document.getElementById('cover-upload-status');
+        statusEl.textContent = '请先选择图片文件';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        return;
+      }
+
+      const statusEl = document.getElementById('cover-upload-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999] mt-1.5 block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        } else {
+          document.getElementById('field-coverImage').value = result.url;
+          updateCoverPreview(result.url);
+          statusEl.textContent = '✓ 上传成功';
+          statusEl.className = 'text-[11px] text-[#7CB38B] mt-1.5 block';
+          fileInput.value = '';
+          setTimeout(() => {
+            if (statusEl.textContent.includes('✓')) statusEl.textContent = '';
+          }, 3000);
+        }
+      } catch (e) {
+        statusEl.textContent = '上传失败，请重试';
         statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
       }
     }
@@ -835,6 +909,9 @@
       document.getElementById('field-status').value = 'draft';
       document.getElementById('field-coverImage').value = '';
       document.getElementById('field-excerpt').value = '';
+      document.getElementById('cover-file').value = '';
+      document.getElementById('cover-upload-status').textContent = '';
+      updateCoverPreview('');
     }
 
     function populateForm(post) {
@@ -846,6 +923,7 @@
       document.getElementById('field-status').value = post.status || 'draft';
       document.getElementById('field-coverImage').value = post.coverImage || '';
       document.getElementById('field-excerpt').value = post.excerpt || '';
+      updateCoverPreview(post.coverImage || '');
       // content 由 TinyMCE 填充
     }
 
