@@ -1,6 +1,57 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_CONFIG } from '../config.ts';
+
+// —— 服务端获取 /now 状态数据 ——
+interface NowStatus {
+  phase: string;
+  progress: number;
+  badgeText: string;
+  updatedAt: string;
+}
+
+let status: NowStatus = {
+  phase: 'Phase 2',
+  progress: 72,
+  badgeText: '高投入推进中',
+  updatedAt: new Date().toISOString(),
+};
+
+try {
+  const apiUrl = new URL('/api/now', Astro.url);
+  const res = await fetch(apiUrl.toString());
+  if (res.ok) {
+    const data: any = await res.json();
+    if (!data.error) {
+      status = data as NowStatus;
+    }
+  }
+} catch {}
+
+const phaseLabel = status.phase || 'Phase 2';
+const statusLabel = status.badgeText || '平滑推进中';
+
+// 格式化 updatedAt
+const updatedAtObj = new Date(status.updatedAt);
+const lastBuildStr = isNaN(updatedAtObj.getTime())
+  ? '—'
+  : `${updatedAtObj.getFullYear()}-${String(updatedAtObj.getMonth()+1).padStart(2,'0')}-${String(updatedAtObj.getDate()).padStart(2,'0')} ${String(updatedAtObj.getHours()).padStart(2,'0')}:${String(updatedAtObj.getMinutes()).padStart(2,'0')}`;
+
+// 计算相对时间
+function relativeTime(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  const now = Date.now();
+  const diff = now - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+const lastBuildRelative = relativeTime(status.updatedAt);
 ---
 
 <BaseLayout title="/colophon — 站点说明">
@@ -151,11 +202,11 @@ import { SITE_CONFIG } from '../config.ts';
 								</li>
 								<li class="flex justify-between items-center border-b border-[#E8E8E8]/50 dark:border-[#2A2A2A]/50 pb-2 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
 									<span>当前阶段</span>
-									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-medium">Phase 2（平滑推进）</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-medium">{phaseLabel}（{statusLabel}）</span>
 								</li>
 								<li class="flex justify-between items-center border-b border-[#E8E8E8]/50 dark:border-[#2A2A2A]/50 pb-2 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
 									<span>最后构建</span>
-									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-mono font-medium">动态获取中</span>
+									<span class="text-[#1A1A1A] dark:text-[#EAEAEA] font-mono font-medium">{lastBuildStr}</span>
 								</li>
 								<li class="flex justify-between items-center pt-1 px-2 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
 									<span>开源许可</span>
@@ -178,14 +229,14 @@ import { SITE_CONFIG } from '../config.ts';
 									<span class="text-[10px] font-bold text-[#7CB38B] tracking-widest uppercase">High Momentum</span>
 								</div>
 								<!-- 标题悬浮时略微变绿 -->
-								<h3 class="text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight group-hover:text-[#7CB38B] transition-colors duration-500">Phase 2</h3>
-								<p class="text-sm text-[#666] dark:text-[#999] mb-6">平滑推进中</p>
+								<h3 class="text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight group-hover:text-[#7CB38B] transition-colors duration-500">{phaseLabel}</h3>
+								<p class="text-sm text-[#666] dark:text-[#999] mb-6">{statusLabel}</p>
 								<div class="flex items-center gap-2 text-xs text-[#999] dark:text-[#666]">
 									<!-- 旋转刷新小图标 -->
 									<svg class="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
 									</svg>
-									<span class="font-mono">Last Build: 2h ago</span>
+									<span class="font-mono">Last Build: {lastBuildRelative}</span>
 								</div>
 							</div>
 						</div>
