@@ -1,4 +1,5 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import { SITE_CONFIG } from '../config.ts';
 import SunIcon from '../components/icons/SunIcon.astro';
 import MoonIcon from '../components/icons/MoonIcon.astro';
@@ -21,6 +22,7 @@ const navLinkClass = (path: string) => {
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{title}</title>
+	<ViewTransitions />
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 	<!-- 模块1：导航栏 -->
@@ -90,6 +92,43 @@ const navLinkClass = (path: string) => {
 	<main class="min-h-[calc(100vh-64px-200px)]">
 		<slot />
 	</main>
+
+	<!-- 全局音频 + 悬浮播放器（跨页面持久化） -->
+	<audio id="global-audio" transition:persist="global-audio" preload="none"></audio>
+
+	<aside id="draggable-player" transition:persist="draggable-player" data-expanded="false"
+		class="fixed z-[9999] cursor-grab active:cursor-grabbing bg-gradient-to-r from-[#4ade80] to-[#2dd4bf] rounded-full shadow-lg select-none transition-all duration-400 ease-out"
+		style="width:48px;height:48px;bottom:24px;right:24px;">
+		<!-- 收缩态：音乐图标 -->
+		<div id="player-collapsed" class="absolute inset-0 flex items-center justify-center">
+			<svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+				<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+			</svg>
+		</div>
+
+		<!-- 展开态：控制栏 -->
+		<div id="player-expanded" class="absolute inset-0 flex items-center justify-between px-4 opacity-0 pointer-events-none">
+			<!-- 左侧控制组 -->
+			<div class="flex items-center gap-2">
+				<button data-no-drag type="button" id="float-prev" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+				</button>
+				<button data-no-drag type="button" id="float-play" class="w-8 h-8 flex items-center justify-center rounded-full bg-black text-[#4ade80] hover:scale-105 active:scale-95 transition-all cursor-pointer border-none">
+					<svg id="float-icon-play" class="w-4 h-4 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+					<svg id="float-icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+				</button>
+				<button data-no-drag type="button" id="float-next" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+				</button>
+				<button data-no-drag type="button" id="float-mode" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black text-[10px] font-bold" title="列表循环">🔁</button>
+				<button data-no-drag type="button" id="float-list" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+					<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+				</button>
+			</div>
+			<!-- 右侧歌曲标题 -->
+			<span id="float-title" class="text-sm font-bold text-black truncate max-w-[120px] ml-2">暂无音乐</span>
+		</div>
+	</aside>
 
 	<!-- 模块4：页脚 -->
 	<footer id="site-footer" class="relative w-full bg-[#111111] py-12 px-6 mt-12 overflow-hidden">
@@ -234,8 +273,251 @@ const navLinkClass = (path: string) => {
 			const el = document.getElementById('site-runtime');
 			if (el) el.textContent = '本站已运行 ' + parts.join('');
 		}
-		updateRuntime();
-		setInterval(updateRuntime, 1000);
+	updateRuntime();
+	setInterval(updateRuntime, 1000);
+	</script>
+
+	<!-- 全局播放器脚本 -->
+	<script is:inline>
+		(function () {
+			// ============================================================
+			// 全局播放器状态
+			// ============================================================
+			if (!window.playerState) {
+				window.playerState = {
+					currentIndex: 0,
+					songs: [],
+					isPlaying: false,
+					playMode: 'loop',
+					initialized: false,
+				};
+			}
+
+			const state = window.playerState;
+			const audio = document.getElementById('global-audio');
+			const player = document.getElementById('draggable-player');
+			const collapsed = document.getElementById('player-collapsed');
+			const expanded = document.getElementById('player-expanded');
+			const floatTitle = document.getElementById('float-title');
+			const floatPlayBtn = document.getElementById('float-play');
+			const floatIconPlay = document.getElementById('float-icon-play');
+			const floatIconPause = document.getElementById('float-icon-pause');
+			const floatModeBtn = document.getElementById('float-mode');
+
+			// ============================================================
+			// UI 同步
+			// ============================================================
+			function setExpanded(exp) {
+				player.dataset.expanded = exp ? 'true' : 'false';
+			}
+
+			function updateFloatUI() {
+				if (!state.songs || state.songs.length === 0) {
+					floatTitle.textContent = '暂无音乐';
+					return;
+				}
+				const song = state.songs[state.currentIndex];
+				if (song) {
+					floatTitle.textContent = song.title || '未知歌曲';
+				}
+				if (state.isPlaying) {
+					floatIconPlay.classList.add('hidden');
+					floatIconPause.classList.remove('hidden');
+				} else {
+					floatIconPlay.classList.remove('hidden');
+					floatIconPause.classList.add('hidden');
+				}
+				// 模式按钮
+				const modeMap = { loop: '🔁', single: '🔂', shuffle: '🔀' };
+				if (floatModeBtn) floatModeBtn.textContent = modeMap[state.playMode] || '🔁';
+			}
+
+			// ============================================================
+			// 音频事件监听（全局唯一）
+			// ============================================================
+			audio.addEventListener('play', () => {
+				state.isPlaying = true;
+				updateFloatUI();
+				setExpanded(true);
+			});
+
+			audio.addEventListener('pause', () => {
+				state.isPlaying = false;
+				updateFloatUI();
+			});
+
+			audio.addEventListener('ended', () => {
+				if (state.playMode === 'single') {
+					audio.currentTime = 0;
+					audio.play().catch(() => {});
+				} else {
+					playNext();
+				}
+			});
+
+			// ============================================================
+			// 播放控制
+			// ============================================================
+			function ensureSongLoaded() {
+				if (!audio.src && state.songs.length > 0) {
+					const song = state.songs[state.currentIndex];
+					if (song) audio.src = song.audio_url;
+				}
+			}
+
+			window.playerToggle = function () {
+				if (!state.songs.length) return;
+				ensureSongLoaded();
+				if (audio.paused) {
+					audio.play().catch(() => {});
+				} else {
+					audio.pause();
+				}
+			};
+
+			function playNext() {
+				if (!state.songs.length) return;
+				if (state.playMode === 'shuffle') {
+					state.currentIndex = Math.floor(Math.random() * state.songs.length);
+				} else {
+					state.currentIndex = (state.currentIndex + 1) % state.songs.length;
+				}
+				loadCurrentSong();
+				if (!state.isPlaying) {
+					audio.play().catch(() => {});
+				}
+			}
+
+			function playPrev() {
+				if (!state.songs.length) return;
+				if (state.playMode === 'shuffle') {
+					state.currentIndex = Math.floor(Math.random() * state.songs.length);
+				} else {
+					state.currentIndex = (state.currentIndex - 1 + state.songs.length) % state.songs.length;
+				}
+				loadCurrentSong();
+				if (!state.isPlaying) {
+					audio.play().catch(() => {});
+				}
+			}
+
+			function loadCurrentSong() {
+				const song = state.songs[state.currentIndex];
+				if (!song) return;
+				audio.src = song.audio_url;
+				updateFloatUI();
+				// 触发自定义事件通知首页同步
+				window.dispatchEvent(new CustomEvent('player-song-change', { detail: song }));
+			}
+
+			function switchMode() {
+				const modes = ['loop', 'single', 'shuffle'];
+				const idx = modes.indexOf(state.playMode);
+				state.playMode = modes[(idx + 1) % 3];
+				updateFloatUI();
+				window.dispatchEvent(new CustomEvent('player-mode-change', { detail: state.playMode }));
+			}
+
+			// ============================================================
+			// 悬浮按钮事件
+			// ============================================================
+			floatPlayBtn.addEventListener('click', () => window.playerToggle());
+			document.getElementById('float-prev').addEventListener('click', playPrev);
+			document.getElementById('float-next').addEventListener('click', playNext);
+			floatModeBtn.addEventListener('click', switchMode);
+
+			// 点击收缩态圆点：开始播放或展开
+			collapsed.addEventListener('click', (e) => {
+				if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+				if (state.songs.length && !state.isPlaying) {
+					window.playerToggle();
+				} else {
+					setExpanded(true);
+				}
+			});
+
+			// ============================================================
+			// 拖拽逻辑
+			// ============================================================
+			let dragging = false;
+			let dragStartX, dragStartY, playerStartX, playerStartY;
+
+			function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+
+			function getSavedPos() {
+				try {
+					const pos = JSON.parse(localStorage.getItem('player-pos') || 'null');
+					if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') return pos;
+				} catch {}
+				return null;
+			}
+
+			function savePos(x, y) {
+				localStorage.setItem('player-pos', JSON.stringify({ x, y }));
+			}
+
+			// 恢复位置
+			const saved = getSavedPos();
+			if (saved) {
+				player.style.left = saved.x + 'px';
+				player.style.top = saved.y + 'px';
+				player.style.bottom = 'auto';
+				player.style.right = 'auto';
+			}
+
+			player.addEventListener('pointerdown', (e) => {
+				if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+				dragging = true;
+				dragStartX = e.clientX;
+				dragStartY = e.clientY;
+				const rect = player.getBoundingClientRect();
+				playerStartX = rect.left;
+				playerStartY = rect.top;
+				player.setPointerCapture(e.pointerId);
+				player.style.transition = 'none';
+			});
+
+			player.addEventListener('pointermove', (e) => {
+				if (!dragging) return;
+				const dx = e.clientX - dragStartX;
+				const dy = e.clientY - dragStartY;
+				const maxX = window.innerWidth - player.offsetWidth;
+				const maxY = window.innerHeight - player.offsetHeight;
+				const x = clamp(playerStartX + dx, 0, maxX);
+				const y = clamp(playerStartY + dy, 0, maxY);
+				player.style.left = x + 'px';
+				player.style.top = y + 'px';
+				player.style.bottom = 'auto';
+				player.style.right = 'auto';
+			});
+
+			player.addEventListener('pointerup', () => {
+				if (!dragging) return;
+				dragging = false;
+				player.style.transition = '';
+				const rect = player.getBoundingClientRect();
+				savePos(rect.left, rect.top);
+			});
+
+			// ============================================================
+			// astro:page-load — 同步首页 UI
+			// ============================================================
+			document.addEventListener('astro:page-load', () => {
+				updateFloatUI();
+				if (state.isPlaying) setExpanded(true);
+				// 同步首页 Sidebar
+				window.dispatchEvent(new CustomEvent('player-state-sync', {
+					detail: {
+						currentIndex: state.currentIndex,
+						isPlaying: state.isPlaying,
+						playMode: state.playMode,
+						songs: state.songs,
+					}
+				}));
+			});
+
+			updateFloatUI();
+		})();
 	</script>
 </body>
 </html>
@@ -347,5 +629,18 @@ const navLinkClass = (path: string) => {
 	.animate-fade-in-up {
 		/* 加上 forwards，让元素在动画结束后停留在 opacity: 1 的状态，不再消失！ */
 		animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+	/* --- 悬浮播放器 --- */
+	#draggable-player[data-expanded="true"] {
+		width: 320px !important;
+		border-radius: 9999px;
+	}
+	#draggable-player[data-expanded="true"] #player-collapsed {
+		opacity: 0;
+		pointer-events: none;
+	}
+	#draggable-player[data-expanded="true"] #player-expanded {
+		opacity: 1;
+		pointer-events: auto;
 	}
 </style>
