@@ -46,7 +46,7 @@ try {
   const apiUrl = new URL('/api/now', Astro.url);
   const res = await fetch(apiUrl.toString());
   if (res.ok) {
-    const data = await res.json();
+    const data: any = await res.json();
     if (!data.error) {
       status = data as NowStatus;
     }
@@ -203,11 +203,11 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
           </div>
           <!-- 状态标签 -->
           <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default">
-          <span class="relative z-10">{status.badgeText || '高投入推进中'}</span>
+          <span class="relative z-10">{status.badgeText || '读取GG了'}</span>
 			  <!-- 标签内的一道扫光 -->
 			  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
 			  </span>
-			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">{status.projectDescription || `目前处于高投入推进阶段，主要目标是完成第二阶段的功能开发和视觉优化，预计在 ${status.endDate} 前完成上线。`}</p>
+			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">{status.projectDescription || `来到了没有数据的外太空`}</p>
         </div>
         <!-- 右侧 45% -->
         <div class="md:w-[45%]">
@@ -410,9 +410,11 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     			</div>
   			</div>
 
-  <script is:inline define:vars={{ startDate: status.startDate }}>
+  <script define:vars={{ startDate: status.startDate }}>
     (function () {
-      const start = new Date(startDate + 'T00:00:00');
+      // 如果有时间部分则直接使用 否则补 T00:00:00
+      const hasTime = startDate.includes('T') || startDate.includes(' ');
+      const start = new Date(hasTime ? startDate : startDate + 'T00:00:00');
 
       function formatDuration(ms) {
         const totalMinutes = Math.floor(ms / 60000);
