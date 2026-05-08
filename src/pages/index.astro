@@ -265,6 +265,7 @@ function formatDate(dateStr: string): string {
 					</div>
 
 					<audio id="player-audio" preload="none"></audio>
+					<div id="songs-data" data-songs={JSON.stringify(songs)} class="hidden"></div>
 				</div>
 				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500">
 					<div class="flex items-center justify-between mb-4">
@@ -543,7 +544,8 @@ function formatDate(dateStr: string): string {
 
 <script is:inline>
 (function() {
-  const songs = ${JSON.stringify(songs)};
+  const songsEl = document.getElementById('songs-data');
+  const songs = songsEl ? JSON.parse(songsEl.dataset.songs || '[]') : [];
   if (!songs || songs.length === 0) return;
 
   let currentIndex = 0;
