@@ -14,14 +14,26 @@ const R2_PUBLIC_BASE =
   "https://pub-5eb99be06b64411bbfd2b80c94822c5f.r2.dev";
 
 // —— 限制 ——
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ALLOWED_TYPES = [
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_AUDIO_SIZE = 50 * 1024 * 1024; // 50 MB
+
+const ALLOWED_IMAGE_TYPES = [
   "image/png",
   "image/jpeg",
   "image/webp",
   "image/gif",
   "image/svg+xml",
   "image/avif",
+];
+
+const ALLOWED_AUDIO_TYPES = [
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/ogg",
+  "audio/flac",
+  "audio/mp4",
+  "audio/x-m4a",
 ];
 
 function json(data: unknown, status = 200) {
@@ -70,16 +82,20 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   }
 
   // 类型校验
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
+  const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type);
+
+  if (!isImage && !isAudio) {
     return json(
-      { error: `不支持的图片类型: ${file.type}，仅支持 PNG/JPEG/WebP/GIF/SVG/AVIF` },
+      { error: `不支持的文件类型: ${file.type}，仅支持图片(PNG/JPEG/WebP/GIF/SVG/AVIF)或音频(MP3/WAV/OGG/FLAC/M4A)` },
       400
     );
   }
 
   // 大小校验
-  if (file.size > MAX_FILE_SIZE) {
-    return json({ error: `文件过大（最大 5MB）` }, 400);
+  const maxSize = isAudio ? MAX_AUDIO_SIZE : MAX_IMAGE_SIZE;
+  if (file.size > maxSize) {
+    return json({ error: `文件过大（${isAudio ? '音频最大 50MB' : '图片最大 5MB'}）` }, 400);
   }
 
   const key = generateKey(file.name);

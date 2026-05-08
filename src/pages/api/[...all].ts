@@ -11,6 +11,7 @@ import { handleUpload } from "../../lib/upload";
 import { handleNow } from "../../lib/now";
 import { handleNowActivity } from "../../lib/now-activity";
 import { handleNowMessages } from "../../lib/now-messages";
+import { handleSongs } from "../../lib/songs";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
@@ -37,6 +38,10 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
 
   if (url.pathname.startsWith("/api/now")) {
     return handleNow(ctx);
+  }
+
+  if (url.pathname.startsWith("/api/songs")) {
+    return handleSongs(ctx);
   }
 
   return new Response("Not Found", { status: 404 });

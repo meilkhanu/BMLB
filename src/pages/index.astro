@@ -34,6 +34,28 @@ try {
   console.error('[index] GET /api/posts 请求失败:', e?.message || e);
 }
 
+// —— 服务端获取歌曲列表 ——
+interface Song {
+  id: number;
+  title: string;
+  artist: string;
+  album: string;
+  cover_url: string;
+  audio_url: string;
+  duration: number;
+  sort_order: number;
+}
+
+let songs: Song[] = [];
+try {
+  const songsRes = await fetch(new URL('/api/songs', Astro.url).toString());
+  if (songsRes.ok) {
+    songs = await songsRes.json();
+  }
+} catch (e: any) {
+  console.error('[index] GET /api/songs 请求失败:', e?.message || e);
+}
+
 // —— 按分类分组 ——
 const postsByCategory: Record<string, ApiPost[]> = {};
 allPosts.forEach(p => {
@@ -165,12 +187,12 @@ function formatDate(dateStr: string): string {
 						<span id="calendar-footer-date" class="text-[10px] font-mono font-medium text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-0.5 rounded-md">--/--</span>
 					</div>
 				</div>
-				<div id="sidebar-box-2" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500">
+				<div id="sidebar-box-2" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 relative">
 					<div class="flex items-center justify-between mb-4">
 						<div class="flex items-center gap-2">
 							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
 						</div>
-						<div class="flex items-end gap-[2px] h-3">
+						<div id="player-visualizer" class="flex items-end gap-[2px] h-3">
 							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div>
 							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay: 0.2s"></div>
 							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay: 0.4s"></div>
@@ -179,53 +201,70 @@ function formatDate(dateStr: string): string {
 					</div>
 
 					<div class="flex gap-3 items-center">
-						<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] shadow-inner group cursor-pointer">
-							<div class="absolute inset-0 flex items-center justify-center text-white/60 group-hover:scale-110 group-hover:text-white transition-all duration-500">
+						<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] shadow-inner">
+							<img id="player-cover" src="" alt="cover" class="w-full h-full object-cover hidden" />
+							<div id="player-cover-fallback" class="absolute inset-0 flex items-center justify-center text-white/60">
 								<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
 							</div>
 						</div>
 						
 						<div class="flex-1 min-w-0 flex flex-col justify-center">
-							<h4 class="text-[15px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate tracking-tight">浮遊大陸アルジェス</h4>
-							<p class="text-xs text-[#666] dark:text-[#999] mt-0.5 truncate">Falcom Sound Team J.D.K.</p>
+							<h4 id="player-title" class="text-[15px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate tracking-tight">暂无音乐</h4>
+							<p id="player-artist" class="text-xs text-[#666] dark:text-[#999] mt-0.5 truncate">-</p>
 						</div>
 					</div>
 
 					<div class="mt-4 flex flex-col gap-1.5">
-						<div class="relative w-full h-1.5 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden cursor-pointer group/progress">
-							<div class="absolute top-0 left-0 h-full bg-[#8B7CB3] w-[35%] rounded-full group-hover/progress:bg-[#7A6BA2] transition-colors relative">
+						<div class="relative w-full h-1.5 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden cursor-pointer group/progress" id="player-progress-bar">
+							<div id="player-progress" class="absolute top-0 left-0 h-full bg-[#8B7CB3] w-0 rounded-full group-hover/progress:bg-[#7A6BA2] transition-colors relative">
 								<div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow opacity-0 group-hover/progress:opacity-100 transition-opacity"></div>
 							</div>
 						</div>
 						<div class="flex justify-between items-center text-[10px] font-medium text-[#999] font-mono">
-							<span>1:06</span>
-							<span>3:10</span>
+							<span id="player-current">0:00</span>
+							<span id="player-duration">0:00</span>
 						</div>
 					</div>
 
 					<div class="mt-1 flex justify-between items-center px-1">
-						<button onclick="console.log('loop')" class="text-[#999] hover:text-[#8B7CB3] transition-colors">
-							<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+						<button id="player-mode-btn" class="text-[#999] hover:text-[#8B7CB3] transition-colors" title="列表循环">
+							<svg id="mode-icon-loop" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+							<svg id="mode-icon-single" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7z"/><circle cx="12" cy="15" r="2"/></svg>
+							<svg id="mode-icon-shuffle" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
 						</button>
 						
 						<div class="flex items-center gap-4">
-							<button onclick="console.log('prev')" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
+							<button id="player-prev" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
 								<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
 							</button>
 							
-							<button onclick="togglePlay()" class="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A1A] dark:bg-[#EAEAEA] text-white dark:text-[#1A1A1A] hover:bg-[#8B7CB3] dark:hover:bg-[#8B7CB3] hover:scale-105 active:scale-95 transition-all shadow-md">
-								<svg class="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+							<button id="player-play" class="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A1A] dark:bg-[#EAEAEA] text-white dark:text-[#1A1A1A] hover:bg-[#8B7CB3] dark:hover:bg-[#8B7CB3] hover:scale-105 active:scale-95 transition-all shadow-md">
+								<svg id="icon-play" class="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+								<svg id="icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
 							</button>
 							
-							<button onclick="console.log('next')" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
+							<button id="player-next" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
 								<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
 							</button>
 						</div>
 
-						<button onclick="console.log('list')" class="text-[#999] hover:text-[#8B7CB3] transition-colors">
+						<button id="player-list-btn" class="text-[#999] hover:text-[#8B7CB3] transition-colors relative">
 							<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
 						</button>
 					</div>
+
+					<!-- 播放列表弹窗 -->
+					<div id="player-playlist" class="hidden absolute left-0 right-0 bottom-full mb-2 bg-white/90 dark:bg-[#1A1A1A]/90 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-xl p-3 max-h-[280px] overflow-y-auto z-50">
+						<div class="flex items-center justify-between mb-2 px-1">
+							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Playlist</span>
+							<button id="playlist-close" class="text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] transition-colors cursor-pointer border-none bg-transparent">
+								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+							</button>
+						</div>
+						<div id="playlist-items" class="space-y-1"></div>
+					</div>
+
+					<audio id="player-audio" preload="none"></audio>
 				</div>
 				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500">
 					<div class="flex items-center justify-between mb-4">
@@ -495,15 +534,202 @@ function formatDate(dateStr: string): string {
 
 	renderCalendar(new Date().getFullYear(), new Date().getMonth());
 
-	function togglePlay() {
-		console.log('play');
-	}
-
 	const siteStart = new Date('2026-04-26');
 	const now = new Date();
 	const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
 	const runtimeEl = document.getElementById('stat-runtime');
 	if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
+</script>
+
+<script is:inline>
+(function() {
+  const songs = ${JSON.stringify(songs)};
+  if (!songs || songs.length === 0) return;
+
+  let currentIndex = 0;
+  let playMode = 'loop'; // 'loop' | 'single' | 'shuffle'
+  let isPlaying = false;
+  let shuffledIndices = [];
+
+  const audio = document.getElementById('player-audio');
+  const playBtn = document.getElementById('player-play');
+  const prevBtn = document.getElementById('player-prev');
+  const nextBtn = document.getElementById('player-next');
+  const modeBtn = document.getElementById('player-mode-btn');
+  const listBtn = document.getElementById('player-list-btn');
+  const playlistEl = document.getElementById('player-playlist');
+  const playlistClose = document.getElementById('playlist-close');
+  const playlistItems = document.getElementById('playlist-items');
+  const progressBar = document.getElementById('player-progress-bar');
+  const progressEl = document.getElementById('player-progress');
+  const currentEl = document.getElementById('player-current');
+  const durationEl = document.getElementById('player-duration');
+  const titleEl = document.getElementById('player-title');
+  const artistEl = document.getElementById('player-artist');
+  const coverEl = document.getElementById('player-cover');
+  const coverFallback = document.getElementById('player-cover-fallback');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+  const modeIconLoop = document.getElementById('mode-icon-loop');
+  const modeIconSingle = document.getElementById('mode-icon-single');
+  const modeIconShuffle = document.getElementById('mode-icon-shuffle');
+  const visualizer = document.getElementById('player-visualizer');
+
+  function formatTime(sec) {
+    if (!sec || isNaN(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  function loadSong(index) {
+    currentIndex = index;
+    const song = songs[index];
+    audio.src = song.audio_url;
+    titleEl.textContent = song.title || '未知歌曲';
+    artistEl.textContent = (song.artist || '未知艺术家') + (song.album ? ' · ' + song.album : '');
+    durationEl.textContent = formatTime(song.duration);
+    if (song.cover_url) {
+      coverEl.src = song.cover_url;
+      coverEl.classList.remove('hidden');
+      coverFallback.classList.add('hidden');
+    } else {
+      coverEl.classList.add('hidden');
+      coverFallback.classList.remove('hidden');
+    }
+    updatePlaylistUI();
+    if (isPlaying) {
+      audio.play().catch(() => {});
+    }
+  }
+
+  function togglePlay() {
+    if (!audio.src && songs.length > 0) {
+      loadSong(currentIndex);
+    }
+    if (audio.paused) {
+      audio.play().catch(() => {});
+      isPlaying = true;
+      iconPlay.classList.add('hidden');
+      iconPause.classList.remove('hidden');
+      visualizer.classList.remove('opacity-30');
+    } else {
+      audio.pause();
+      isPlaying = false;
+      iconPlay.classList.remove('hidden');
+      iconPause.classList.add('hidden');
+      visualizer.classList.add('opacity-30');
+    }
+  }
+
+  function playNext() {
+    if (playMode === 'shuffle') {
+      currentIndex = Math.floor(Math.random() * songs.length);
+    } else {
+      currentIndex = (currentIndex + 1) % songs.length;
+    }
+    loadSong(currentIndex);
+    if (!isPlaying) togglePlay();
+  }
+
+  function playPrev() {
+    if (playMode === 'shuffle') {
+      currentIndex = Math.floor(Math.random() * songs.length);
+    } else {
+      currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+    }
+    loadSong(currentIndex);
+    if (!isPlaying) togglePlay();
+  }
+
+  function switchMode() {
+    if (playMode === 'loop') {
+      playMode = 'single';
+      modeIconLoop.classList.add('hidden');
+      modeIconSingle.classList.remove('hidden');
+      modeIconShuffle.classList.add('hidden');
+      modeBtn.title = '单曲循环';
+    } else if (playMode === 'single') {
+      playMode = 'shuffle';
+      modeIconLoop.classList.add('hidden');
+      modeIconSingle.classList.add('hidden');
+      modeIconShuffle.classList.remove('hidden');
+      modeBtn.title = '随机播放';
+    } else {
+      playMode = 'loop';
+      modeIconLoop.classList.remove('hidden');
+      modeIconSingle.classList.add('hidden');
+      modeIconShuffle.classList.add('hidden');
+      modeBtn.title = '列表循环';
+    }
+  }
+
+  function updatePlaylistUI() {
+    playlistItems.innerHTML = songs.map((s, i) => `
+      <div class="flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ${i === currentIndex ? 'bg-[#8B7CB3]/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}" onclick="window.playerPlayIndex(${i})">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[10px] font-bold">${i + 1}</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">${s.title}</div>
+          <div class="text-[10px] text-[#999] truncate">${s.artist || ''}</div>
+        </div>
+        ${i === currentIndex && isPlaying ? '<div class="flex items-end gap-[1px] h-3"><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay:0.1s"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay:0.2s"></div></div>' : ''}
+      </div>
+    `).join('');
+  }
+
+  function togglePlaylist() {
+    playlistEl.classList.toggle('hidden');
+    if (!playlistEl.classList.contains('hidden')) {
+      updatePlaylistUI();
+    }
+  }
+
+  // 事件监听
+  playBtn.addEventListener('click', togglePlay);
+  prevBtn.addEventListener('click', playPrev);
+  nextBtn.addEventListener('click', playNext);
+  modeBtn.addEventListener('click', switchMode);
+  listBtn.addEventListener('click', togglePlaylist);
+  playlistClose.addEventListener('click', () => playlistEl.classList.add('hidden'));
+
+  audio.addEventListener('timeupdate', () => {
+    const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+    progressEl.style.width = percent + '%';
+    currentEl.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener('ended', () => {
+    if (playMode === 'single') {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    } else {
+      playNext();
+    }
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    durationEl.textContent = formatTime(audio.duration);
+  });
+
+  progressBar.addEventListener('click', (e) => {
+    const rect = progressBar.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    if (audio.duration) {
+      audio.currentTime = percent * audio.duration;
+    }
+  });
+
+  window.playerPlayIndex = (index) => {
+    loadSong(index);
+    if (!isPlaying) togglePlay();
+  };
+
+  // 初始化第一首歌
+  if (songs.length > 0) {
+    loadSong(0);
+    visualizer.classList.add('opacity-30');
+  }
+})();
 </script>
 
 <style is:global>

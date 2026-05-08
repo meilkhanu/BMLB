@@ -24,6 +24,7 @@
       <div class="flex items-center gap-3">
         <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">编辑 /now</button>
         <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">微日志</button>
+        <button id="music-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">音乐</button>
         <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
         <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
       </div>
@@ -365,6 +366,87 @@
       </div>
     </div>
 
+    <!-- —— 音乐管理 —— -->
+    <div id="music-editor-view" class="hidden">
+      <button type="button" id="music-back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
+
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold">音乐管理</h3>
+          <button type="button" id="music-new-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 添加歌曲</button>
+        </div>
+
+        <!-- 歌曲列表 -->
+        <div id="music-list" class="space-y-2 max-h-[400px] overflow-y-auto mb-6">
+          <p class="text-sm text-[#999]">加载中...</p>
+        </div>
+
+        <!-- 歌曲编辑表单（默认隐藏） -->
+        <div id="music-form" class="hidden pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <h4 class="text-sm font-bold mb-4" id="music-form-title">添加歌曲</h4>
+          <input type="hidden" id="music-id" />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">歌曲标题 *</label>
+              <input type="text" id="music-title" placeholder="歌曲名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">艺术家</label>
+              <input type="text" id="music-artist" placeholder="艺术家名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">专辑</label>
+              <input type="text" id="music-album" placeholder="专辑名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">排序</label>
+              <input type="number" id="music-sort" placeholder="0" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+          </div>
+
+          <!-- 封面 -->
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">封面图 URL</label>
+              <input type="text" id="music-cover-url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <div class="flex gap-2 mt-2">
+                <input type="file" id="music-cover-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
+                <button type="button" id="music-cover-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传封面</button>
+              </div>
+              <span id="music-cover-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-1.5">封面预览</label>
+              <div id="music-cover-preview-box" class="w-full aspect-square rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] flex items-center justify-center overflow-hidden">
+                <span id="music-cover-placeholder" class="text-xs text-[#999]">暂无封面</span>
+                <img id="music-cover-preview" src="" alt="封面预览" class="hidden w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 音频文件 -->
+          <div class="mb-4">
+            <label class="block text-xs font-medium text-[#999] mb-1.5">音频文件 *</label>
+            <input type="text" id="music-audio-url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <div class="flex gap-2 mt-2">
+              <input type="file" id="music-audio-file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/mp4" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
+              <button type="button" id="music-audio-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传音频</button>
+            </div>
+            <span id="music-audio-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+          </div>
+
+          <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <button type="button" id="music-save-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存</button>
+            <button type="button" id="music-cancel-btn" class="px-6 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">取消</button>
+            <span id="music-save-status" class="text-xs text-[#999]"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- —— 删除确认弹窗 —— -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
@@ -387,6 +469,7 @@
     let tinymceReady = false;
     let deleteTarget = null;
     let nowStatusData = null;
+    let currentMusicId = null;
 
     // ============================================================
     // /now 状态面板编辑器
@@ -398,6 +481,16 @@
     document.getElementById('cover-upload-btn').addEventListener('click', () => uploadCoverImage());
     document.getElementById('field-coverImage').addEventListener('input', function() {
       updateCoverPreview(this.value.trim());
+    });
+    document.getElementById('music-btn').addEventListener('click', () => openMusicEditor());
+    document.getElementById('music-back-btn').addEventListener('click', () => closeMusicEditor());
+    document.getElementById('music-new-btn').addEventListener('click', () => showMusicForm());
+    document.getElementById('music-save-btn').addEventListener('click', () => saveSong());
+    document.getElementById('music-cancel-btn').addEventListener('click', () => hideMusicForm());
+    document.getElementById('music-cover-upload-btn').addEventListener('click', () => uploadMusicCover());
+    document.getElementById('music-audio-upload-btn').addEventListener('click', () => uploadMusicAudio());
+    document.getElementById('music-cover-url').addEventListener('input', function() {
+      updateMusicCoverPreview(this.value.trim());
     });
     document.getElementById('edit-activity-btn').addEventListener('click', () => openActivityEditor());
     document.getElementById('activity-back-btn').addEventListener('click', () => closeActivityEditor());
@@ -411,6 +504,7 @@
     async function openNowEditor() {
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
       await loadNowStatus();
@@ -419,6 +513,7 @@
     function closeNowEditor() {
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
@@ -578,6 +673,7 @@
     async function openActivityEditor() {
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.remove('hidden');
       await Promise.all([loadActivities(), loadAdminMessages()]);
     }
@@ -868,6 +964,7 @@
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
 
@@ -896,9 +993,226 @@
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
     }
+
+    // ============================================================
+    // 音乐管理
+    // ============================================================
+    async function openMusicEditor() {
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.remove('hidden');
+      hideMusicForm();
+      await loadSongs();
+    }
+
+    function closeMusicEditor() {
+      document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+    }
+
+    async function loadSongs() {
+      const listEl = document.getElementById('music-list');
+      listEl.innerHTML = '<p class="text-sm text-[#999]">加载中...</p>';
+      try {
+        const res = await fetch('/api/songs');
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const songs = await res.json();
+        if (!Array.isArray(songs) || songs.length === 0) {
+          listEl.innerHTML = '<p class="text-sm text-[#999]">暂无歌曲，点击「添加歌曲」开始上传</p>';
+          return;
+        }
+        listEl.innerHTML = songs.map(s => `
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">${escapeHtml(s.title)}</div>
+                <div class="text-xs text-[#999] truncate">${escapeHtml(s.artist || '未知艺术家')} · ${escapeHtml(s.album || '未知专辑')}</div>
+              </div>
+            </div>
+            <div class="flex gap-2 shrink-0 ml-2">
+              <button onclick="editSong(${s.id})" class="px-3 py-1 rounded-lg text-xs font-medium bg-white dark:bg-[#252525] hover:bg-[#8B7CB3] hover:text-white transition-colors cursor-pointer border-none">编辑</button>
+              <button onclick="confirmDeleteSong(${s.id}, '${escapeJs(s.title)}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-white dark:bg-[#252525] hover:bg-red-500 hover:text-white transition-colors cursor-pointer border-none">删除</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        listEl.innerHTML = '<p class="text-sm text-red-500">加载失败</p>';
+      }
+    }
+
+    function showMusicForm(song = null) {
+      currentMusicId = song ? song.id : null;
+      document.getElementById('music-form-title').textContent = song ? '编辑歌曲' : '添加歌曲';
+      document.getElementById('music-id').value = song ? song.id : '';
+      document.getElementById('music-title').value = song ? song.title : '';
+      document.getElementById('music-artist').value = song ? (song.artist || '') : '';
+      document.getElementById('music-album').value = song ? (song.album || '') : '';
+      document.getElementById('music-cover-url').value = song ? (song.cover_url || '') : '';
+      document.getElementById('music-audio-url').value = song ? (song.audio_url || '') : '';
+      document.getElementById('music-sort').value = song ? (song.sort_order || 0) : '';
+      document.getElementById('music-save-status').textContent = '';
+      updateMusicCoverPreview(song ? (song.cover_url || '') : '');
+      document.getElementById('music-form').classList.remove('hidden');
+      document.getElementById('music-list').scrollTop = 0;
+    }
+
+    function hideMusicForm() {
+      currentMusicId = null;
+      document.getElementById('music-form').classList.add('hidden');
+    }
+
+    async function saveSong() {
+      const data = {
+        title: document.getElementById('music-title').value.trim(),
+        artist: document.getElementById('music-artist').value.trim(),
+        album: document.getElementById('music-album').value.trim(),
+        coverUrl: document.getElementById('music-cover-url').value.trim(),
+        audioUrl: document.getElementById('music-audio-url').value.trim(),
+        sortOrder: parseInt(document.getElementById('music-sort').value) || 0,
+      };
+
+      if (!data.title || !data.audioUrl) {
+        document.getElementById('music-save-status').textContent = '请填写歌曲标题和音频 URL';
+        document.getElementById('music-save-status').className = 'text-xs text-red-500';
+        return;
+      }
+
+      const statusEl = document.getElementById('music-save-status');
+      statusEl.textContent = '保存中...';
+      statusEl.className = 'text-xs text-[#999]';
+
+      const url = '/api/songs' + (currentMusicId ? `?id=${currentMusicId}` : '');
+      const method = currentMusicId ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-xs text-red-500';
+        } else {
+          statusEl.textContent = '✓ 保存成功';
+          statusEl.className = 'text-xs text-[#7CB38B]';
+          hideMusicForm();
+          await loadSongs();
+        }
+      } catch (e) {
+        statusEl.textContent = '保存失败，请重试';
+        statusEl.className = 'text-xs text-red-500';
+      }
+    }
+
+    async function uploadMusicCover() {
+      const fileInput = document.getElementById('music-cover-file');
+      const file = fileInput.files?.[0];
+      if (!file) {
+        const statusEl = document.getElementById('music-cover-status');
+        statusEl.textContent = '请先选择图片文件';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        return;
+      }
+      const statusEl = document.getElementById('music-cover-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999] mt-1.5 block';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        } else {
+          document.getElementById('music-cover-url').value = result.url;
+          updateMusicCoverPreview(result.url);
+          statusEl.textContent = '✓ 上传成功';
+          statusEl.className = 'text-[11px] text-[#7CB38B] mt-1.5 block';
+          fileInput.value = '';
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 3000);
+        }
+      } catch (e) {
+        statusEl.textContent = '上传失败，请重试';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+      }
+    }
+
+    async function uploadMusicAudio() {
+      const fileInput = document.getElementById('music-audio-file');
+      const file = fileInput.files?.[0];
+      if (!file) {
+        const statusEl = document.getElementById('music-audio-status');
+        statusEl.textContent = '请先选择音频文件';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        return;
+      }
+      const statusEl = document.getElementById('music-audio-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999] mt-1.5 block';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) {
+          statusEl.textContent = result.error;
+          statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+        } else {
+          document.getElementById('music-audio-url').value = result.url;
+          statusEl.textContent = '✓ 上传成功';
+          statusEl.className = 'text-[11px] text-[#7CB38B] mt-1.5 block';
+          fileInput.value = '';
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 3000);
+        }
+      } catch (e) {
+        statusEl.textContent = '上传失败，请重试';
+        statusEl.className = 'text-[11px] text-red-500 mt-1.5 block';
+      }
+    }
+
+    function updateMusicCoverPreview(url) {
+      const placeholder = document.getElementById('music-cover-placeholder');
+      const img = document.getElementById('music-cover-preview');
+      if (url) {
+        img.src = url;
+        placeholder.classList.add('hidden');
+        img.classList.remove('hidden');
+      } else {
+        img.src = '';
+        placeholder.classList.remove('hidden');
+        img.classList.add('hidden');
+      }
+    }
+
+    window.editSong = (id) => {
+      fetch('/api/songs').then(r => r.json()).then(songs => {
+        const song = songs.find(s => s.id === id);
+        if (song) showMusicForm(song);
+      });
+    };
+
+    window.confirmDeleteSong = (id, title) => {
+      if (!confirm(`删除「${title}」？此操作不可撤销。`)) return;
+      fetch(`/api/songs?id=${id}`, { method: 'DELETE' })
+        .then(r => { if (r.status === 401) window.location.href = '/admin/login'; return r.json(); })
+        .then(() => loadSongs())
+        .catch(() => alert('删除失败，请重试'));
+    };
 
     function resetForm() {
       document.getElementById('field-title').value = '';
