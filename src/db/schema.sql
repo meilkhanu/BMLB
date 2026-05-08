@@ -22,6 +22,14 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
 CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published_at);
 CREATE INDEX IF NOT EXISTS idx_posts_category_status_date ON posts(category_id, status, published_at);
 
+-- ============================================================
+-- 贝谟拉比 · 数据库重建（now_status + now_activity）
+-- ============================================================
+
+-- 先清掉旧表（会丢数据！）
+DROP TABLE IF EXISTS now_status;
+
+-- 重建 now_status（含所有新字段）
 CREATE TABLE IF NOT EXISTS now_status (
   id                 INTEGER PRIMARY KEY CHECK (id = 1),
   start_date         TEXT NOT NULL,
@@ -43,13 +51,22 @@ CREATE TABLE IF NOT EXISTS now_status (
   updated_at         TEXT DEFAULT (datetime('now'))
 );
 
--- ============================================================
--- /now 微日志
--- ============================================================
-
+-- 创建 now_activity（新表，直接建）
 CREATE TABLE IF NOT EXISTS now_activity (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   content TEXT NOT NULL,
   activity_date TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ============================================================
+-- /now 留言板
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS now_messages (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  author     TEXT NOT NULL DEFAULT '访客',
+  email      TEXT DEFAULT '',
+  content    TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

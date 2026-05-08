@@ -1,6 +1,47 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
+// —— MD5 helper（Gravatar 用） ——
+function md5(str: string): string {
+  function r(n: number, c: number) { return (n << c) | (n >>> (32 - c)); }
+  function q(n: number, c: number, t: number, b: number, x: number, s: number) {
+    return r(n + c + t + b + x, s);
+  }
+  function a(i: number, a: number, b: number, c: number, d: number, s: number, t: number) {
+    return q(b & c | ~b & d, a, b, i, t, s);
+  }
+  function m(i: number, a: number, b: number, c: number, d: number, s: number, t: number) {
+    return q(b & d | c & ~d, a, b, i, t, s);
+  }
+  function p(i: number, a: number, b: number, c: number, d: number, s: number, t: number) {
+    return q(b ^ c ^ d, a, b, i, t, s);
+  }
+  function s(i: number, a: number, b: number, c: number, d: number, s: number, t: number) {
+    return q(c ^ (b | ~d), a, b, i, t, s);
+  }
+  const l = str.length;
+  const w = [0];
+  for (let i = 0; i < l; i++) w[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
+  w[l >> 2] |= 0x80 << ((l % 4) * 8);
+  w[((l + 8 >> 6) << 4) + 15] = l * 8;
+  let va = 0x67452301, vb = 0xEFCDAB89, vc = 0x98BADCFE, vd = 0x10325476;
+  for (let i = 0; i < w.length; i += 16) {
+    let aa = va, bb = vb, cc = vc, dd = vd;
+    for (let j = 0; j < 64; j++) {
+      let f: number, g: number;
+      if (j < 16) { f = a(w[i+j]||0, aa, bb, cc, dd, [7,12,17,22][j%4], [0xD76AA478,0xE8C7B756,0x242070DB,0xC1BDCEEE,0xF57C0FAF,0x4787C62A,0xA8304613,0xFD469501,0x698098D8,0x8B44F7AF,0xFFFF5BB1,0x895CD7BE,0x6B901122,0xFD987193,0xA679438E,0x49B40821][j]); g = j; }
+      else if (j < 32) { f = m(w[i+((5*j+1)%16)]||0, aa, bb, cc, dd, [5,9,14,20][j%4], [0xF61E2562,0xC040B340,0x265E5A51,0xE9B6C7AA,0xD62F105D,0x02441453,0xD8A1E681,0xE7D3FBC8,0x21E1CDE6,0xC33707D6,0xF4D50D87,0x455A14ED,0xA9E3E905,0xFCEFA3F8,0x676F02D9,0x8D2A4C8A][j-16]); }
+      else if (j < 48) { f = p(w[i+((3*j+5)%16)]||0, aa, bb, cc, dd, [4,11,16,23][j%4], [0xFFFA3942,0x8771F681,0x6D9D6122,0xFDE5380C,0xA4BEEA44,0x4BDECFA9,0xF6BB4B60,0xBEBFBC70,0x289B7EC6,0xEAA127FA,0xD4EF3085,0x04881D05,0xD9D4D039,0xE6DB99E5,0x1FA27CF8,0xC4AC5665][j-32]); }
+      else { f = s(w[i+((7*j)%16)]||0, aa, bb, cc, dd, [6,10,15,21][j%4], [0xF4292244,0x432AFF97,0xAB9423A7,0xFC93A039,0x655B59C3,0x8F0CCC92,0xFFEFF47D,0x85845DD1,0x6FA87E4F,0xFE2CE6E0,0xA3014314,0x4E0811A1,0xF7537E82,0xBD3AF235,0x2AD7D2BB,0xEB86D391][j-48]); }
+      const tmp = dd;
+      dd = cc; cc = bb; bb = bb + r(aa + f, [7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21][j % 16]); aa = tmp;
+    }
+    va += aa; vb += bb; vc += cc; vd += dd;
+  }
+  function h(n: number) { return (n >>> 0).toString(16).padStart(8, '0'); }
+  return h(va) + h(vb) + h(vc) + h(vd);
+}
+
 // —— 服务端获取 /now 状态面板数据 ——
 interface NowStatus {
   id: number;
@@ -85,6 +126,34 @@ try {
   }
 } catch (e: any) {
   console.error('[now] GET /api/now/activity 请求失败:', e?.message || e);
+}
+
+// —— 服务端获取留言板 ——
+interface NowMessage {
+  id: number;
+  author: string;
+  email: string;
+  content: string;
+  createdAt: string;
+}
+
+let messages: NowMessage[] = [
+  { id: 0, author: '访客', email: '', content: '页面很有生命力。', createdAt: '' },
+  { id: 0, author: '访客', email: '', content: '期待正式上线。', createdAt: '' },
+  { id: 0, author: '访客', email: '', content: '设计语言很统一。', createdAt: '' },
+];
+
+try {
+  const apiUrl = new URL('/api/now/messages', Astro.url);
+  const res = await fetch(apiUrl.toString());
+  if (res.ok) {
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      messages = data as NowMessage[];
+    }
+  }
+} catch (e: any) {
+  console.error('[now] GET /api/now/messages 请求失败:', e?.message || e);
 }
 
 const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
@@ -300,7 +369,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         </div>
       <!-- 右侧：留言板 -->
       <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col h-full">
-        <!-- 头部栏：加入 Live 呼吸绿点，暗示这是一个“活”的接收端 -->
+        <!-- 头部栏 -->
         <div class="flex items-center justify-between mb-5">
           <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Leave a Message</p>
           <span class="text-[10px] font-medium text-[#999] flex items-center gap-1.5">
@@ -309,129 +378,74 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
           </span>
         </div>
 
-        <!-- 留言板输入区（修正版：结构清晰、统一风格、无重复 textarea） -->
-				<div class="mb-6">
-  					<div
-    					class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300
-    					dark:border-[#2B2B2B] dark:bg-[#141414]/80
-    					focus-within:border-[#8B7CB3]/45
-    					focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)]
-    					focus-within:ring-4 focus-within:ring-[#8B7CB3]/8"
-  					>
-
-    					<!-- 输入区域 -->
-    					<textarea
-      						rows="3"
-      						placeholder="给现在的我留句话..."
-      						class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none
-      						dark:text-[#EAEAEA] dark:placeholder:text-[#666]"
-    					></textarea>
-
-    					<!-- 分割线 -->
-    					<div
-      						class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300
-      						dark:bg-[#2F2F2F]
-      						group-focus-within:bg-[#8B7CB3]/25"
-    					></div>
-
-    					<!-- 发送按钮 -->
-    					<button
-      						type="button"
-      						class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98]"
-    					>
-      						<!-- hover 扫光 -->
-      						<span class="absolute inset-0 overflow-hidden">
-        							<span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
-      						</span>
-
-      						<!-- 内容 -->
-      						<span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
-        						发送
-        						<svg
-          							class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
-          							fill="none"
-          							stroke="currentColor"
-          							viewBox="0 0 24 24"
-        						>
-          							<path
-            							stroke-linecap="round"
-            							stroke-linejoin="round"
-            							stroke-width="2"
-            							d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-          							/>
-        						</svg>
-      						</span>
-    					</button>
-  					</div>
-
-					<!-- 底部提示信息 -->
-  					<div class="mt-2 flex items-center justify-between px-1">
-    					<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
-      						留下此刻想说的话
-    					</span>
-    					<span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">
-      						Ctrl + Enter 发送
-    					</span>
-  					</div>
-					</div>
-
-        <!-- 留言列表：统一磨砂玻璃与微交互体验 -->
-        <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1 pl-2 px-2 pt-2">
-          
-          <!-- Message 1 -->
-          <div class="group flex gap-3 cursor-default">
-            <!-- 头像：悬浮时放大并增加轻微阴影 -->
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B7CB3]/20 to-[#B26A8B]/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
-              <span class="text-xs font-bold text-[#8B7CB3]">A</span>
-            </div>
-            <div class="flex flex-col gap-1 w-full">
-              <div class="flex items-center justify-between pl-1">
-                <!-- 名字：悬浮时泛起专属紫灰色 -->
-                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Anonymous</span>
-                <!-- 时间戳 -->
-                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">刚刚</span>
-              </div>
-              <!-- 气泡本体：替换为磨砂玻璃 bg-white/60 + backdrop-blur-md，悬浮时上浮并加深边框微光 -->
-              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-[#8B7CB3]/20 transition-all duration-300">
-                页面很有生命力。
-              </div>
-            </div>
+        <!-- 留言输入区 -->
+        <div class="mb-6" id="messages-input-area">
+          <!-- 昵称 + 邮箱行 -->
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <input type="text" id="msg-author" placeholder="昵称（选填）" maxlength="20"
+              class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
+            <input type="text" id="msg-email" placeholder="邮箱（选填，用于头像）"
+              class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
           </div>
-          
-          <!-- Message 2 -->
-          <div class="group flex gap-3 cursor-default">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
-              <span class="text-xs font-bold text-blue-500">G</span>
-            </div>
-            <div class="flex flex-col gap-1 w-full">
-              <div class="flex items-center justify-between pl-1">
-                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-blue-500 transition-colors duration-300">Guest</span>
-                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">2 小时前</span>
-              </div>
-              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-blue-500/20 transition-all duration-300">
-                期待正式上线。
-              </div>
-            </div>
+          <!-- 内容 + 发送行 -->
+          <div class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300 dark:border-[#2B2B2B] dark:bg-[#141414]/80 focus-within:border-[#8B7CB3]/45 focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)] focus-within:ring-4 focus-within:ring-[#8B7CB3]/8">
+            <textarea id="msg-content" rows="2" maxlength="500" placeholder="给现在的我留句话..."
+              class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none dark:text-[#EAEAEA] dark:placeholder:text-[#666]"></textarea>
+            <div class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300 dark:bg-[#2F2F2F] group-focus-within:bg-[#8B7CB3]/25"></div>
+            <button type="button" id="msg-send-btn"
+              class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98] border-none cursor-pointer">
+              <span class="absolute inset-0 overflow-hidden">
+                <span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
+              </span>
+              <span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
+                发送
+                <svg class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </span>
+            </button>
           </div>
-
-          <!-- Message 3 -->
-          <div class="group flex gap-3 cursor-default">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300">
-              <span class="text-xs font-bold text-emerald-500">V</span>
-            </div>
-            <div class="flex flex-col gap-1 w-full">
-              <div class="flex items-center justify-between pl-1">
-                <span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-emerald-500 transition-colors duration-300">Visitor</span>
-                <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">昨天</span>
-              </div>
-              <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-emerald-500/20 transition-all duration-300">
-                设计语言很统一。
-              </div>
-            </div>
+          <div class="mt-2 flex items-center justify-between px-1">
+            <span id="msg-send-status" class="text-[11px] text-[#A0A0A0] dark:text-[#666]">留下此刻想说的话</span>
+            <span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">Ctrl + Enter 发送</span>
           </div>
-          
         </div>
-      			</div>
+
+        <!-- 留言列表 -->
+        <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1 pl-2 pt-2" id="messages-list">
+          {messages.map((msg, idx) => {
+            const name = msg.author || '访客';
+            const initial = name.charAt(0).toUpperCase();
+            const colors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            const color = colors[Math.abs(hash) % colors.length];
+            const avatarClass = idx % 3 === 0 ? 'text-[#8B7CB3]' : idx % 3 === 1 ? 'text-blue-500' : 'text-emerald-500';
+            const borderHover = idx % 3 === 0 ? 'group-hover:border-[#8B7CB3]/20' : idx % 3 === 1 ? 'group-hover:border-blue-500/20' : 'group-hover:border-emerald-500/20';
+            const nameHover = idx % 3 === 0 ? 'group-hover:text-[#8B7CB3]' : idx % 3 === 1 ? 'group-hover:text-blue-500' : 'group-hover:text-emerald-500';
+            return (
+              <div class="group flex gap-3 cursor-default">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style={`background: linear-gradient(135deg, ${color}20, ${color}30)`}>
+                  {msg.email ? (
+                    <img src={`https://www.gravatar.com/avatar/${md5(msg.email.trim().toLowerCase())}?d=mp&s=64`} alt="" class="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <span class={`text-xs font-bold ${avatarClass}`}>{initial}</span>
+                  )}
+                </div>
+                <div class="flex flex-col gap-1 w-full">
+                  <div class="flex items-center justify-between pl-1">
+                    <span class={`text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ${nameHover} transition-colors duration-300`}>{name}</span>
+                    <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{msg.createdAt ? new Date(msg.createdAt + 'Z').toLocaleString('zh-CN', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : ''}</span>
+                  </div>
+                  <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borderHover} transition-all duration-300`}>
+                    {msg.content}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     			</div>
   			</div>
 
@@ -467,6 +481,157 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
 
       update();
       setInterval(update, 1000);
+    })();
+  </script>
+
+  <script is:inline>
+    // —— 留言板交互 ——
+    (function () {
+      const authorEl = document.getElementById('msg-author');
+      const contentEl = document.getElementById('msg-content');
+      const sendBtn = document.getElementById('msg-send-btn');
+      const statusEl = document.getElementById('msg-send-status');
+      const listEl = document.getElementById('messages-list');
+      const emailEl = document.getElementById('msg-email');
+
+      // 简单 MD5（客户端 Gravatar 用）
+      function md5(str) {
+        function r(n, c) { return (n << c) | (n >>> (32 - c)); }
+        function q(n, c, t, b, x, s) { return r(n + c + t + b + x, s); }
+        function a(i, a, b, c, d, s, t) { return q(b & c | ~b & d, a, b, i, t, s); }
+        function m(i, a, b, c, d, s, t) { return q(b & d | c & ~d, a, b, i, t, s); }
+        function p(i, a, b, c, d, s, t) { return q(b ^ c ^ d, a, b, i, t, s); }
+        function s(i, a, b, c, d, s, t) { return q(c ^ (b | ~d), a, b, i, t, s); }
+        var l = str.length, w = [0];
+        for (var i = 0; i < l; i++) w[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
+        w[l >> 2] |= 0x80 << ((l % 4) * 8);
+        w[((l + 8 >> 6) << 4) + 15] = l * 8;
+        var va = 0x67452301, vb = 0xEFCDAB89, vc = 0x98BADCFE, vd = 0x10325476;
+        for (var i = 0; i < w.length; i += 16) {
+          var aa = va, bb = vb, cc = vc, dd = vd;
+          for (var j = 0; j < 64; j++) {
+            var f;
+            if (j < 16) { f = a(w[i+j]||0, aa, bb, cc, dd, [7,12,17,22][j%4], [0xD76AA478,0xE8C7B756,0x242070DB,0xC1BDCEEE,0xF57C0FAF,0x4787C62A,0xA8304613,0xFD469501,0x698098D8,0x8B44F7AF,0xFFFF5BB1,0x895CD7BE,0x6B901122,0xFD987193,0xA679438E,0x49B40821][j]); }
+            else if (j < 32) { f = m(w[i+((5*j+1)%16)]||0, aa, bb, cc, dd, [5,9,14,20][j%4], [0xF61E2562,0xC040B340,0x265E5A51,0xE9B6C7AA,0xD62F105D,0x02441453,0xD8A1E681,0xE7D3FBC8,0x21E1CDE6,0xC33707D6,0xF4D50D87,0x455A14ED,0xA9E3E905,0xFCEFA3F8,0x676F02D9,0x8D2A4C8A][j-16]); }
+            else if (j < 48) { f = p(w[i+((3*j+5)%16)]||0, aa, bb, cc, dd, [4,11,16,23][j%4], [0xFFFA3942,0x8771F681,0x6D9D6122,0xFDE5380C,0xA4BEEA44,0x4BDECFA9,0xF6BB4B60,0xBEBFBC70,0x289B7EC6,0xEAA127FA,0xD4EF3085,0x04881D05,0xD9D4D039,0xE6DB99E5,0x1FA27CF8,0xC4AC5665][j-32]); }
+            else { f = s(w[i+((7*j)%16)]||0, aa, bb, cc, dd, [6,10,15,21][j%4], [0xF4292244,0x432AFF97,0xAB9423A7,0xFC93A039,0x655B59C3,0x8F0CCC92,0xFFEFF47D,0x85845DD1,0x6FA87E4F,0xFE2CE6E0,0xA3014314,0x4E0811A1,0xF7537E82,0xBD3AF235,0x2AD7D2BB,0xEB86D391][j-48]); }
+            var tmp = dd;
+            dd = cc; cc = bb; bb = bb + r(aa + f, [7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21][j % 16]); aa = tmp;
+          }
+          va += aa; vb += bb; vc += cc; vd += dd;
+        }
+        function h(n) { return (n >>> 0).toString(16).padStart(8, '0'); }
+        return h(va) + h(vb) + h(vc) + h(vd);
+      }
+
+      function getColor(name) {
+        var colors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
+        var hash = 0;
+        for (var i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        return colors[Math.abs(hash) % colors.length];
+      }
+
+      function formatTime(isoStr) {
+        if (!isoStr) return '';
+        var d = new Date(isoStr + 'Z');
+        var months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+        return months[d.getMonth()] + d.getDate() + '日 ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      }
+
+      function renderMessage(msg, idx) {
+        var name = msg.author || '访客';
+        var initial = name.charAt(0).toUpperCase();
+        var color = getColor(name);
+        var avatarClasses = ['text-[#8B7CB3]','text-blue-500','text-emerald-500'];
+        var avatarClass = avatarClasses[idx % 3];
+        var borderHover = ['group-hover:border-[#8B7CB3]/20','group-hover:border-blue-500/20','group-hover:border-emerald-500/20'][idx % 3];
+        var nameHover = ['group-hover:text-[#8B7CB3]','group-hover:text-blue-500','group-hover:text-emerald-500'][idx % 3];
+        var timeStr = formatTime(msg.createdAt);
+
+        var avatarHtml = msg.email
+          ? '<img src="https://www.gravatar.com/avatar/' + md5(msg.email.trim().toLowerCase()) + '?d=mp&s=64" alt="" class="w-full h-full object-cover" loading="lazy" />'
+          : '<span class="text-xs font-bold ' + avatarClass + '">' + initial + '</span>';
+
+        return '<div class="group flex gap-3 cursor-default">' +
+          '<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style="background: linear-gradient(135deg, ' + color + '20, ' + color + '30)">' +
+            avatarHtml +
+          '</div>' +
+          '<div class="flex flex-col gap-1 w-full">' +
+            '<div class="flex items-center justify-between pl-1">' +
+              '<span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ' + nameHover + ' transition-colors duration-300">' + name + '</span>' +
+              (timeStr ? '<span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">' + timeStr + '</span>' : '') +
+            '</div>' +
+            '<div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ' + borderHover + ' transition-all duration-300">' +
+              msg.content +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      async function submitMessage() {
+        var author = authorEl.value.trim();
+        var email = emailEl.value.trim();
+        var content = contentEl.value.trim();
+
+        if (!content) {
+          statusEl.textContent = '请输入留言内容';
+          statusEl.className = 'text-[11px] text-red-500';
+          return;
+        }
+
+        sendBtn.disabled = true;
+        statusEl.textContent = '发送中...';
+        statusEl.className = 'text-[11px] text-[#A0A0A0] dark:text-[#666]';
+
+        try {
+          var res = await fetch('/api/now/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ author: author, email: email, content: content }),
+          });
+          var result = await res.json();
+          if (result.error) {
+            statusEl.textContent = result.error;
+            statusEl.className = 'text-[11px] text-red-500';
+          } else {
+            contentEl.value = '';
+            statusEl.textContent = '✓ 发送成功';
+            statusEl.className = 'text-[11px] text-[#7CB38B]';
+            await refreshMessages();
+            setTimeout(function () {
+              if (statusEl.textContent.indexOf('✓') === 0) {
+                statusEl.textContent = '留下此刻想说的话';
+                statusEl.className = 'text-[11px] text-[#A0A0A0] dark:text-[#666]';
+              }
+            }, 2000);
+          }
+        } catch (e) {
+          statusEl.textContent = '网络错误，请重试';
+          statusEl.className = 'text-[11px] text-red-500';
+        } finally {
+          sendBtn.disabled = false;
+        }
+      }
+
+      async function refreshMessages() {
+        try {
+          var res = await fetch('/api/now/messages');
+          var messages = await res.json();
+          if (Array.isArray(messages) && messages.length > 0) {
+            listEl.innerHTML = messages.map(function (msg, idx) {
+              return renderMessage(msg, idx);
+            }).join('');
+          }
+        } catch (e) {}
+      }
+
+      sendBtn.addEventListener('click', submitMessage);
+      contentEl.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          submitMessage();
+        }
+      });
     })();
   </script>
 </BaseLayout>

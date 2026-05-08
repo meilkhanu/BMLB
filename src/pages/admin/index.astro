@@ -338,6 +338,14 @@
 
         <!-- 现有列表 -->
         <div id="activity-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+
+        <!-- 留言管理 -->
+        <div class="mt-8 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">留言管理</h4>
+          <div id="messages-admin-list" class="space-y-2 max-h-[400px] overflow-y-auto">
+            <p class="text-sm text-[#999]">加载中...</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -497,7 +505,7 @@
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.remove('hidden');
-      await loadActivities();
+      await Promise.all([loadActivities(), loadAdminMessages()]);
     }
 
     function closeActivityEditor() {
@@ -589,6 +597,53 @@
       }
     }
     window._deleteActivity = _deleteActivity;
+
+    // 留言管理
+    async function loadAdminMessages() {
+      try {
+        const res = await fetch('/api/now/messages');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          renderAdminMessages(data);
+        } else {
+          document.getElementById('messages-admin-list').innerHTML = '<p class="text-sm text-[#999]">加载失败</p>';
+        }
+      } catch (e) {
+        document.getElementById('messages-admin-list').innerHTML = '<p class="text-sm text-[#999]">加载失败</p>';
+      }
+    }
+
+    function renderAdminMessages(messages) {
+      const list = document.getElementById('messages-admin-list');
+      if (messages.length === 0) {
+        list.innerHTML = '<p class="text-sm text-[#999] text-center py-8">暂无留言</p>';
+        return;
+      }
+      list.innerHTML = messages.map(item => `
+        <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A] group hover:bg-white dark:hover:bg-[#252525] transition-colors">
+          <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">${escapeHtml(item.author || '访客')}</span>
+              ${item.email ? `<span class="text-[10px] text-[#999] font-mono">${escapeHtml(item.email)}</span>` : ''}
+            </div>
+            <span class="text-sm text-[#666] dark:text-[#888] truncate">${escapeHtml(item.content)}</span>
+          </div>
+          <button onclick="window._deleteMessage(${item.id})" class="text-[10px] font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0 ml-2">删除</button>
+        </div>
+      `).join('');
+    }
+
+    async function _deleteMessage(id) {
+      if (!confirm('确认删除这条留言？')) return;
+      try {
+        const res = await fetch(`/api/now/messages?id=${id}`, { method: 'DELETE' });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        await loadAdminMessages();
+      } catch (e) {
+        alert('删除失败，请重试');
+      }
+    }
+    window._deleteMessage = _deleteMessage;
 
     async function saveNowStatus() {
       const data = {
