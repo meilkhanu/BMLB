@@ -28,6 +28,31 @@ try {
   }
 } catch {}
 
+// —— 服务端获取微日志（与 /now 页面共用同一数据源） ——
+interface NowActivityItem {
+  id: number;
+  content: string;
+  activityDate: string;
+}
+
+let activities: NowActivityItem[] = [
+  { id: 0, content: '完成归档页设计',  activityDate: '04-30' },
+  { id: 0, content: '优化首页卡片层级', activityDate: '04-29' },
+  { id: 0, content: '构思 /now 页面结构', activityDate: '04-28' },
+  { id: 0, content: '统一配色系统',     activityDate: '04-27' },
+];
+
+try {
+  const apiUrl = new URL('/api/now/activity', Astro.url);
+  const res = await fetch(apiUrl.toString());
+  if (res.ok) {
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      activities = data as NowActivityItem[];
+    }
+  }
+} catch {}
+
 const phaseLabel = status.phase || 'Phase 2';
 const statusLabel = status.badgeText || '平滑推进中';
 
@@ -666,81 +691,41 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						<!-- 核心改造 1：渐变能量轴 (代表时间流向，向下消散) -->
 						<div class="absolute left-3.5 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#7CB38B] via-[#8B7CB3]/50 to-transparent"></div>
 
-						<!-- Phase 1 (已完成：柔和归档态) -->
-						<div class="relative group opacity-80 hover:opacity-100 transition-opacity duration-500">
-							<!-- 实体发光节点 -->
-							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.5)] z-10 transition-transform duration-300 group-hover:scale-125"></span>
-							
-							<!-- 玻璃卡片载体 -->
-							<div class="bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-								<div class="flex items-center gap-2 mb-1">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Phase 1</div>
-									<span class="text-xs text-[#7CB38B] font-bold tracking-widest">✓ DONE</span>
+						{activities.map((item, idx) => {
+							const isLatest = idx === 0;
+							return (
+								<div class={`relative group ${isLatest ? '' : 'opacity-80 hover:opacity-100'} transition-opacity duration-500`}>
+									{isLatest ? (
+										<!-- 绿色呼吸脉冲灯 (呼应 Site Info 的施工状态) -->
+										<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 flex h-3 w-3 z-10">
+											<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
+											<span class="relative inline-flex rounded-full h-3 w-3 bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.8)]"></span>
+										</span>
+									) : (
+										<!-- 实体发光节点 -->
+										<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.5)] z-10 transition-transform duration-300 group-hover:scale-125"></span>
+									)}
+									
+									<!-- 玻璃卡片载体 -->
+									<div class={`${isLatest ? 'bg-white/70 dark:bg-[#2A2A2A]/60 backdrop-blur-md border-[#7CB38B]/30 shadow-md' : 'bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm border-white/20 dark:border-white/10 shadow-sm'} rounded-2xl p-4 border hover:-translate-y-1 hover:shadow-lg transition-all duration-300 relative overflow-hidden`}>
+										{isLatest && <div class="absolute inset-0 bg-gradient-to-r from-[#7CB38B]/5 to-transparent pointer-events-none"></div>}
+										<div class="flex items-center gap-2 mb-1 relative z-10">
+											<div class={`text-sm font-bold ${isLatest ? 'text-[#7CB38B] dark:text-[#7CB38B]' : 'text-[#1A1A1A] dark:text-[#EAEAEA]'}`}>
+												{item.activityDate}
+											</div>
+											{isLatest ? (
+												<span class="text-[10px] bg-[#7CB38B]/10 text-[#7CB38B] px-2 py-0.5 rounded-full font-bold tracking-widest animate-pulse">LATEST</span>
+											) : (
+												<span class="text-xs text-[#7CB38B] font-bold tracking-widest">✓ DONE</span>
+											)}
+										</div>
+										<div class={`text-xs leading-relaxed relative z-10 ${isLatest ? 'text-[#444] dark:text-[#CCC]' : 'text-[#666] dark:text-[#999]'}`}>
+											{item.content}
+										</div>
+									</div>
 								</div>
-								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed">整体构建 + 确定首页结构并完成首页搭建</div>
-							</div>
-						</div>
-
-						<!-- Phase 2 (当前进行时：高亮呼吸态) -->
-						<div class="relative group">
-							<!-- 绿色呼吸脉冲灯 (呼应 Site Info 的施工状态) -->
-							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 flex h-3 w-3 z-10">
-								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
-								<span class="relative inline-flex rounded-full h-3 w-3 bg-[#7CB38B] shadow-[0_0_10px_rgba(124,179,139,0.8)]"></span>
-							</span>
-							
-							<!-- 突出的当前卡片 (加入极淡的绿色边框光晕) -->
-							<div class="bg-white/70 dark:bg-[#2A2A2A]/60 backdrop-blur-md rounded-2xl p-4 border border-[#7CB38B]/30 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-								<div class="absolute inset-0 bg-gradient-to-r from-[#7CB38B]/5 to-transparent pointer-events-none"></div>
-								<div class="flex items-center gap-2 mb-1 relative z-10">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] text-[#7CB38B] dark:text-[#7CB38B]">Phase 2</div>
-									<span class="text-[10px] bg-[#7CB38B]/10 text-[#7CB38B] px-2 py-0.5 rounded-full font-bold tracking-widest animate-pulse">ACTIVE</span>
-								</div>
-								<div class="text-xs text-[#444] dark:text-[#CCC] leading-relaxed relative z-10">Layout + 暗色模式 + Tab 交互 + /now & /archive & /colophon页面</div>
-							</div>
-						</div>
-
-						<!-- Phase 3 (未来式：全息投影态) -->
-						<div class="relative group opacity-40 hover:opacity-100 transition-opacity duration-500">
-							<!-- 空心节点 -->
-							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
-							
-							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
-								<div class="flex items-center gap-2 mb-1">
-									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 3</div>
-									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
-								</div>
-								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">文章系统（规划中）</div>
-							</div>
-						</div>
-
-						<!-- Phase 4 (未来式：全息投影态) -->
-						<div class="relative group opacity-30 hover:opacity-100 transition-opacity duration-500">
-							<!-- 空心节点 -->
-							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
-							
-							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
-								<div class="flex items-center gap-2 mb-1">
-									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 4</div>
-									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
-								</div>
-								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">留言板/评论（规划中）</div>
-							</div>
-						</div>
-
-						<!-- Phase 5+ (未来式：最底部的迷雾) -->
-						<div class="relative group opacity-20 hover:opacity-100 transition-opacity duration-500">
-							<!-- 空心节点 -->
-							<span class="absolute -left-[1.6rem] md:-left-[2.1rem] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-[#999] dark:border-[#666] bg-[#F9F9F9] dark:bg-[#141414] z-10 transition-transform duration-300 group-hover:scale-125 group-hover:border-[#8B7CB3]"></span>
-							
-							<div class="bg-white/30 dark:bg-[#1A1A1A]/30 backdrop-blur-sm rounded-2xl p-4 border border-white/10 dark:border-white/5 hover:-translate-y-1 hover:shadow-sm transition-all duration-300">
-								<div class="flex items-center gap-2 mb-1">
-									<div class="text-sm font-bold text-[#999] dark:text-[#666] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA] transition-colors duration-300">Phase 5+</div>
-									<span class="text-xs text-[#999] dark:text-[#666]">→</span >
-								</div>
-								<div class="text-xs text-[#999] dark:text-[#666] leading-relaxed group-hover:text-[#666] dark:group-hover:text-[#999] transition-colors duration-300">持续演化中</div>
-							</div>
-						</div>
+							);
+						})}
 
 					</div>
 				</div>
