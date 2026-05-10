@@ -2,8 +2,8 @@ export const SITE_CONFIG = {
   siteName: "贝谟拉比",
   siteStartDate: "2026-04-26",
   images: {
-    hero: "/images/hero-bg.jpg",
-    avatar: "/images/avatar.jpg",
+    hero: "/images/hero-bg.avif",
+    avatar: "/images/avatar.avif",
   },
   categories: [
     { id: "notes", name: "札记", color: "#8B7CB3" },
