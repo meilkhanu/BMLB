@@ -191,13 +191,22 @@ const navLinkClass = (path: string) => {
 			}
 		}
 
-		const savedTheme = localStorage.getItem('theme');
-		if (savedTheme === 'dark') {
-			document.documentElement.classList.add('dark');
-			updateThemeIcon(true);
-		} else {
-			updateThemeIcon(false);
+		function initTheme() {
+			const savedTheme = localStorage.getItem('theme');
+			if (savedTheme === 'dark') {
+				document.documentElement.classList.add('dark');
+				updateThemeIcon(true);
+			} else {
+				document.documentElement.classList.remove('dark');
+				updateThemeIcon(false);
+			}
 		}
+
+		// 初始加载时执行
+		initTheme();
+
+		// View Transitions 页面切换后重新同步主题图标
+		document.addEventListener('astro:page-load', initTheme);
 
 		// 导航栏滚动效果（简化版：只控制阴影深浅）
 		const nav = document.getElementById('site-nav');
@@ -210,9 +219,6 @@ const navLinkClass = (path: string) => {
 		}
 		window.addEventListener('scroll', handleScroll);
 		handleScroll();
-
-		const observer = new MutationObserver(() => {});
-		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 		// 页脚星空鼠标视差交互 (全屏无缝监听版)
 		const footerPattern = document.getElementById('footer-pattern');
