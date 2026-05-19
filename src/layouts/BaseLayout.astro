@@ -22,6 +22,17 @@ const navLinkClass = (path: string) => {
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{title}</title>
+	<script is:inline>
+		(function() {
+			const stored = localStorage.getItem('theme');
+			const isDark = stored
+				? stored === 'dark'
+				: window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (isDark) {
+				document.documentElement.classList.add('dark');
+			}
+		})();
+	</script>
 	<ViewTransitions />
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
@@ -192,8 +203,11 @@ const navLinkClass = (path: string) => {
 		}
 
 		function initTheme() {
-			const savedTheme = localStorage.getItem('theme');
-			if (savedTheme === 'dark') {
+			const stored = localStorage.getItem('theme');
+			const isDark = stored
+				? stored === 'dark'
+				: window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (isDark) {
 				document.documentElement.classList.add('dark');
 				updateThemeIcon(true);
 			} else {
