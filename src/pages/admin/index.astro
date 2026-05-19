@@ -1250,7 +1250,7 @@
         selector: '#field-content',
         height: 600,
         plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount fullscreen code',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | indent outdent | lineheight | h2 h3 | bullist numlist | link image | blockquote codesample | table charmap | searchreplace | styles | removeformat fullscreen',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | indent outdent | h2 h3 | bullist numlist | link image | blockquote codesample | table charmap | searchreplace | styles | removeformat fullscreen',
         menubar: false,
         statusbar: true,
         indentation: '2em',
@@ -1259,28 +1259,28 @@
           {
             title: '段落间距',
             items: [
-              { title: '段前距 12px', selector: 'p', styles: { marginTop: '12px' } },
-              { title: '段后距 12px', selector: 'p', styles: { marginBottom: '12px' } },
-              { title: '段前后距 12px', selector: 'p', styles: { marginTop: '12px', marginBottom: '12px' } },
-              { title: '无段间距', selector: 'p', styles: { marginTop: '0px', marginBottom: '0px' } }
+              { title: '段前距 12px', selector: 'p', styles: { 'margin-top': '12px' } },
+              { title: '段后距 12px', selector: 'p', styles: { 'margin-bottom': '12px' } },
+              { title: '段前后距 12px', selector: 'p', styles: { 'margin-top': '12px', 'margin-bottom': '12px' } },
+              { title: '无段间距', selector: 'p', styles: { 'margin-top': '0px', 'margin-bottom': '0px' } }
             ]
           },
           {
             title: '行间距',
             items: [
-              { title: '1.0 倍', selector: 'p,div,li', styles: { lineHeight: '1.0' } },
-              { title: '1.5 倍', selector: 'p,div,li', styles: { lineHeight: '1.5' } },
-              { title: '1.75 倍', selector: 'p,div,li', styles: { lineHeight: '1.75' } },
-              { title: '2.0 倍', selector: 'p,div,li', styles: { lineHeight: '2.0' } },
-              { title: '2.5 倍', selector: 'p,div,li', styles: { lineHeight: '2.5' } }
+              { title: '1.0 倍', selector: 'p,div,li', styles: { 'line-height': '1.0' } },
+              { title: '1.5 倍', selector: 'p,div,li', styles: { 'line-height': '1.5' } },
+              { title: '1.75 倍', selector: 'p,div,li', styles: { 'line-height': '1.75' } },
+              { title: '2.0 倍', selector: 'p,div,li', styles: { 'line-height': '2.0' } },
+              { title: '2.5 倍', selector: 'p,div,li', styles: { 'line-height': '2.5' } }
             ]
           },
           {
             title: '首行缩进',
             items: [
-              { title: '缩进 2字符', selector: 'p', styles: { textIndent: '2em' } },
-              { title: '缩进 4字符', selector: 'p', styles: { textIndent: '4em' } },
-              { title: '取消缩进', selector: 'p', styles: { textIndent: '0' } }
+              { title: '缩进 2字符', selector: 'p', styles: { 'text-indent': '2em' } },
+              { title: '缩进 4字符', selector: 'p', styles: { 'text-indent': '4em' } },
+              { title: '取消缩进', selector: 'p', styles: { 'text-indent': '0' } }
             ]
           }
         ],
