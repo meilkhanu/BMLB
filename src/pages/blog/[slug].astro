@@ -250,7 +250,7 @@ try {
           const names = ['group-hover:text-[#8B7CB3]', 'group-hover:text-blue-500', 'group-hover:text-emerald-500'];
           const bgColors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
           let hash = 0;
-          for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
+          for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + hash * 31; }
           const bgColor = bgColors[Math.abs(hash) % bgColors.length];
           const timeStr = cmt.createdAt
             ? new Date(cmt.createdAt + 'Z').toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
