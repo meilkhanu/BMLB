@@ -11,6 +11,7 @@ import { handleUpload } from "../../lib/upload";
 import { handleNow } from "../../lib/now";
 import { handleNowActivity } from "../../lib/now-activity";
 import { handleNowMessages } from "../../lib/now-messages";
+import { handleComments } from "../../lib/comments";
 import { handleSongs } from "../../lib/songs";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
@@ -22,6 +23,10 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
 
   if (url.pathname.startsWith("/api/posts")) {
     return handlePosts(ctx);
+  }
+
+  if (url.pathname.startsWith("/api/comments")) {
+    return handleComments(ctx);
   }
 
   if (url.pathname.startsWith("/api/upload")) {
