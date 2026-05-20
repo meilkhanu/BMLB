@@ -81,17 +81,8 @@ const dateFormatted = isValidDate
   ? `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`
   : dateStr;
 
-// —— 服务端获取评论 ——
-interface Comment {
-  id: number;
-  author: string;
-  email: string;
-  content: string;
-  targetSlug: string;
-  createdAt: string;
-}
-
-let comments: Comment[] = [];
+// —— 服务端获取评论（极简版，头像交客户端增强） ——
+let comments: any[] = [];
 
 try {
   const res = await fetch(new URL(`/api/comments?slug=${encodeURIComponent(slug)}`, Astro.url).toString());
@@ -251,63 +242,31 @@ try {
       <!-- 评论列表 -->
       <div class="space-y-4" id="comments-list">
         {comments.map((cmt, idx) => {
-          const name = cmt.author || '访客';
+          const name = (cmt.author || '').trim() || '访客';
           const initial = name.charAt(0).toUpperCase();
-          const colors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
+          const accentIdx = idx % 3;
+          const avatarColors = ['text-[#8B7CB3]', 'text-blue-500', 'text-emerald-500'];
+          const borders = ['group-hover:border-[#8B7CB3]/20', 'group-hover:border-blue-500/20', 'group-hover:border-emerald-500/20'];
+          const names = ['group-hover:text-[#8B7CB3]', 'group-hover:text-blue-500', 'group-hover:text-emerald-500'];
+          const bgColors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
           let hash = 0;
-          for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-          const color = colors[Math.abs(hash) % colors.length];
-          const avatarClass = idx % 3 === 0 ? 'text-[#8B7CB3]' : idx % 3 === 1 ? 'text-blue-500' : 'text-emerald-500';
-          const borderHover = idx % 3 === 0 ? 'group-hover:border-[#8B7CB3]/20' : idx % 3 === 1 ? 'group-hover:border-blue-500/20' : 'group-hover:border-emerald-500/20';
-          const nameHover = idx % 3 === 0 ? 'group-hover:text-[#8B7CB3]' : idx % 3 === 1 ? 'group-hover:text-blue-500' : 'group-hover:text-emerald-500';
-          const timeStr = cmt.createdAt ? new Date(cmt.createdAt + 'Z').toLocaleString('zh-CN', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+          for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
+          const bgColor = bgColors[Math.abs(hash) % bgColors.length];
+          const timeStr = cmt.createdAt
+            ? new Date(cmt.createdAt + 'Z').toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            : '';
           return (
-            <div class="group flex gap-3 cursor-default">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style={`background: linear-gradient(135deg, ${color}20, ${color}30)`}>
-                {cmt.email ? (
-                  <img src={`https://www.gravatar.com/avatar/${(() => {
-                    // inline MD5
-                    function md5(str: string): string {
-                      function r(n: number, c: number) { return (n << c) | (n >>> (32 - c)); }
-                      function q(n: number, c: number, t: number, b: number, x: number, s: number) { return r(n + c + t + b + x, s); }
-                      function a(i: number, a: number, b: number, c: number, d: number, s: number, t: number) { return q(b & c | ~b & d, a, b, i, t, s); }
-                      function m(i: number, a: number, b: number, c: number, d: number, s: number, t: number) { return q(b & d | c & ~d, a, b, i, t, s); }
-                      function p(i: number, a: number, b: number, c: number, d: number, s: number, t: number) { return q(b ^ c ^ d, a, b, i, t, s); }
-                      function s(i: number, a: number, b: number, c: number, d: number, s: number, t: number) { return q(c ^ (b | ~d), a, b, i, t, s); }
-                      const l = str.length;
-                      const w = [0];
-                      for (let i = 0; i < l; i++) w[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
-                      w[l >> 2] |= 0x80 << ((l % 4) * 8);
-                      w[((l + 8 >> 6) << 4) + 15] = l * 8;
-                      let va = 0x67452301, vb = 0xEFCDAB89, vc = 0x98BADCFE, vd = 0x10325476;
-                      for (let i = 0; i < w.length; i += 16) {
-                        let aa = va, bb = vb, cc = vc, dd = vd;
-                        for (let j = 0; j < 64; j++) {
-                          let f: number;
-                          if (j < 16) { f = a(w[i+j]||0, aa, bb, cc, dd, [7,12,17,22][j%4], [0xD76AA478,0xE8C7B756,0x242070DB,0xC1BDCEEE,0xF57C0FAF,0x4787C62A,0xA8304613,0xFD469501,0x698098D8,0x8B44F7AF,0xFFFF5BB1,0x895CD7BE,0x6B901122,0xFD987193,0xA679438E,0x49B40821][j]); }
-                          else if (j < 32) { f = m(w[i+((5*j+1)%16)]||0, aa, bb, cc, dd, [5,9,14,20][j%4], [0xF61E2562,0xC040B340,0x265E5A51,0xE9B6C7AA,0xD62F105D,0x02441453,0xD8A1E681,0xE7D3FBC8,0x21E1CDE6,0xC33707D6,0xF4D50D87,0x455A14ED,0xA9E3E905,0xFCEFA3F8,0x676F02D9,0x8D2A4C8A][j-16]); }
-                          else if (j < 48) { f = p(w[i+((3*j+5)%16)]||0, aa, bb, cc, dd, [4,11,16,23][j%4], [0xFFFA3942,0x8771F681,0x6D9D6122,0xFDE5380C,0xA4BEEA44,0x4BDECFA9,0xF6BB4B60,0xBEBFBC70,0x289B7EC6,0xEAA127FA,0xD4EF3085,0x04881D05,0xD9D4D039,0xE6DB99E5,0x1FA27CF8,0xC4AC5665][j-32]); }
-                          else { f = s(w[i+((7*j)%16)]||0, aa, bb, cc, dd, [6,10,15,21][j%4], [0xF4292244,0x432AFF97,0xAB9423A7,0xFC93A039,0x655B59C3,0x8F0CCC92,0xFFEFF47D,0x85845DD1,0x6FA87E4F,0xFE2CE6E0,0xA3014314,0x4E0811A1,0xF7537E82,0xBD3AF235,0x2AD7D2BB,0xEB86D391][j-48]); }
-                          const tmp = dd;
-                          dd = cc; cc = bb; bb = bb + r(aa + f, [7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21][j % 16]); aa = tmp;
-                        }
-                        va += aa; vb += bb; vc += cc; vd += dd;
-                      }
-                      function h(n: number) { return (n >>> 0).toString(16).padStart(8, '0'); }
-                      return h(va) + h(vb) + h(vc) + h(vd);
-                    }
-                    return md5(cmt.email.trim().toLowerCase());
-                  })()}?d=mp&s=64`} alt="" class="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <span class={`text-xs font-bold ${avatarClass}`}>{initial}</span>
-                )}
+            <div class="group flex gap-3 cursor-default" data-comment-email={(cmt.email || '').trim()}>
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style={`background: linear-gradient(135deg, ${bgColor}20, ${bgColor}30)`}>
+                <span class={`text-xs font-bold comment-avatar-text ${avatarColors[accentIdx]}`}>{initial}</span>
+                <img class="comment-avatar-img hidden w-full h-full object-cover" alt="" loading="lazy" />
               </div>
               <div class="flex flex-col gap-1 w-full">
                 <div class="flex items-center justify-between pl-1">
-                  <span class={`text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ${nameHover} transition-colors duration-300`}>{name}</span>
+                  <span class={`text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ${names[accentIdx]} transition-colors duration-300`}>{name}</span>
                   <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{timeStr}</span>
                 </div>
-                <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borderHover} transition-all duration-300`}>
+                <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borders[accentIdx]} transition-all duration-300`}>
                   {cmt.content}
                 </div>
               </div>
@@ -436,6 +395,24 @@ try {
       }
 
       var cmtCount = listEl ? listEl.children.length : 0;
+
+      // 增强现有评论：有邮箱的替换为 Gravatar 头像
+      function enhanceExistingAvatars() {
+        var items = listEl ? listEl.querySelectorAll('[data-comment-email]') : [];
+        for (var i = 0; i < items.length; i++) {
+          var email = items[i].getAttribute('data-comment-email') || '';
+          if (!email) continue;
+          var textEl = items[i].querySelector('.comment-avatar-text');
+          var imgEl = items[i].querySelector('.comment-avatar-img');
+          if (textEl && imgEl) {
+            var hash = md5(email.toLowerCase());
+            imgEl.src = 'https://www.gravatar.com/avatar/' + hash + '?d=mp&s=64';
+            imgEl.classList.remove('hidden');
+            textEl.classList.add('hidden');
+          }
+        }
+      }
+      enhanceExistingAvatars();
       function renderComment(msg, idx) {
         var name = msg.author || '访客';
         var initial = name.charAt(0).toUpperCase();
