@@ -100,6 +100,22 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 ---
 
 <BaseLayout title="归档">
+	<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+		<div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#222222_1px,transparent_1px)] [background-size:24px_24px] opacity-70"></div>
+		
+		<div class="absolute top-1/4 left-0 w-[300px] h-[1px] bg-gradient-to-r from-transparent via-[#39C5BB]/20 to-transparent dark:via-[#00FFCC]/10 animate-subtle-scan-1"></div>
+		<div class="absolute top-2/3 right-0 w-[400px] h-[1px] bg-gradient-to-r from-transparent via-[#FF1A4D]/15 to-transparent dark:via-[#D80032]/10 animate-subtle-scan-2"></div>
+
+		<div class="absolute bottom-12 right-12 opacity-10 dark:opacity-5 transition-all duration-700 hover:opacity-40 hidden lg:block group/bg-mascot">
+			<svg class="w-16 h-16 animate-mascot-float" viewBox="0 0 100 100">
+				<circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2" class="text-[#39C5BB]" fill="none" />
+				<path d="M35,45 Q40,35 45,45 T55,45" stroke="currentColor" stroke-width="1.5" fill="none" class="text-[#FF1A4D]" />
+				<text x="50" y="62" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold" class="fill-current text-gray-400 dark:text-gray-600">SYS.0104</text>
+			</svg>
+		</div>
+	</div>
+
+	<div class="container mx-auto px-4 py-12 relative z-10">
 	<div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-32 pb-12">
 		<!-- 标题区 -->
 		<div class="mb-12">
@@ -222,6 +238,52 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		</div>
 	</div>
 </BaseLayout>
+
+<style is:global>
+	/* --- 🌐 极简背景与双歌姬联动低调动效 --- */
+
+	/* 电子流光在背景网格间悄悄横移 */
+	@keyframes subtle-scan-right {
+		0% { transform: translateX(-100%); opacity: 0; }
+		10% { opacity: 1; }
+		90% { opacity: 1; }
+		100% { transform: translateX(100vw); opacity: 0; }
+	}
+	@keyframes subtle-scan-left {
+		0% { transform: translateX(100%); opacity: 0; }
+		10% { opacity: 1; }
+		90% { opacity: 1; }
+		100% { transform: translateX(-100vw); opacity: 0; }
+	}
+
+	/* 右下角极简歌姬几何挂件的 Apple 级呼吸浮动 */
+	@keyframes mascot-floating {
+		0%, 100% { transform: translateY(0) rotate(0deg); }
+		50% { transform: translateY(-6px) rotate(2deg); }
+	}
+
+	.animate-subtle-scan-1 {
+		animation: subtle-scan-right 12s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+		animation-delay: 2s;
+	}
+	.animate-subtle-scan-2 {
+		animation: subtle-scan-left 16s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+		animation-delay: 5s;
+	}
+	.animate-mascot-float {
+		animation: mascot-floating 6s ease-in-out infinite;
+	}
+
+	/* 优化卡片背景，让它们在点阵背景上显得更有 Apple 的 Layering（图层感）和毛玻璃高级感 */
+	.group.bg-white {
+		backdrop-filter: blur(20px) !important;
+		background-color: rgba(255, 255, 255, 0.85) !important;
+	}
+	.dark .group.bg-white, .dark .bg-\[\#1A1A1A\] {
+		backdrop-filter: blur(20px) !important;
+		background-color: rgba(26, 26, 26, 0.8) !important;
+	}
+</style>
 
 <script is:inline>
 	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
