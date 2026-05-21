@@ -103,14 +103,21 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 	<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden mix-blend-multiply dark:mix-blend-screen">
 		<div class="absolute inset-0 bg-[radial-gradient(#d1d5db_1.5px,transparent_1.5px)] dark:bg-[radial-gradient(#2c2c2c_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-100"></div>
 		
-		<div class="absolute top-1/4 left-0 w-[400px] h-[2px] bg-gradient-to-r from-transparent via-[#39C5BB] to-transparent dark:via-[#00FFCC] opacity-40 dark:opacity-30 animate-subtle-scan-1"></div>
-		<div class="absolute top-2/3 right-0 w-[500px] h-[2px] bg-gradient-to-r from-transparent via-[#FF1A4D] to-transparent dark:via-[#D80032] opacity-40 dark:opacity-30 animate-subtle-scan-2"></div>
-
 		<div class="absolute inset-0">
-			<div class="tech-dot bg-[#39C5BB]" style="left: 10%; bottom: -10px; --delay: 0s; --speed: 8s; --size: 3px;"></div>
-			<div class="tech-dot bg-[#FF1A4D]" style="left: 25%; bottom: -10px; --delay: 3s; --speed: 11s; --size: 4px;"></div>
-			<div class="tech-dot bg-[#39C5BB]" style="left: 70%; bottom: -10px; --delay: 1.5s; --speed: 9s; --size: 2px;"></div>
-			<div class="tech-dot bg-[#FF1A4D]" style="left: 85%; bottom: -10px; --delay: 5s; --speed: 13s; --size: 3px;"></div>
+			<div class="tech-dot bg-[#39C5BB]" style="left: 8%; bottom: -10px; --delay: 0s; --speed: 9s; --size: 3px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 18%; bottom: -10px; --delay: 4s; --speed: 12s; --size: 4px;"></div>
+			<div class="tech-dot bg-[#39C5BB]" style="left: 28%; bottom: -10px; --delay: 2s; --speed: 7s; --size: 2px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 38%; bottom: -10px; --delay: 6s; --speed: 14s; --size: 3px;"></div>
+			
+			<div class="tech-dot bg-[#39C5BB]" style="left: 48%; bottom: -10px; --delay: 1.5s; --speed: 10s; --size: 4px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 58%; bottom: -10px; --delay: 5.5s; --speed: 8s; --size: 2.5px;"></div>
+			<div class="tech-dot bg-[#39C5BB]" style="left: 65%; bottom: -10px; --delay: 3.2s; --speed: 13s; --size: 3px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 73%; bottom: -10px; --delay: 0.8s; --speed: 11s; --size: 3.5px;"></div>
+			
+			<div class="tech-dot bg-[#39C5BB]" style="left: 82%; bottom: -10px; --delay: 7s; --speed: 9.5s; --size: 2px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 89%; bottom: -10px; --delay: 2.5s; --speed: 15s; --size: 4px;"></div>
+			<div class="tech-dot bg-[#39C5BB]" style="left: 94%; bottom: -10px; --delay: 4.8s; --speed: 7.5s; --size: 3px;"></div>
+			<div class="tech-dot bg-[#FF1A4D]" style="left: 97%; bottom: -10px; --delay: 1.2s; --speed: 10.5s; --size: 2px;"></div>
 		</div>
 
 		<div class="absolute bottom-16 right-16 opacity-30 dark:opacity-25 transition-all duration-500 hover:opacity-100 hidden lg:block hover:scale-110">
@@ -248,17 +255,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 </BaseLayout>
 
 <style is:global>
-	/* --- 🌐 极简背景与双歌姬联动动效（显化增强版） --- */
-
-	/* 电子流光无缝横移 */
-	@keyframes subtle-scan-right {
-		0% { transform: translateX(-100%); }
-		100% { transform: translateX(100vw); }
-	}
-	@keyframes subtle-scan-left {
-		0% { transform: translateX(100%); }
-		100% { transform: translateX(-100vw); }
-	}
+	/* --- 🌐 极简背景与双歌姬联动动效（粒子强化版） --- */
 
 	/* 挂件优雅浮动 */
 	@keyframes mascot-floating {
@@ -266,7 +263,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		50% { transform: translateY(-8px) rotate(3deg); }
 	}
 
-	/* 电子粒子像页脚一样缓缓上升 */
+	/* 电子粒子缓缓上升 */
 	@keyframes tech-pixel-up {
 		0% {
 			transform: translateY(0) scale(1);
@@ -275,17 +272,11 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		10% { opacity: 0.6; }
 		80% { opacity: 0.4; }
 		100% {
-			transform: translateY(-100vh) scale(0.5);
+			transform: translateY(-105vh) scale(0.5);
 			opacity: 0;
 		}
 	}
 
-	.animate-subtle-scan-1 {
-		animation: subtle-scan-right 14s linear infinite;
-	}
-	.animate-subtle-scan-2 {
-		animation: subtle-scan-left 18s linear infinite;
-	}
 	.animate-mascot-float {
 		animation: mascot-floating 5s ease-in-out infinite;
 	}
@@ -302,7 +293,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		filter: drop-shadow(0 0 4px currentColor);
 	}
 
-	/* Apple 图层感知优化：带有些许透明度的毛玻璃卡片，以便隐约透出后面的网格纹理 */
+	/* Apple 图层感知优化：带有高斯模糊的毛玻璃卡片 */
 	.group.bg-white {
 		backdrop-filter: blur(16px) saturate(120%) !important;
 		background-color: rgba(255, 255, 255, 0.75) !important;
@@ -312,7 +303,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		background-color: rgba(26, 26, 26, 0.7) !important;
 	}
 
-	/* 让主轴上的卡片也带有一点点透明度穿透效果 */
+	/* 让主轴上的文章列表卡片也自然穿透透光 */
 	a.group.bg-white {
 		background-color: rgba(255, 255, 255, 0.7) !important;
 	}
