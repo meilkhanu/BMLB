@@ -219,6 +219,17 @@ const navLinkClass = (path: string) => {
 		// 初始加载时执行
 		initTheme();
 
+		// View Transitions 交换前：确保 dark class 已应用于新文档，消除切换闪烁
+		document.addEventListener('astro:before-swap', (ev) => {
+			const stored = localStorage.getItem('theme');
+			const isDark = stored
+				? stored === 'dark'
+				: window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (isDark) {
+				ev.newDocument.documentElement.classList.add('dark');
+			}
+		});
+
 		// View Transitions 页面切换后重新同步主题图标
 		document.addEventListener('astro:page-load', initTheme);
 
@@ -545,6 +556,15 @@ const navLinkClass = (path: string) => {
 </html>
 
 <style is:global>
+	/* 深色模式闪烁防护：
+	   - view-transition-name 让 html 不参与 View Transitions 的 morph 动画
+	   - color-scheme 确保浏览器原生元素（滚动条、表单等）使用正确配色 */
+	html {
+		view-transition-name: root;
+	}
+	:root {
+		color-scheme: light dark;
+	}
 	body {
 		font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
 	}
