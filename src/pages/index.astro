@@ -101,16 +101,53 @@ function formatDate(dateStr: string): string {
 	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden border-[#EAEAEA] dark:border-[#1A1A1A]">
 		<img src="/images/hero-bg.avif" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_40%]" />
 		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
-		<div class="absolute -bottom-[1px] left-0 w-full h-[40px] md:h-[70px] overflow-hidden z-10 pointer-events-none">
-			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-1" viewBox="0 0 2000 100" preserveAspectRatio="none">
-				<path d="M0,40 C150,100 350,100 500,40 C650,-20 850,-20 1000,40 C1150,100 1350,100 1500,40 C1650,-20 1850,-20 2000,40 V100 H0 Z" class="opacity-30 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+		<!-- 波浪过渡区 -->
+		<div class="absolute -bottom-[1px] left-0 w-full h-[60px] md:h-[100px] overflow-hidden z-10 pointer-events-none" style="mask-image: linear-gradient(to bottom, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%);">
+			<!-- 底层：大波浪 -->
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-move-1" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<g class="animate-wave-bob-1">
+					<path d="M0,55 C400,30 800,30 1200,55 C1600,80 1800,80 2000,55 V100 H0 Z" class="opacity-20 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+				</g>
 			</svg>
-			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-2" viewBox="0 0 2000 100" preserveAspectRatio="none">
-				<path d="M0,60 C150,20 350,20 500,60 C650,100 850,100 1000,60 C1150,20 1350,20 1500,60 C1650,100 1850,100 2000,60 V100 H0 Z" class="opacity-60 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+			<!-- 中层：主体波浪 + 浪花 -->
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-move-2" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<g class="animate-wave-bob-2">
+					<path d="M0,65 C333,40 666,40 1000,65 C1333,90 1666,90 2000,65 V100 H0 Z" class="opacity-50 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+					<g class="animate-splash-1">
+						<circle cx="500" cy="38" r="2.5" class="fill-white/40 dark:fill-white/20" />
+						<circle cx="520" cy="34" r="1.5" class="fill-white/30 dark:fill-white/15" />
+						<circle cx="1500" cy="38" r="2.5" class="fill-white/40 dark:fill-white/20" />
+						<circle cx="1520" cy="35" r="1.5" class="fill-white/30 dark:fill-white/15" />
+					</g>
+				</g>
 			</svg>
-			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-3" viewBox="0 0 2000 100" preserveAspectRatio="none">
-				<path d="M0,70 C150,120 350,120 500,70 C650,20 850,20 1000,70 C1150,120 1350,120 1500,70 C1650,20 1850,20 2000,70 V100 H0 Z" class="fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+			<!-- 顶层：细碎波纹 + 浪花 -->
+			<svg class="absolute bottom-0 left-0 w-[200%] h-full animate-wave-move-3" viewBox="0 0 2000 100" preserveAspectRatio="none">
+				<g class="animate-wave-bob-3">
+					<path d="M0,75 C250,58 500,58 750,75 C1000,92 1250,92 1500,75 C1750,58 1875,58 2000,75 V100 H0 Z" class="opacity-90 fill-[#FAFAFA] dark:fill-[#0F0F0F]"></path>
+					<g class="animate-splash-2">
+						<circle cx="375" cy="56" r="1.5" class="fill-white/50 dark:fill-white/25" />
+						<circle cx="390" cy="53" r="1" class="fill-white/35 dark:fill-white/18" />
+						<circle cx="875" cy="90" r="2" class="fill-white/40 dark:fill-white/20" />
+						<circle cx="1375" cy="56" r="1.5" class="fill-white/50 dark:fill-white/25" />
+						<circle cx="1390" cy="53" r="1" class="fill-white/35 dark:fill-white/18" />
+						<circle cx="1875" cy="56" r="1.5" class="fill-white/45 dark:fill-white/22" />
+					</g>
+				</g>
 			</svg>
+		</div>
+		<!-- 粉紫光点 -->
+		<div class="absolute bottom-0 left-0 w-full h-[60px] md:h-[100px] z-[11] pointer-events-none overflow-hidden" aria-hidden="true">
+			<div class="wave-sparkle" style="left:5%;bottom:55%;animation-delay:0s;"></div>
+			<div class="wave-sparkle pink" style="left:15%;bottom:75%;animation-delay:1.2s;"></div>
+			<div class="wave-sparkle" style="left:25%;bottom:45%;animation-delay:2.5s;"></div>
+			<div class="wave-sparkle pink" style="left:35%;bottom:65%;animation-delay:0.8s;"></div>
+			<div class="wave-sparkle" style="left:45%;bottom:50%;animation-delay:3.1s;"></div>
+			<div class="wave-sparkle pink" style="left:55%;bottom:80%;animation-delay:1.8s;"></div>
+			<div class="wave-sparkle" style="left:65%;bottom:40%;animation-delay:0.5s;"></div>
+			<div class="wave-sparkle pink" style="left:75%;bottom:70%;animation-delay:2.2s;"></div>
+			<div class="wave-sparkle" style="left:85%;bottom:55%;animation-delay:3.8s;"></div>
+			<div class="wave-sparkle pink" style="left:92%;bottom:65%;animation-delay:1.5s;"></div>
 		</div>
 	</section>
 
@@ -792,14 +829,50 @@ function formatDate(dateStr: string): string {
 
 <style is:global>
 	@keyframes wave-move {
-		0% {
-			transform: translateX(0);
-		}
-		100% {
-			transform: translateX(-50%);
-		}
+		0% { transform: translateX(0); }
+		100% { transform: translateX(-50%); }
 	}
-	.animate-wave-1 {animation: wave-move 25s linear infinite; }
-	.animate-wave-2 {animation: wave-move 18s linear infinite; }
-	.animate-wave-3 {animation: wave-move 12s linear infinite; }
+	@keyframes wave-bob-1 {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-5px); }
+	}
+	@keyframes wave-bob-2 {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-8px); }
+	}
+	@keyframes wave-bob-3 {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-4px); }
+	}
+	@keyframes splash-bob {
+		0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+		50% { transform: translateY(-4px) scale(1.2); opacity: 0.7; }
+	}
+	@keyframes sparkle-twinkle {
+		0%, 100% { opacity: 0; transform: scale(0.4); }
+		50% { opacity: 0.7; transform: scale(1); }
+	}
+
+	.animate-wave-move-1 { animation: wave-move 28s linear infinite; }
+	.animate-wave-move-2 { animation: wave-move 20s linear infinite; }
+	.animate-wave-move-3 { animation: wave-move 14s linear infinite; }
+	.animate-wave-bob-1 { animation: wave-bob-1 7s ease-in-out infinite; }
+	.animate-wave-bob-2 { animation: wave-bob-2 5s ease-in-out infinite; }
+	.animate-wave-bob-3 { animation: wave-bob-3 4s ease-in-out infinite; }
+	.animate-splash-1 { animation: splash-bob 3.5s ease-in-out infinite; }
+	.animate-splash-2 { animation: splash-bob 2.5s ease-in-out infinite; }
+	.wave-sparkle {
+		position: absolute;
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: #FF6B9D;
+		opacity: 0;
+		animation: sparkle-twinkle 3s ease-in-out infinite;
+		box-shadow: 0 0 6px 2px rgba(255, 107, 157, 0.5);
+	}
+	.wave-sparkle.pink {
+		background: #f90275;
+		box-shadow: 0 0 6px 2px rgba(249, 2, 117, 0.5);
+	}
 </style>
