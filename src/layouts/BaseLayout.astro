@@ -231,15 +231,30 @@ const navLinkClass = (path: string) => {
 		handleScroll();
 
 		// 页脚 Canvas 星月粒子背景
-		(function() {
+		let footerCanvasAnimId = null;
+		let footerCanvasResizeHandler = null;
+		let footerCanvasVisHandler = null;
+
+		function initFooterCanvas() {
 			const canvas = document.getElementById('footer-canvas');
 			const footer = document.getElementById('site-footer');
 			if (!canvas || !footer) return;
 
+			// 清理旧动画和监听器
+			if (footerCanvasAnimId) {
+				cancelAnimationFrame(footerCanvasAnimId);
+				footerCanvasAnimId = null;
+			}
+			if (footerCanvasResizeHandler) {
+				window.removeEventListener('resize', footerCanvasResizeHandler);
+			}
+			if (footerCanvasVisHandler) {
+				document.removeEventListener('visibilitychange', footerCanvasVisHandler);
+			}
+
 			const ctx = canvas.getContext('2d');
 			let width, height;
 			let particles = [];
-			let animationId;
 
 			function resize() {
 				const rect = footer.getBoundingClientRect();
@@ -403,26 +418,31 @@ const navLinkClass = (path: string) => {
 			function animate() {
 				update();
 				draw();
-				animationId = requestAnimationFrame(animate);
+				footerCanvasAnimId = requestAnimationFrame(animate);
 			}
 
 			resize();
 			createParticles();
 			animate();
 
-			window.addEventListener('resize', () => {
+			footerCanvasResizeHandler = () => {
 				resize();
 				createParticles();
-			});
+			};
+			window.addEventListener('resize', footerCanvasResizeHandler);
 
-			document.addEventListener('visibilitychange', () => {
+			footerCanvasVisHandler = () => {
 				if (document.hidden) {
-					cancelAnimationFrame(animationId);
+					cancelAnimationFrame(footerCanvasAnimId);
 				} else {
 					animate();
 				}
-			});
-		})();
+			};
+			document.addEventListener('visibilitychange', footerCanvasVisHandler);
+		}
+
+		initFooterCanvas();
+		document.addEventListener('astro:page-load', initFooterCanvas);
 
 		// 移动端全屏菜单控制逻辑
 		let isMobileMenuOpen = false;
