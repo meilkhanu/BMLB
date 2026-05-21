@@ -73,6 +73,14 @@ const categoryInfo = SITE_CONFIG.categories.find(c => c.id === post.categoryId);
 const catName = categoryInfo?.name ?? post.categoryId;
 const catColor = categoryInfo?.color ?? '#8B7CB3';
 
+// —— 智能返回：根据来源决定返回链接 ——
+const referer = Astro.request.headers.get('referer') || '';
+const siteUrl = Astro.url.origin;
+const cameFromArchive = referer.startsWith(siteUrl + '/archive');
+const cameFromSite = referer.startsWith(siteUrl);
+const backUrl = cameFromArchive ? '/archive' : (cameFromSite ? '/' : '/archive');
+const backLabel = backUrl === '/' ? '返回首页' : '返回归档';
+
 // 格式化日期
 const dateStr = post.publishedAt || post.createdAt;
 const dateObj = new Date(dateStr);
@@ -99,7 +107,7 @@ try {
 
     <!-- 返回链接 -->
     <a
-      href="/archive"
+      href={backUrl}
       class="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors duration-300 mb-8 group no-underline"
     >
       <svg
@@ -108,7 +116,7 @@ try {
       >
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
-      <span>返回归档</span>
+      <span>{backLabel}</span>
     </a>
 
     <!-- ========== 文章头部 ========== -->
@@ -327,13 +335,13 @@ try {
     <!-- ========== 底部返回 ========== -->
     <div class="mt-12 text-center">
       <a
-        href="/archive"
+        href={backUrl}
         class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] no-underline"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        返回归档
+        {backLabel}
       </a>
     </div>
   </article>
