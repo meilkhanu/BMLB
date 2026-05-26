@@ -832,9 +832,26 @@ function formatDate(dateStr: string): string {
 					for (let i = 0; i < layer.count; i++) {
 						const speed = layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin);
 						const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.15;
+						let x, y, life;
+						const spawnZone = Math.random();
+						if (spawnZone > 0.5) {
+							// 已在画布内：正在划过
+							x = Math.random() * width;
+							y = Math.random() * height;
+							life = Math.floor(Math.random() * 120);
+						} else if (spawnZone > 0.25) {
+							// 从左侧边缘外准备进入
+							x = -Math.random() * 40;
+							y = Math.random() * height;
+							life = 0;
+						} else {
+							// 从顶部边缘外准备进入
+							x = Math.random() * width;
+							y = -Math.random() * 40;
+							life = 0;
+						}
 						particles.push({
-							x: Math.random() * width,
-							y: Math.random() * height,
+							x, y,
 							size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
 							type: layer.types[Math.floor(Math.random() * layer.types.length)],
 							color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
@@ -844,8 +861,7 @@ function formatDate(dateStr: string): string {
 							rotationSpeed: (Math.random() - 0.5) * 0.02,
 							baseOpacity: layer.opacityMin + Math.random() * (layer.opacityMax - layer.opacityMin),
 							glow: layer.glow + Math.random() * 4,
-							life: Math.floor(Math.random() * 200),
-							maxLife: 200 + Math.floor(Math.random() * 300)
+							life
 						});
 					}
 				});
@@ -904,12 +920,15 @@ function formatDate(dateStr: string): string {
 				ctx.clearRect(0, 0, width, height);
 				particles.forEach(p => {
 					let alpha = p.baseOpacity;
-					const fadeInFrames = 40;
-					const fadeOutFrames = 60;
+					const fadeInFrames = 30;
+					// 淡入
 					if (p.life < fadeInFrames) {
 						alpha *= (p.life / fadeInFrames);
-					} else if (p.life > p.maxLife - fadeOutFrames) {
-						alpha *= ((p.maxLife - p.life) / fadeOutFrames);
+					}
+					// 接近右下边界时淡出，避免截断感
+					const distToEdge = Math.min(width + 40 - p.x, height + 40 - p.y);
+					if (distToEdge < 50) {
+						alpha *= Math.max(0, distToEdge / 50);
 					}
 
 					ctx.save();
@@ -933,11 +952,16 @@ function formatDate(dateStr: string): string {
 					p.y += p.speedY;
 					p.rotation += p.rotationSpeed;
 
-					if (p.x > width + 20 || p.y > height + 20 || p.life > p.maxLife) {
-						p.x = -Math.random() * width * 0.6 - 10;
-						p.y = -Math.random() * height * 0.6 - 10;
+					// 飞出边界后从左上边缘重新进入，循环不息
+					if (p.x > width + 40 || p.y > height + 40) {
+						if (Math.random() > 0.5) {
+							p.x = -Math.random() * 40;
+							p.y = Math.random() * height;
+						} else {
+							p.x = Math.random() * width;
+							p.y = -Math.random() * 40;
+						}
 						p.life = 0;
-						p.maxLife = 200 + Math.floor(Math.random() * 300);
 					}
 				});
 			}
