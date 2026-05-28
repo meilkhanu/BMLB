@@ -87,7 +87,10 @@
           </div>
           <div>
             <label class="block text-xs font-medium text-[#999] mb-1.5">Slug（URL标识）*</label>
-            <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <div class="flex gap-2">
+              <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="flex-1 px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <button type="button" id="gen-slug-btn" class="px-4 py-2.5 rounded-xl bg-[#F5F5F5] dark:bg-[#252525] text-xs font-bold text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">随机生成</button>
+            </div>
           </div>
           <div>
             <label class="block text-xs font-medium text-[#999] mb-1.5">分类 *</label>
@@ -1379,16 +1382,31 @@
       };
     }
 
-    // Slug 自动生成（中文标题 → 时间戳兜底）
+    // Slug 自动生成（英文标题转 slug，中文/空标题用时间戳兜底）
+    function generateSlug(title) {
+      if (!title) return '';
+      // 先尝试从标题提取合法 slug 字符
+      let slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      if (slug) return slug;
+      // 兜底：时间戳 + 随机字符
+      return 'p-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
     document.getElementById('field-title').addEventListener('blur', function() {
       const slugField = document.getElementById('field-slug');
       if (!slugField.value && !currentSlug) {
         const title = this.value.trim();
-        // 简单处理：无中文输入时自动转 slug，中文则留空让用户手动填
-        if (title && /^[a-zA-Z0-9\s-]+$/.test(title)) {
-          slugField.value = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        if (title) {
+          slugField.value = generateSlug(title);
         }
       }
+    });
+
+    document.getElementById('gen-slug-btn').addEventListener('click', function() {
+      const slugField = document.getElementById('field-slug');
+      const title = document.getElementById('field-title').value.trim();
+      slugField.value = generateSlug(title || 'post');
+      slugField.focus();
     });
 
     // ============================================================
@@ -1406,9 +1424,14 @@
         data.content = tinymce.get('field-content')?.getContent() || '';
       }
 
+      // 如果 Slug 为空，自动根据标题生成（新建/编辑都适用）
+      if (!data.slug) {
+        data.slug = generateSlug(data.title);
+      }
+
       // 校验
       if (!data.title || !data.slug || !data.content || !data.categoryId) {
-        document.getElementById('save-status').textContent = '请填写标题、Slug 和正文';
+        document.getElementById('save-status').textContent = '请填写标题和正文';
         document.getElementById('save-status').className = 'text-xs text-red-500 ml-2';
         return;
       }
