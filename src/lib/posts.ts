@@ -11,6 +11,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 // ============================================================
@@ -24,8 +25,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 async function requireAuth(request: Request, env: Env) {
@@ -61,7 +62,7 @@ function rowToPost(row: any) {
 // ============================================================
 
 async function handleGetPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   const { request, url } = ctx;
@@ -130,7 +131,7 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -174,7 +175,7 @@ async function handlePostPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -242,7 +243,7 @@ async function handlePutPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeletePosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -269,7 +270,7 @@ async function handleDeletePosts(ctx: APIContext): Promise<Response> {
 
 export async function handlePosts(ctx: APIContext): Promise<Response> {
   // 启动时断言
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     console.error("[posts] FATAL: runtime.env is undefined — D1 binding missing");
   }

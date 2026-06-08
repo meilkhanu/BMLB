@@ -8,6 +8,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 // ============================================================
@@ -21,8 +22,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 async function requireAuth(request: Request, env: Env) {
@@ -53,7 +54,7 @@ interface Comment {
 // ============================================================
 
 async function handleGetComments(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   const url = new URL(ctx.request.url);
@@ -117,7 +118,7 @@ async function handleGetComments(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostComment(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   let body: any;
@@ -176,7 +177,7 @@ async function handlePostComment(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteComment(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {

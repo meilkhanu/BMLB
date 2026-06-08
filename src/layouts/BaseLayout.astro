@@ -1,5 +1,4 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
 import { SITE_CONFIG } from '../config.ts';
 import SunIcon from '../components/icons/SunIcon.astro';
 import MoonIcon from '../components/icons/MoonIcon.astro';
@@ -33,7 +32,6 @@ const navLinkClass = (path: string) => {
 			}
 		})();
 	</script>
-	<ViewTransitions />
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 	<!-- 模块1：导航栏 -->
@@ -107,9 +105,9 @@ const navLinkClass = (path: string) => {
 	</main>
 
 	<!-- 全局音频 + 悬浮播放器（跨页面持久化） -->
-	<audio id="global-audio" transition:persist="global-audio" preload="none"></audio>
+	<audio id="global-audio" data-astro-transition-persist="global-audio" preload="none"></audio>
 
-	<aside id="draggable-player" transition:persist="draggable-player" data-expanded="false"
+	<aside id="draggable-player" data-astro-transition-persist="draggable-player" data-expanded="false"
 		class="fixed z-[9999] cursor-grab active:cursor-grabbing bg-gradient-to-r from-[#4ade80] to-[#2dd4bf] rounded-full shadow-lg select-none transition-all duration-400 ease-out"
 		style="width:48px;height:48px;bottom:24px;right:24px;">
 		<!-- 收缩态：音乐图标 -->

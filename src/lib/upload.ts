@@ -6,6 +6,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 // —— R2 公开访问基础 URL ——
@@ -43,8 +44,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 // —— 生成唯一文件名 ——
@@ -57,7 +58,7 @@ function generateKey(originalName: string): string {
 
 // —— POST /api/upload ——
 async function handleUploadRequest(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     return json({ error: "运行时不可用（R2 binding 缺失）" }, 500);
   }
@@ -102,7 +103,7 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   const buffer = await file.arrayBuffer();
 
   try {
-    await env.IMAGES.put(key, buffer, {
+    await env.BUCKET.put(key, buffer, {
       httpMetadata: {
         contentType: file.type,
         cacheControl: "public, max-age=31536000, immutable",

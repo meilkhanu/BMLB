@@ -8,6 +8,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 // ============================================================
@@ -21,8 +22,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 async function requireAuth(request: Request, env: Env) {
@@ -59,7 +60,7 @@ const DEFAULT_ACTIVITIES: NowActivity[] = [
 // ============================================================
 
 async function handleGetActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -90,7 +91,7 @@ async function handleGetActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -138,7 +139,7 @@ async function handlePostActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {

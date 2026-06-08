@@ -7,6 +7,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 // ============================================================
@@ -20,8 +21,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 async function requireAuth(request: Request, env: Env) {
@@ -85,7 +86,7 @@ const DEFAULT_STATUS = {
 // ============================================================
 
 async function handleGetNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -105,7 +106,7 @@ async function handleGetNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -209,7 +210,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 export async function handleNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     console.error("[now] FATAL: runtime.env is undefined — D1 binding missing");
   }

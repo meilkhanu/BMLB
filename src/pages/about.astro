@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "关于";
+const description = "完全依照设计图重构的关于页。";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-[1600px] mx-auto px-6 pt-24 pb-24 font-sans antialiased text-[#1A1A1A] dark:text-[#EAEAEA]">
+    
+    <div class="flex flex-wrap items-center gap-6 text-xs font-mono text-neutral-400 dark:text-neutral-500 mb-16 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+      <a href="/" class="hover:text-black dark:hover:text-white transition-colors">BMLB 首页</a>
+      <span>/</span>
+      <a href="/archive" class="hover:text-black dark:hover:text-white transition-colors">归档</a>
+      <span>/</span>
+      <a href="/now" class="hover:text-black dark:hover:text-white transition-colors">/now</a>
+      <span>/</span>
+      <a href="/colophon" class="hover:text-black dark:hover:text-white transition-colors">/colophon</a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-12">
+      <div class="lg:col-span-2">
+        <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase">
+          关于我
+        </h1>
+      </div>
+      
+      <div class="border-2 border-neutral-900 dark:border-neutral-100 p-6 rounded-none">
+        <h2 class="text-sm font-mono font-bold tracking-widest uppercase mb-4 text-neutral-400">
+          # SITE / SYSTEM
+        </h2>
+        <div class="text-2xl font-black tracking-tight mb-2">BMLB</div>
+        <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-mono">
+          独立数字资产储藏室 & 边缘观测站。<br />
+          Core Deck: Astro / Tailwind / Cloudflare
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-t-2 border-neutral-900 dark:border-neutral-100 pt-12 mb-20">
+      <div class="md:col-span-1 aspect-square bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center border border-neutral-300 dark:border-neutral-700">
+        <span class="text-xl font-black font-mono tracking-widest text-neutral-400 dark:text-neutral-500">LOGO</span>
+      </div>
+      
+      <div class="md:col-span-3 space-y-4">
+        <div class="text-xs font-mono text-neutral-400 uppercase tracking-wider">Biography //</div>
+        <article class="text-sm md:text-base leading-relaxed space-y-4 text-neutral-700 dark:text-neutral-300">
+          <p>
+            我是一名处于交叉学科边缘的求学者。在白天，我的世界充满着港口、航道与近海波浪的物理推演，试图用数学模型解析半封闭景观水体里的碳平衡和二氧化碳分压。
+          </p>
+          <p>
+            而在深夜，我将自己交付给编辑器的冷光。作为一名独立 Web 开发者，我热衷于捣鼓各种前端框架、边缘计算与轻量级轻型数据库。这个站点就是我用 Astro 4 与 Cloudflare 边缘网络堆叠出来的数字“储藏室”。
+          </p>
+        </article>
+      </div>
+    </div>
+
+    <div class="border-t-2 border-neutral-950 dark:border-neutral-50 pt-12">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <div class="lg:col-span-1 border-r border-neutral-200 dark:border-neutral-800 pr-4">
+          <h2 class="text-3xl font-black tracking-tight mb-1">作品集</h2>
+          <div class="text-xl font-black tracking-tight text-neutral-300 dark:text-neutral-700 mb-4">Portfolio</div>
+          <div class="text-xs font-mono text-neutral-400 dark:text-neutral-500 leading-snug">
+            更多信息 <br />
+            More information
+          </div>
+        </div>
+
+        <div class="lg:col-span-3 space-y-4">
+          
+          <div class="border border-neutral-300 dark:border-neutral-700 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors">
+            <div>
+              <h3 class="text-lg font-bold tracking-tight">BMLB的农业数据库</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">环境监测与景观水体数据归档，专注于碳汇数据分析与生态物理参数记录。</p>
+            </div>
+            <a href="#" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold tracking-wider bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 px-4 py-2 border border-transparent">
+              <span>Browse</span>
+              <span>→</span>
+            </a>
+          </div>
+
+          <div class="border border-neutral-300 dark:border-neutral-700 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors">
+            <div>
+              <h3 class="text-lg font-bold tracking-tight">电气记录库</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">数字硬件实验、自动化脚本逻辑与工作流环境配置的半公开技术车间记录。</p>
+            </div>
+            <a href="#" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold tracking-wider bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 px-4 py-2 border border-transparent">
+              <span>Browse</span>
+              <span>→</span>
+            </a>
+          </div>
+
+          <div class="border border-neutral-300 dark:border-neutral-700 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-neutral-50/50 dark:bg-neutral-900/20">
+            <div>
+              <h3 class="text-lg font-bold tracking-tight text-neutral-400 dark:text-neutral-600">异次元之旅</h3>
+              <p class="text-xs text-neutral-400 dark:text-neutral-600 mt-1">时空切片与观测者视角的随笔档案。</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono font-bold uppercase border border-neutral-300 dark:border-neutral-700 text-neutral-400 dark:text-neutral-600 px-3 py-1.5">
+                搭建中
+              </span>
+              <span class="text-[10px] font-mono font-bold uppercase bg-neutral-200 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-600 px-3 py-1.5">
+                LINK
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>

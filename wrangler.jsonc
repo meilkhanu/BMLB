@@ -1,0 +1,30 @@
+{
+  "name": "bmlb",
+  "compatibility_date": "2026-06-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bmlb-db",
+      "database_id": "5c6b4c97-e359-47df-834f-eefab08e7a14"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CONFIG",
+      "id": "9d31277d22c54f43a02404810faab462"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "bmlb-images"
+    }
+  ]
+}

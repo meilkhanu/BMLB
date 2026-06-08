@@ -9,6 +9,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 import { verifySession, type Env } from "./auth";
 
 function json(data: unknown, status = 200) {
@@ -18,8 +19,8 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
 }
 
 function getDb(env: Env) {
@@ -28,7 +29,7 @@ function getDb(env: Env) {
 
 // —— GET /api/songs ——
 async function handleGetSongs(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -44,7 +45,7 @@ async function handleGetSongs(ctx: APIContext): Promise<Response> {
 
 // —— POST /api/songs ——
 async function handleCreateSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, env);
@@ -87,7 +88,7 @@ async function handleCreateSong(ctx: APIContext): Promise<Response> {
 
 // —— PUT /api/songs?id=X ——
 async function handleUpdateSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, env);
@@ -144,7 +145,7 @@ async function handleUpdateSong(ctx: APIContext): Promise<Response> {
 
 // —— DELETE /api/songs?id=X ——
 async function handleDeleteSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, env);

@@ -7,6 +7,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
+import { env as cloudflareEnv } from 'cloudflare:workers';
 
 // ============================================================
 // Env 类型
@@ -15,16 +16,16 @@ import type { APIContext } from "astro";
 export interface Env {
   CONFIG: KVNamespace;
   DB: D1Database;
-  IMAGES: R2Bucket;
-}
-
-function getEnv(locals: APIContext["locals"]): Env | undefined {
-  return (locals as any).runtime?.env as Env | undefined;
+  BUCKET: R2Bucket;
 }
 
 // ============================================================
 // 工具函数
 // ============================================================
+
+function getEnv(): Env | undefined {
+  return cloudflareEnv as unknown as Env | undefined;
+}
 
 function json(data: unknown, status = 200, extraHeaders?: Record<string, string>) {
   return new Response(JSON.stringify(data), {
@@ -76,7 +77,7 @@ export async function verifySession(request: Request, env: Env): Promise<boolean
 // ============================================================
 
 async function handleGetAuth(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     console.error("[auth] D1 binding missing — env is undefined");
     return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
@@ -91,7 +92,7 @@ async function handleGetAuth(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostAuth(ctx: APIContext): Promise<Response> {
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     console.error("[auth] D1 binding missing — env is undefined");
     return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
@@ -153,7 +154,7 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
 
 export async function handleAuth(ctx: APIContext): Promise<Response> {
   // 启动时断言
-  const env = getEnv(ctx.locals);
+  const env = getEnv();
   if (!env) {
     console.error("[auth] FATAL: runtime.env is undefined — D1/KV bindings missing");
   }
