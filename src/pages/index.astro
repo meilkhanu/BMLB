@@ -22,17 +22,29 @@ interface ApiPost {
 
 let allPosts: ApiPost[] = [];
 try {
-  const apiUrl = new URL('/api/posts?limit=50', Astro.url);
-  const res = await fetch(apiUrl.toString());
-  if (res.ok) {
-    allPosts = await res.json();
+  const db = (cfEnv as any)?.DB;
+  if (db) {
+    const { results } = await db.prepare(
+      "SELECT * FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 50"
+    ).all();
+    allPosts = (results || []).map((row: any) => ({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      content: row.content,
+      excerpt: row.excerpt || '',
+      categoryId: row.category_id,
+      tags: JSON.parse(row.tags || '[]'),
+      coverImage: row.cover_image || '',
+      publishedAt: row.published_at || '',
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      status: row.status,
+    }));
     allPosts.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
-  } else {
-    const errText = await res.text().catch(() => '无法读取响应');
-    console.error('[index] GET /api/posts 返回非 OK:', res.status, errText.slice(0, 200));
   }
 } catch (e: any) {
-  console.error('[index] GET /api/posts 请求失败:', e?.message || e);
+  console.error('[index] D1 posts 查询失败:', e?.message || e);
 }
 
 // —— 服务端获取歌曲列表 ——
@@ -49,12 +61,15 @@ interface Song {
 
 let songs: Song[] = [];
 try {
-  const songsRes = await fetch(new URL('/api/songs', Astro.url).toString());
-  if (songsRes.ok) {
-    songs = await songsRes.json();
+  const db = (cfEnv as any)?.DB;
+  if (db) {
+    const { results: songRows } = await db.prepare(
+      "SELECT * FROM songs ORDER BY sort_order ASC, id ASC"
+    ).all();
+    songs = (songRows || []) as Song[];
   }
 } catch (e: any) {
-  console.error('[index] GET /api/songs 请求失败:', e?.message || e);
+  console.error('[index] D1 songs 查询失败:', e?.message || e);
 }
 
 // —— 获取最后活动时间（含草稿，回退到已发布文章）——
