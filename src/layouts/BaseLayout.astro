@@ -1,5 +1,6 @@
 ---
 import { SITE_CONFIG } from '../config.ts';
+import { env as cfEnv } from 'cloudflare:workers';
 import SunIcon from '../components/icons/SunIcon.astro';
 import MoonIcon from '../components/icons/MoonIcon.astro';
 import SearchIcon from '../components/icons/SearchIcon.astro';
@@ -12,6 +13,15 @@ const navLinkClass = (path: string) => {
 	const base = 'text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1';
 	return currentPath === path ? `${base} border-b-2 border-[#8B7CB3]` : base;
 };
+
+let songs: any[] = [];
+try {
+	const db = (cfEnv as any)?.DB;
+	if (db) {
+		const { results } = await db.prepare("SELECT * FROM songs ORDER BY sort_order ASC, id ASC").all();
+		songs = results || [];
+	}
+} catch {}
 ---
 
 <!DOCTYPE html>
@@ -105,8 +115,9 @@ const navLinkClass = (path: string) => {
 		<slot />
 	</main>
 
-	<!-- 全局音频 + 悬浮播放器（跨页面持久化） -->
+	<!-- 全局音频 + 歌曲数据 + 悬浮播放器（跨页面持久化） -->
 	<audio id="global-audio" data-astro-transition-persist="global-audio" preload="none"></audio>
+	<div id="global-songs-data" data-songs={JSON.stringify(songs)} class="hidden"></div>
 
 	<aside id="draggable-player" data-astro-transition-persist="draggable-player" data-expanded="false"
 		class="fixed z-[9999] cursor-grab active:cursor-grabbing rounded-full shadow-lg select-none transition-all duration-300 ease-out"
@@ -139,6 +150,17 @@ const navLinkClass = (path: string) => {
 				</button>
 			</div>
 			<span id="float-title" class="text-sm font-bold text-white truncate max-w-[120px] ml-2">暂无音乐</span>
+		</div>
+
+		<!-- 迷你播放列表面板 -->
+		<div id="float-playlist" class="hidden absolute left-0 right-0 bottom-full mb-3 bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-xl p-3 max-h-[240px] overflow-y-auto z-50">
+			<div class="flex items-center justify-between mb-2 px-1">
+				<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Playlist</span>
+				<button id="float-playlist-close" data-no-drag class="text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] transition-colors cursor-pointer border-none bg-transparent">
+					<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div id="float-playlist-items" class="space-y-1"></div>
 		</div>
 	</aside>
 
@@ -517,12 +539,51 @@ const navLinkClass = (path: string) => {
 			const floatIconPlay = document.getElementById('float-icon-play');
 			const floatIconPause = document.getElementById('float-icon-pause');
 			const floatModeBtn = document.getElementById('float-mode');
+			const floatListBtn = document.getElementById('float-list');
+			const floatPlaylist = document.getElementById('float-playlist');
+			const floatPlaylistItems = document.getElementById('float-playlist-items');
+			const floatPlaylistClose = document.getElementById('float-playlist-close');
+
+			// 从全局隐藏元素加载歌曲
+			if (!state.initialized) {
+				const globalSongsEl = document.getElementById('global-songs-data');
+				if (globalSongsEl) {
+					try {
+						const songs = JSON.parse(globalSongsEl.dataset.songs || '[]');
+						if (songs.length > 0) {
+							state.songs = songs;
+							state.initialized = true;
+						}
+					} catch {}
+				}
+			}
 
 			// ============================================================
 			// UI 同步
 			// ============================================================
 			function setExpanded(exp) {
 				player.dataset.expanded = exp ? 'true' : 'false';
+			}
+
+			function updateFloatPlaylistUI() {
+				if (!floatPlaylistItems) return;
+				floatPlaylistItems.innerHTML = state.songs.map((s, i) =>
+					'<div class="flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ' + (i === state.currentIndex ? 'bg-[#8B7CB3]/10' : 'hover:bg-black/5 dark:hover:bg-white/5') + '" data-play-index="' + i + '">' +
+						'<div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[10px] font-bold">' + (i + 1) + '</div>' +
+						'<div class="flex-1 min-w-0">' +
+							'<div class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">' + s.title + '</div>' +
+							'<div class="text-[10px] text-[#999] truncate">' + (s.artist || '') + '</div>' +
+						'</div>' +
+						(i === state.currentIndex && state.isPlaying ? '<div class="flex items-end gap-[1px] h-3"><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay:0.1s"></div></div>' : '') +
+					'</div>'
+				).join('');
+
+				floatPlaylistItems.querySelectorAll('[data-play-index]').forEach(el => {
+					el.addEventListener('click', () => {
+						const idx = parseInt(el.dataset.playIndex);
+						window.playerPlayIndex(idx);
+					});
+				});
 			}
 
 			function updateFloatUI() {
@@ -622,7 +683,7 @@ const navLinkClass = (path: string) => {
 				if (!song) return;
 				audio.src = song.audio_url;
 				updateFloatUI();
-				// 触发自定义事件通知首页同步
+				updateFloatPlaylistUI();
 				window.dispatchEvent(new CustomEvent('player-song-change', { detail: song }));
 			}
 
@@ -634,6 +695,17 @@ const navLinkClass = (path: string) => {
 				window.dispatchEvent(new CustomEvent('player-mode-change', { detail: state.playMode }));
 			}
 
+			window.playerPlayIndex = function (index) {
+				state.currentIndex = index;
+				const song = state.songs[index];
+				if (song) {
+					audio.src = song.audio_url;
+					audio.play().catch(() => {});
+					updateFloatUI();
+					updateFloatPlaylistUI();
+				}
+			};
+
 			// ============================================================
 			// 悬浮按钮事件
 			// ============================================================
@@ -641,6 +713,21 @@ const navLinkClass = (path: string) => {
 			document.getElementById('float-prev').addEventListener('click', playPrev);
 			document.getElementById('float-next').addEventListener('click', playNext);
 			floatModeBtn.addEventListener('click', switchMode);
+
+			// 播放列表切换
+			if (floatListBtn) {
+				floatListBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					floatPlaylist.classList.toggle('hidden');
+					if (!floatPlaylist.classList.contains('hidden')) updateFloatPlaylistUI();
+				});
+			}
+			if (floatPlaylistClose) {
+				floatPlaylistClose.addEventListener('click', (e) => {
+					e.stopPropagation();
+					floatPlaylist.classList.add('hidden');
+				});
+			}
 
 			// 点击收缩态：始终展开
 			collapsed.addEventListener('click', (e) => {
@@ -674,7 +761,6 @@ const navLinkClass = (path: string) => {
 				localStorage.setItem('player-pos', JSON.stringify({ x, y }));
 			}
 
-			// 恢复位置
 			const saved = getSavedPos();
 			if (saved) {
 				player.style.left = saved.x + 'px';
@@ -718,12 +804,24 @@ const navLinkClass = (path: string) => {
 			});
 
 			// ============================================================
-			// astro:page-load — 同步首页 UI
+			// astro:page-load — 同步 UI
 			// ============================================================
-			document.addEventListener('astro:page-load', () => {
+			function onPageLoad() {
+				// 重新从全局元素加载歌曲（页面切换后 DOM 更新）
+				if (!state.initialized || state.songs.length === 0) {
+					const globalSongsEl = document.getElementById('global-songs-data');
+					if (globalSongsEl) {
+						try {
+							const songs = JSON.parse(globalSongsEl.dataset.songs || '[]');
+							if (songs.length > 0) {
+								state.songs = songs;
+								state.initialized = true;
+							}
+						} catch {}
+					}
+				}
 				updateFloatUI();
 				if (state.isPlaying) setExpanded(true);
-				// 同步首页 Sidebar
 				window.dispatchEvent(new CustomEvent('player-state-sync', {
 					detail: {
 						currentIndex: state.currentIndex,
@@ -732,7 +830,10 @@ const navLinkClass = (path: string) => {
 						songs: state.songs,
 					}
 				}));
-			});
+			}
+
+			document.addEventListener('astro:page-load', onPageLoad);
+			document.addEventListener('DOMContentLoaded', onPageLoad);
 
 			updateFloatUI();
 		})();

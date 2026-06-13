@@ -7,4 +7,5 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
   integrations: [react(), tailwind()],
+  viewTransitions: true,
 });
