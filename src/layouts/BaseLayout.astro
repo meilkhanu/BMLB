@@ -612,15 +612,28 @@ try {
 			// ============================================================
 			// 音频事件监听（全局唯一）
 			// ============================================================
+			function syncSidebar() {
+				window.dispatchEvent(new CustomEvent('player-state-sync', {
+					detail: {
+						currentIndex: state.currentIndex,
+						isPlaying: state.isPlaying,
+						playMode: state.playMode,
+						songs: state.songs,
+					}
+				}));
+			}
+
 			audio.addEventListener('play', () => {
 				state.isPlaying = true;
 				updateFloatUI();
 				setExpanded(true);
+				syncSidebar();
 			});
 
 			audio.addEventListener('pause', () => {
 				state.isPlaying = false;
 				updateFloatUI();
+				syncSidebar();
 			});
 
 			audio.addEventListener('ended', () => {

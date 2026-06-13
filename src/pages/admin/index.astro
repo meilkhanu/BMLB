@@ -1,6 +1,6 @@
 ---
 // src/pages/admin/index.astro
-// 管理后台主页：文章列表 + 新建/编辑（TinyMCE）+ 删除
+// 管理后台主页：文章列表 + 新建/编辑（CKEditor 5）+ 删除
 ---
 
 <!DOCTYPE html>
@@ -9,8 +9,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理后台 — 贝谟拉比</title>
-  <!-- TinyMCE 8 (API key, 需在 tiny.cloud 控制台注册域名) -->
-  <script src="https://cdn.tiny.cloud/1/jyhfqudwd0zic9z9y1l31phs1jcg0pdb72q46rf9xpd56x0t/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+  <!-- CKEditor 5 自托管 -->
+  <script is:inline src="/ckeditor5/ckeditor.js"></script>
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
@@ -469,7 +469,7 @@
     // 全局状态
     // ============================================================
     let currentSlug = null;    // null = 新建模式，有值 = 编辑模式
-    let tinymceReady = false;
+    let ckEditor = null;       // CKEditor 5 实例
     let deleteTarget = null;
     let nowStatusData = null;
     let currentMusicId = null;
@@ -983,14 +983,14 @@
         resetForm();
       }
 
-      // 初始化 TinyMCE
-      initTinyMCE();
+      // 初始化 CKEditor 5
+      initCKEditor();
     }
 
     function closeEditor() {
-      if (tinymceReady) {
-        tinymce.remove('#field-content');
-        tinymceReady = false;
+      if (ckEditor) {
+        ckEditor.destroy();
+        ckEditor = null;
       }
       currentSlug = null;
       document.getElementById('editor-view').classList.add('hidden');
@@ -1241,118 +1241,152 @@
       document.getElementById('field-coverImage').value = post.coverImage || '';
       document.getElementById('field-excerpt').value = post.excerpt || '';
       updateCoverPreview(post.coverImage || '');
-      // content 由 TinyMCE 填充
+      // content 由 CKEditor 5 填充
     }
 
-    function initTinyMCE() {
-      if (tinymceReady) {
-        tinymce.remove('#field-content');
+    // ============================================================
+    // CKEditor 5 初始化
+    // ============================================================
+    function initCKEditor() {
+      if (ckEditor) {
+        ckEditor.destroy();
+        ckEditor = null;
       }
 
-      tinymce.init({
-        selector: '#field-content',
-        height: 600,
-        plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount fullscreen code',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | indent outdent | h2 h3 | bullist numlist | link image | blockquote codesample | table charmap | searchreplace | styles | removeformat fullscreen',
-        menubar: false,
-        statusbar: true,
-        indentation: '2em',
-        font_family_formats: 'Inter=Inter,sans-serif;宋体=SimSun,STSong,serif;微软雅黑=Microsoft YaHei,PingFang SC,sans-serif;MiSans=MiSans,PingFang SC,Microsoft YaHei,sans-serif',
-        content_style: 'body { font-family: Inter, PingFang SC, Microsoft YaHei, sans-serif; font-size: 16px; line-height: 1.8; color: #1a1a1a; padding: 1rem; max-width: 860px; margin: 0 auto; } p { margin: 0 0 1em 0; }',
-        style_formats: [
-          {
-            title: '段落间距',
-            items: [
-              { title: '段前距 12px', selector: 'p', styles: { 'margin-top': '12px' } },
-              { title: '段后距 12px', selector: 'p', styles: { 'margin-bottom': '12px' } },
-              { title: '段前后距 12px', selector: 'p', styles: { 'margin-top': '12px', 'margin-bottom': '12px' } },
-              { title: '无段间距', selector: 'p', styles: { 'margin-top': '0px', 'margin-bottom': '0px' } }
-            ]
-          },
-          {
-            title: '行间距',
-            items: [
-              { title: '1.0 倍', selector: 'p,div,li', styles: { 'line-height': '1.0' } },
-              { title: '1.5 倍', selector: 'p,div,li', styles: { 'line-height': '1.5' } },
-              { title: '1.75 倍', selector: 'p,div,li', styles: { 'line-height': '1.75' } },
-              { title: '2.0 倍', selector: 'p,div,li', styles: { 'line-height': '2.0' } },
-              { title: '2.5 倍', selector: 'p,div,li', styles: { 'line-height': '2.5' } }
-            ]
-          },
-          {
-            title: '首行缩进',
-            items: [
-              { title: '缩进 2字符', selector: 'p', styles: { 'text-indent': '2em' } },
-              { title: '缩进 4字符', selector: 'p', styles: { 'text-indent': '4em' } },
-              { title: '取消缩进', selector: 'p', styles: { 'text-indent': '0' } }
-            ]
-          }
-        ],
-        images_upload_handler: async (blobInfo, progress) => new Promise((resolve, reject) => {
+      const textarea = document.getElementById('field-content');
+
+      // 自定义上传适配器
+      class UploadAdapter {
+        constructor(loader) {
+          this.loader = loader;
+        }
+        async upload() {
+          const file = await this.loader.file;
           const formData = new FormData();
-          formData.append('file', blobInfo.blob(), blobInfo.filename());
+          formData.append('file', file);
 
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', '/api/upload', true);
-
-          xhr.upload.onprogress = (e) => {
-            if (e.lengthComputable) {
-              progress(e.loaded / e.total * 100);
-            }
-          };
-
-          xhr.onload = () => {
-            if (xhr.status === 401) {
-              reject('登录已过期，请刷新页面重新登录');
-              return;
-            }
-            if (xhr.status < 200 || xhr.status >= 300) {
+          return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/upload', true);
+            xhr.onload = () => {
+              if (xhr.status === 401) {
+                reject('登录已过期，请刷新页面重新登录');
+                return;
+              }
+              if (xhr.status < 200 || xhr.status >= 300) {
+                try {
+                  const err = JSON.parse(xhr.responseText);
+                  reject(err.error || '上传失败');
+                } catch { reject('上传失败'); }
+                return;
+              }
               try {
-                const err = JSON.parse(xhr.responseText);
-                reject(err.error || '上传失败');
-              } catch {
-                reject('上传失败 (HTTP ' + xhr.status + ')');
-              }
-              return;
-            }
-            try {
-              const result = JSON.parse(xhr.responseText);
-              if (result.url) {
-                resolve(result.url);
-              } else {
-                reject('上传响应缺少 URL');
-              }
-            } catch {
-              reject('上传响应解析失败');
-            }
-          };
-
-          xhr.onerror = () => reject('网络错误，上传失败');
-          xhr.send(formData);
-        }),
-        setup: (editor) => {
-          editor.on('init', () => {
-            tinymceReady = true;
-            // 编辑模式下填充正文内容
-            if (currentSlug) {
-              loadContentIntoEditor(editor);
-            }
+                const result = JSON.parse(xhr.responseText);
+                if (result.url) {
+                  resolve({ default: result.url });
+                } else {
+                  reject('上传响应缺少 URL');
+                }
+              } catch { reject('上传响应解析失败'); }
+            };
+            xhr.onerror = () => reject('网络错误，上传失败');
+            xhr.send(formData);
           });
-        },
-      });
+        }
+        abort() {}
+      }
+
+      function uploadPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = (loader) => new UploadAdapter(loader);
+      }
+
+      ClassicEditor
+        .create(textarea, {
+          toolbar: [
+            'undo', 'redo',
+            '|', 'heading',
+            '|', 'bold', 'italic', 'underline', 'strikethrough',
+            '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
+            '|', 'alignment',
+            '|', 'bulletedList', 'numberedList',
+            '|', 'outdent', 'indent',
+            '|', 'link', 'uploadImage', 'blockQuote', 'codeBlock',
+            '|', 'insertTable',
+            '|', 'fullscreen',
+          ],
+          heading: {
+            options: [
+              { model: 'paragraph', title: '正文', class: 'ck-heading_paragraph' },
+              { model: 'heading2', view: 'h2', title: '标题 2', class: 'ck-heading_heading2' },
+              { model: 'heading3', view: 'h3', title: '标题 3', class: 'ck-heading_heading3' },
+            ]
+          },
+          fontSize: {
+            options: [12, 14, 16, 18, 20, 24, 28, 32]
+          },
+          fontFamily: {
+            options: [
+              'default',
+              'Inter, sans-serif',
+              'SimSun, STSong, serif',
+              'Microsoft YaHei, PingFang SC, sans-serif',
+              'MiSans, PingFang SC, Microsoft YaHei, sans-serif',
+              'monospace',
+            ]
+          },
+          image: {
+            toolbar: [
+              'imageTextAlternative', 'toggleImageCaption',
+              '|', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
+            ]
+          },
+          table: {
+            contentToolbar: [
+              'tableColumn', 'tableRow', 'mergeTableCells',
+              'tableProperties', 'tableCellProperties'
+            ]
+          },
+          placeholder: '开始写作...',
+          extraPlugins: [uploadPlugin],
+          removePlugins: ['CKBox', 'CKBoxImageEdit', 'EasyImage', 'CKFinder'],
+        })
+        .then(editor => {
+          ckEditor = editor;
+
+          // 全屏功能：添加按钮到工具栏
+          const toolbar = editor.ui.view.toolbar.element;
+          const fullscreenBtn = document.createElement('button');
+          fullscreenBtn.className = 'ck ck-button ck-toolbar__button';
+          fullscreenBtn.title = '全屏编辑';
+          fullscreenBtn.innerHTML = '<svg viewBox="0 0 20 20" width="20" height="20"><path d="M3 3h5v2H5v3H3V3zm9 0h5v5h-2V5h-3V3zM3 12h2v3h3v2H3v-5zm12 3h-3v2h5v-5h-2v3z"/></svg>';
+          fullscreenBtn.addEventListener('click', () => {
+            const container = editor.ui.view.editable.element.closest('.ck-editor');
+            container.classList.toggle('ck-editor-fullscreen');
+            editor.ui.update();
+          });
+          toolbar.appendChild(fullscreenBtn);
+
+          // 编辑模式下填充正文内容
+          if (currentSlug) {
+            loadContentIntoEditor(editor);
+          }
+        })
+        .catch(err => {
+          console.error('CKEditor 5 初始化失败:', err);
+        });
     }
 
     async function loadContentIntoEditor(editor) {
       const res = await fetch(`/api/posts?slug=${currentSlug}&admin=1`);
       const post = await res.json();
       if (post.content && editor) {
-        editor.setContent(post.content);
+        editor.setData(post.content);
       }
     }
 
     function getContent() {
-      if (tinymceReady) {
-        return tinymce.get('field-content')?.getContent() || '';
+      if (ckEditor) {
+        return ckEditor.getData() || '';
       }
       return '';
     }
@@ -1532,5 +1566,32 @@
       return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
     }
   </script>
+  <style>
+    /* CKEditor 5 全屏模式 */
+    .ck-editor-fullscreen {
+      position: fixed !important;
+      inset: 0;
+      z-index: 10000;
+      background: #FAFAFA;
+    }
+    .dark .ck-editor-fullscreen {
+      background: #0F0F0F;
+    }
+    .ck-editor-fullscreen .ck-editor__top,
+    .ck-editor-fullscreen .ck-editor__bottom {
+      position: sticky;
+      z-index: 10001;
+    }
+    .ck-editor-fullscreen .ck-editor__top {
+      top: 0;
+    }
+    .ck-editor-fullscreen .ck-editor__bottom {
+      bottom: 0;
+    }
+    .ck-editor-fullscreen .ck-editor__main {
+      height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+  </style>
 </body>
 </html>
