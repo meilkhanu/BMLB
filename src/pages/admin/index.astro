@@ -9,8 +9,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理后台 — 贝谟拉比</title>
-  <!-- CKEditor 5 自托管 -->
-  <script is:inline src="/ckeditor5/ckeditor.js"></script>
+  <!-- CKEditor 5 CDN -->
+  <script is:inline src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+  <script is:inline src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/translations/zh-cn.js"></script>
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
@@ -1311,32 +1312,17 @@
             'undo', 'redo',
             '|', 'heading',
             '|', 'bold', 'italic', 'underline', 'strikethrough',
-            '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
             '|', 'alignment',
             '|', 'bulletedList', 'numberedList',
             '|', 'outdent', 'indent',
-            '|', 'link', 'uploadImage', 'blockQuote', 'codeBlock',
+            '|', 'link', 'imageUpload', 'blockQuote',
             '|', 'insertTable',
-            '|', 'fullscreen',
           ],
           heading: {
             options: [
               { model: 'paragraph', title: '正文', class: 'ck-heading_paragraph' },
               { model: 'heading2', view: 'h2', title: '标题 2', class: 'ck-heading_heading2' },
               { model: 'heading3', view: 'h3', title: '标题 3', class: 'ck-heading_heading3' },
-            ]
-          },
-          fontSize: {
-            options: [12, 14, 16, 18, 20, 24, 28, 32]
-          },
-          fontFamily: {
-            options: [
-              'default',
-              'Inter, sans-serif',
-              'SimSun, STSong, serif',
-              'Microsoft YaHei, PingFang SC, sans-serif',
-              'MiSans, PingFang SC, Microsoft YaHei, sans-serif',
-              'monospace',
             ]
           },
           image: {
@@ -1353,6 +1339,7 @@
           },
           placeholder: '开始写作...',
           extraPlugins: [uploadPlugin],
+          language: 'zh-cn',
         })
         .then(editor => {
           ckEditor = editor;

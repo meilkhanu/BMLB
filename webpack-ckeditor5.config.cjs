@@ -13,6 +13,21 @@ module.exports = {
   },
   resolve: {
     fullySpecified: false,
+    alias: {
+      '@ckeditor/ckeditor5-core': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-core'),
+      '@ckeditor/ckeditor5-engine': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-engine'),
+      '@ckeditor/ckeditor5-ui': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-ui'),
+      '@ckeditor/ckeditor5-utils': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-utils'),
+      '@ckeditor/ckeditor5-watchdog': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-watchdog'),
+      '@ckeditor/ckeditor5-widget': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-widget'),
+      '@ckeditor/ckeditor5-clipboard': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-clipboard'),
+      '@ckeditor/ckeditor5-enter': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-enter'),
+      '@ckeditor/ckeditor5-paragraph': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-paragraph'),
+      '@ckeditor/ckeditor5-select-all': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-select-all'),
+      '@ckeditor/ckeditor5-typing': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-typing'),
+      '@ckeditor/ckeditor5-undo': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-undo'),
+      '@ckeditor/ckeditor5-upload': path.resolve(__dirname, 'node_modules/@ckeditor/ckeditor5-upload'),
+    },
   },
   plugins: [
     new CKEditorWebpackPlugin({
