@@ -430,584 +430,581 @@ function formatDate(dateStr: string): string {
 
 <script is:inline>
 	// ============================================================
-	// Tab 切换、果冻滑块、日历、运行时 —— 包在 page-load 确保 DOM 就绪
+	// Tab 切换、果冻滑块、日历、运行时
+	// astro:page-load + DOMContentLoaded 双保险
 	// ============================================================
-	document.addEventListener('astro:page-load', () => {
-	const tabButtons = document.querySelectorAll('[data-tab]');
-	const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
+	(function() {
+		if (window.__bmlbHomeInit) return;
+		window.__bmlbHomeInit = true;
 
-	function syncSliders() {
-		const activePcBtn = document.querySelector('.hidden.md\\:flex [data-tab][data-active="true"]');
-		const pcSlider = document.getElementById('pc-tab-slider');
-		if (activePcBtn && pcSlider) {
-			pcSlider.style.transform = `translateX(${activePcBtn.offsetLeft}px)`;
-			pcSlider.style.width = `${activePcBtn.offsetWidth}px`;
-		}
+		function init() {
+			const tabButtons = document.querySelectorAll('[data-tab]');
+			const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
 
-		const activeMobileBtn = document.querySelector('.md\\:hidden [data-tab][data-active="true"]');
-		const mobileSlider = document.getElementById('mobile-tab-slider');
-		if (activeMobileBtn && mobileSlider) {
-			mobileSlider.style.transform = `translateX(${activeMobileBtn.offsetLeft}px)`;
-			mobileSlider.style.width = `${activeMobileBtn.offsetWidth}px`;
-		}
-	}
+			function syncSliders() {
+				const activePcBtn = document.querySelector('.hidden.md\\:flex [data-tab][data-active="true"]');
+				const pcSlider = document.getElementById('pc-tab-slider');
+				if (activePcBtn && pcSlider) {
+					pcSlider.style.transform = `translateX(${activePcBtn.offsetLeft}px)`;
+					pcSlider.style.width = `${activePcBtn.offsetWidth}px`;
+				}
 
-	tabButtons.forEach(btn => {
-		btn.addEventListener('click', () => {
-			const tabId = btn.dataset.tab;
+				const activeMobileBtn = document.querySelector('.md\\:hidden [data-tab][data-active="true"]');
+				const mobileSlider = document.getElementById('mobile-tab-slider');
+				if (activeMobileBtn && mobileSlider) {
+					mobileSlider.style.transform = `translateX(${activeMobileBtn.offsetLeft}px)`;
+					mobileSlider.style.width = `${activeMobileBtn.offsetWidth}px`;
+				}
+			}
 
-			tabButtons.forEach(b => {
-				b.dataset.active = (b.dataset.tab === tabId) ? "true" : "false";
-			});
+			tabButtons.forEach(btn => {
+				btn.addEventListener('click', () => {
+					const tabId = btn.dataset.tab;
 
-			syncSliders();
+					tabButtons.forEach(b => {
+						b.dataset.active = (b.dataset.tab === tabId) ? "true" : "false";
+					});
 
-			// 切换面板
-			panelClasses.forEach(cls => {
-				const panel = document.querySelector('.' + cls);
-				if (panel) panel.style.display = 'none';
-			});
+					syncSliders();
 
-			const target = document.querySelector('.panel-' + tabId);
-			if (target) {
-				target.style.display = 'block';
-				target.animate([
-					{ opacity: 0, transform: 'translateY(10px)' },
-					{ opacity: 1, transform: 'translateY(0)' }
-				], {
-					duration: 400,
-					easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+					panelClasses.forEach(cls => {
+						const panel = document.querySelector('.' + cls);
+						if (panel) panel.style.display = 'none';
+					});
+
+					const target = document.querySelector('.panel-' + tabId);
+					if (target) {
+						target.style.display = 'block';
+						target.animate([
+							{ opacity: 0, transform: 'translateY(10px)' },
+							{ opacity: 1, transform: 'translateY(0)' }
+						], {
+							duration: 400,
+							easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+						});
+					}
 				});
+			});
+
+			const POSTS_PER_PAGE = 6;
+			document.querySelectorAll('.load-more-btn').forEach(btn => {
+				btn.addEventListener('click', () => {
+					const catId = btn.dataset.cat;
+					if (!catId) return;
+
+					const hiddenCards = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`);
+					const toShow = Math.min(hiddenCards.length, POSTS_PER_PAGE);
+
+					for (let i = 0; i < toShow; i++) {
+						hiddenCards[i].classList.remove('hidden', 'post-card-hidden');
+					}
+
+					const remaining = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`).length;
+					if (remaining === 0) {
+						btn.closest('[id^="load-more-"]')?.classList.add('hidden');
+					}
+				});
+			});
+
+			window.addEventListener('resize', syncSliders);
+			setTimeout(syncSliders, 50);
+
+			function updateDateTime() {
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = now.getMonth() + 1;
+				const day = now.getDate();
+				const hours = String(now.getHours()).padStart(2, '0');
+				const minutes = String(now.getMinutes()).padStart(2, '0');
+				const el = document.getElementById('tab-datetime');
+				if (el) el.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
+				const footerDateEl = document.getElementById('calendar-footer-date');
+				if (footerDateEl) footerDateEl.textContent = `${month}-${day}`;
 			}
-		});
-	});
+			updateDateTime();
+			setInterval(updateDateTime, 60000);
 
-	// "加载更多"按钮事件 —— 显示隐藏的卡片
-	const POSTS_PER_PAGE = 6;
-	document.querySelectorAll('.load-more-btn').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const catId = btn.dataset.cat;
-			if (!catId) return;
+			function renderCalendar(year, month) {
+				const titleEl = document.getElementById('calendar-title');
+				const gridEl = document.getElementById('calendar-grid');
+				if (!titleEl || !gridEl) return;
 
-			const hiddenCards = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`);
-			const toShow = Math.min(hiddenCards.length, POSTS_PER_PAGE);
+				titleEl.textContent = `${year}年 ${month + 1}月`;
 
-			for (let i = 0; i < toShow; i++) {
-				hiddenCards[i].classList.remove('hidden', 'post-card-hidden');
+				const today = new Date();
+				const daysInMonth = new Date(year, month + 1, 0).getDate();
+				const firstDay = new Date(year, month, 1).getDay();
+				const startOffset = (firstDay + 6) % 7;
+				const prevMonthDays = new Date(year, month, 0).getDate();
+
+				let html = '';
+
+				for (let i = startOffset - 1; i >= 0; i--) {
+					const d = prevMonthDays - i;
+					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
+				}
+
+				for (let d = 1; d <= daysInMonth; d++) {
+					const isToday = year === today.getFullYear() && month === today.getMonth() && d === today.getDate();
+					if (isToday) {
+						html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full border border-[#8B7CB3] text-[#8B7CB3] font-medium">${d}</div>`;
+					} else {
+						html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#666] dark:text-[#999]">${d}</div>`;
+					}
+				}
+
+				const totalCells = startOffset + daysInMonth;
+				const rows = totalCells <= 35 ? 35 : 42;
+				const remaining = rows - totalCells;
+				for (let d = 1; d <= remaining; d++) {
+					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
+				}
+
+				gridEl.innerHTML = html;
 			}
 
-			// 如果已全部显示，隐藏"加载更多"按钮
-			const remaining = document.querySelectorAll(`.post-card-hidden[data-cat="${catId}"]`).length;
-			if (remaining === 0) {
-				btn.closest('[id^="load-more-"]')?.classList.add('hidden');
+			renderCalendar(new Date().getFullYear(), new Date().getMonth());
+
+			const siteStart = new Date('2026-04-26');
+			const now = new Date();
+			const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
+			const runtimeEl = document.getElementById('stat-runtime');
+			if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
+
+			const lastActiveEl = document.getElementById('stat-last-active');
+			if (lastActiveEl) {
+				const lastActiveStr = lastActiveEl.dataset.lastActive;
+				if (lastActiveStr) {
+					const lastActiveDate = new Date(lastActiveStr);
+					const diffMs = now - lastActiveDate;
+					if (diffMs < 0) {
+						lastActiveEl.textContent = '未来';
+					} else {
+						const diffSec = Math.floor(diffMs / 1000);
+						const diffMin = Math.floor(diffSec / 60);
+						const diffHour = Math.floor(diffMin / 60);
+						const diffDay = Math.floor(diffHour / 24);
+						const diffMonth = Math.floor(diffDay / 30);
+						const diffYear = Math.floor(diffDay / 365);
+						let text = '刚刚';
+						if (diffYear > 0) text = diffYear + '年前';
+						else if (diffMonth > 0) text = diffMonth + '个月前';
+						else if (diffDay > 0) text = diffDay + '天前';
+						else if (diffHour > 0) text = diffHour + '小时前';
+						else if (diffMin > 0) text = diffMin + '分钟前';
+						lastActiveEl.textContent = text;
+					}
+				} else {
+					lastActiveEl.textContent = '暂无';
+				}
 			}
-		});
-	});
-
-	window.addEventListener('resize', syncSliders);
-	document.addEventListener('DOMContentLoaded', () => {
-		setTimeout(syncSliders, 50);
-	});
-
-	// 日期时间更新
-	function updateDateTime() {
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = now.getMonth() + 1;
-		const day = now.getDate();
-		const hours = String(now.getHours()).padStart(2, '0');
-		const minutes = String(now.getMinutes()).padStart(2, '0');
-		const el = document.getElementById('tab-datetime');
-		if (el) el.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
-		const footerDateEl = document.getElementById('calendar-footer-date');
-		if (footerDateEl) footerDateEl.textContent = `${month}-${day}`;
-	}
-	updateDateTime();
-	setInterval(updateDateTime, 60000);
-
-	function renderCalendar(year, month) {
-		const titleEl = document.getElementById('calendar-title');
-		const gridEl = document.getElementById('calendar-grid');
-		if (!titleEl || !gridEl) return;
-
-		titleEl.textContent = `${year}年 ${month + 1}月`;
-
-		const today = new Date();
-		const daysInMonth = new Date(year, month + 1, 0).getDate();
-		const firstDay = new Date(year, month, 1).getDay();
-		const startOffset = (firstDay + 6) % 7;
-		const prevMonthDays = new Date(year, month, 0).getDate();
-
-		let html = '';
-
-		for (let i = startOffset - 1; i >= 0; i--) {
-			const d = prevMonthDays - i;
-			html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
 		}
 
-		for (let d = 1; d <= daysInMonth; d++) {
-			const isToday = year === today.getFullYear() && month === today.getMonth() && d === today.getDate();
-			if (isToday) {
-				html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full border border-[#8B7CB3] text-[#8B7CB3] font-medium">${d}</div>`;
-			} else {
-				html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#666] dark:text-[#999]">${d}</div>`;
-			}
-		}
-
-		const totalCells = startOffset + daysInMonth;
-		const rows = totalCells <= 35 ? 35 : 42;
-		const remaining = rows - totalCells;
-		for (let d = 1; d <= remaining; d++) {
-			html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555]">${d}</div>`;
-		}
-
-		gridEl.innerHTML = html;
-	}
-
-	renderCalendar(new Date().getFullYear(), new Date().getMonth());
-
-	const siteStart = new Date('2026-04-26');
-	const now = new Date();
-	const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
-	const runtimeEl = document.getElementById('stat-runtime');
-	if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
-
-	const lastActiveEl = document.getElementById('stat-last-active');
-	if (lastActiveEl) {
-		const lastActiveStr = lastActiveEl.dataset.lastActive;
-		if (lastActiveStr) {
-			const lastActiveDate = new Date(lastActiveStr);
-			const diffMs = now - lastActiveDate;
-			if (diffMs < 0) {
-				lastActiveEl.textContent = '未来';
-			} else {
-				const diffSec = Math.floor(diffMs / 1000);
-				const diffMin = Math.floor(diffSec / 60);
-				const diffHour = Math.floor(diffMin / 60);
-				const diffDay = Math.floor(diffHour / 24);
-				const diffMonth = Math.floor(diffDay / 30);
-				const diffYear = Math.floor(diffDay / 365);
-				let text = '刚刚';
-				if (diffYear > 0) text = diffYear + '年前';
-				else if (diffMonth > 0) text = diffMonth + '个月前';
-				else if (diffDay > 0) text = diffDay + '天前';
-				else if (diffHour > 0) text = diffHour + '小时前';
-				else if (diffMin > 0) text = diffMin + '分钟前';
-				lastActiveEl.textContent = text;
-			}
-		} else {
-			lastActiveEl.textContent = '暂无';
-		}
-	}
-	}); // end astro:page-load
+		document.addEventListener('astro:page-load', init);
+		document.addEventListener('DOMContentLoaded', init);
+	})();
 </script>
 
 <script is:inline>
 	// —— 首页播放器：从全局状态加载歌曲 & 同步 Sidebar UI ——
-	document.addEventListener('astro:page-load', () => {
-		const state = window.playerState;
-		if (!state) return;
+	// astro:page-load + DOMContentLoaded 双保险
+	(function() {
+		if (window.__bmlbPlayerInit) return;
+		window.__bmlbPlayerInit = true;
 
-		// 初次加载：从隐藏元素读取歌曲数据
-		if (!state.initialized) {
-			const songsEl = document.getElementById('songs-data');
-			if (songsEl) {
-				try {
-					const songs = JSON.parse(songsEl.dataset.songs || '[]');
-					if (songs.length > 0) {
-						state.songs = songs;
-						state.initialized = true;
-					}
-				} catch {}
+		function init() {
+			const state = window.playerState;
+			if (!state) return;
+
+			if (!state.initialized) {
+				const songsEl = document.getElementById('songs-data');
+				if (songsEl) {
+					try {
+						const songs = JSON.parse(songsEl.dataset.songs || '[]');
+						if (songs.length > 0) {
+							state.songs = songs;
+							state.initialized = true;
+						}
+					} catch {}
+				}
 			}
-		}
 
-		const audio = document.getElementById('global-audio');
-		if (!audio) return;
+			const audio = document.getElementById('global-audio');
+			if (!audio) return;
 
-		// DOM 引用
-		const playBtn = document.getElementById('player-play');
-		const prevBtn = document.getElementById('player-prev');
-		const nextBtn = document.getElementById('player-next');
-		const modeBtn = document.getElementById('player-mode-btn');
-		const listBtn = document.getElementById('player-list-btn');
-		const playlistEl = document.getElementById('player-playlist');
-		const playlistClose = document.getElementById('playlist-close');
-		const playlistItems = document.getElementById('playlist-items');
-		const progressBar = document.getElementById('player-progress-bar');
-		const progressEl = document.getElementById('player-progress');
-		const currentEl = document.getElementById('player-current');
-		const durationEl = document.getElementById('player-duration');
-		const titleEl = document.getElementById('player-title');
-		const artistEl = document.getElementById('player-artist');
-		const coverEl = document.getElementById('player-cover');
-		const coverFallback = document.getElementById('player-cover-fallback');
-		const iconPlay = document.getElementById('icon-play');
-		const iconPause = document.getElementById('icon-pause');
-		const modeIconLoop = document.getElementById('mode-icon-loop');
-		const modeIconSingle = document.getElementById('mode-icon-single');
-		const modeIconShuffle = document.getElementById('mode-icon-shuffle');
-		const visualizer = document.getElementById('player-visualizer');
+			const playBtn = document.getElementById('player-play');
+			const prevBtn = document.getElementById('player-prev');
+			const nextBtn = document.getElementById('player-next');
+			const modeBtn = document.getElementById('player-mode-btn');
+			const listBtn = document.getElementById('player-list-btn');
+			const playlistEl = document.getElementById('player-playlist');
+			const playlistClose = document.getElementById('playlist-close');
+			const playlistItems = document.getElementById('playlist-items');
+			const progressBar = document.getElementById('player-progress-bar');
+			const progressEl = document.getElementById('player-progress');
+			const currentEl = document.getElementById('player-current');
+			const durationEl = document.getElementById('player-duration');
+			const titleEl = document.getElementById('player-title');
+			const artistEl = document.getElementById('player-artist');
+			const coverEl = document.getElementById('player-cover');
+			const coverFallback = document.getElementById('player-cover-fallback');
+			const iconPlay = document.getElementById('icon-play');
+			const iconPause = document.getElementById('icon-pause');
+			const modeIconLoop = document.getElementById('mode-icon-loop');
+			const modeIconSingle = document.getElementById('mode-icon-single');
+			const modeIconShuffle = document.getElementById('mode-icon-shuffle');
+			const visualizer = document.getElementById('player-visualizer');
 
-		function formatTime(sec) {
-			if (!sec || isNaN(sec)) return '0:00';
-			const m = Math.floor(sec / 60);
-			const s = Math.floor(sec % 60);
-			return m + ':' + String(s).padStart(2, '0');
-		}
-
-		function updateSidebarSongUI() {
-			if (!state.songs.length) return;
-			const song = state.songs[state.currentIndex];
-			if (!song) return;
-			titleEl.textContent = song.title || '未知歌曲';
-			artistEl.textContent = (song.artist || '') + (song.album ? ' · ' + song.album : '');
-			durationEl.textContent = formatTime(song.duration);
-			if (song.cover_url) {
-				coverEl.src = song.cover_url;
-				coverEl.classList.remove('hidden');
-				coverFallback.classList.add('hidden');
-			} else {
-				coverEl.classList.add('hidden');
-				coverFallback.classList.remove('hidden');
+			function formatTime(sec) {
+				if (!sec || isNaN(sec)) return '0:00';
+				const m = Math.floor(sec / 60);
+				const s = Math.floor(sec % 60);
+				return m + ':' + String(s).padStart(2, '0');
 			}
-		}
 
-		function updateSidebarPlayUI() {
-			if (state.isPlaying) {
-				iconPlay.classList.add('hidden');
-				iconPause.classList.remove('hidden');
-				visualizer.classList.remove('opacity-30');
-			} else {
-				iconPlay.classList.remove('hidden');
-				iconPause.classList.add('hidden');
-				visualizer.classList.add('opacity-30');
+			function updateSidebarSongUI() {
+				if (!state.songs.length) return;
+				const song = state.songs[state.currentIndex];
+				if (!song) return;
+				titleEl.textContent = song.title || '未知歌曲';
+				artistEl.textContent = (song.artist || '') + (song.album ? ' · ' + song.album : '');
+				durationEl.textContent = formatTime(song.duration);
+				if (song.cover_url) {
+					coverEl.src = song.cover_url;
+					coverEl.classList.remove('hidden');
+					coverFallback.classList.add('hidden');
+				} else {
+					coverEl.classList.add('hidden');
+					coverFallback.classList.remove('hidden');
+				}
 			}
-		}
 
-		function updateModeUI() {
-			modeIconLoop.classList.add('hidden');
-			modeIconSingle.classList.add('hidden');
-			modeIconShuffle.classList.add('hidden');
-			if (state.playMode === 'single') {
-				modeIconSingle.classList.remove('hidden');
-				modeBtn.title = '单曲循环';
-			} else if (state.playMode === 'shuffle') {
-				modeIconShuffle.classList.remove('hidden');
-				modeBtn.title = '随机播放';
-			} else {
-				modeIconLoop.classList.remove('hidden');
-				modeBtn.title = '列表循环';
+			function updateSidebarPlayUI() {
+				if (state.isPlaying) {
+					iconPlay.classList.add('hidden');
+					iconPause.classList.remove('hidden');
+					visualizer.classList.remove('opacity-30');
+				} else {
+					iconPlay.classList.remove('hidden');
+					iconPause.classList.add('hidden');
+					visualizer.classList.add('opacity-30');
+				}
 			}
-		}
 
-		function updatePlaylistUI() {
-			if (!playlistItems) return;
-			playlistItems.innerHTML = state.songs.map((s, i) =>
-				'<div class="flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ' + (i === state.currentIndex ? 'bg-[#8B7CB3]/10' : 'hover:bg-black/5 dark:hover:bg-white/5') + '" onclick="window.playerPlayIndex(' + i + ')">' +
-					'<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[10px] font-bold">' + (i + 1) + '</div>' +
-					'<div class="flex-1 min-w-0">' +
-						'<div class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">' + s.title + '</div>' +
-						'<div class="text-[10px] text-[#999] truncate">' + (s.artist || '') + '</div>' +
-					'</div>' +
-					(i === state.currentIndex && state.isPlaying ? '<div class="flex items-end gap-[1px] h-3"><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay:0.1s"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay:0.2s"></div></div>' : '') +
-				'</div>'
-			).join('');
-		}
-
-		// 初始同步
-		updateSidebarSongUI();
-		updateSidebarPlayUI();
-		updateModeUI();
-		updatePlaylistUI();
-
-		// 进度条
-		audio.addEventListener('timeupdate', function onTime() {
-			const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-			if (progressEl) progressEl.style.width = pct + '%';
-			if (currentEl) currentEl.textContent = formatTime(audio.currentTime);
-		});
-
-		audio.addEventListener('loadedmetadata', function onMeta() {
-			if (durationEl) durationEl.textContent = formatTime(audio.duration);
-		});
-
-		// 进度条点击
-		if (progressBar) {
-			progressBar.addEventListener('click', (e) => {
-				const rect = progressBar.getBoundingClientRect();
-				const pct = (e.clientX - rect.left) / rect.width;
-				if (audio.duration) audio.currentTime = pct * audio.duration;
-			});
-		}
-
-		// 按钮 → 全局状态/音频
-		if (playBtn) playBtn.addEventListener('click', () => window.playerToggle && window.playerToggle());
-		if (prevBtn) prevBtn.addEventListener('click', () => {
-			const s = window.playerState;
-			if (!s || !s.songs.length) return;
-			if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
-			else s.currentIndex = (s.currentIndex - 1 + s.songs.length) % s.songs.length;
-			const song = s.songs[s.currentIndex];
-			if (song) { audio.src = song.audio_url; audio.play().catch(() => {}); }
-		});
-		if (nextBtn) nextBtn.addEventListener('click', () => {
-			const s = window.playerState;
-			if (!s || !s.songs.length) return;
-			if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
-			else s.currentIndex = (s.currentIndex + 1) % s.songs.length;
-			const song = s.songs[s.currentIndex];
-			if (song) { audio.src = song.audio_url; audio.play().catch(() => {}); }
-		});
-		if (modeBtn) modeBtn.addEventListener('click', () => {
-			const modes = ['loop', 'single', 'shuffle'];
-			const idx = modes.indexOf(state.playMode);
-			state.playMode = modes[(idx + 1) % 3];
-			updateModeUI();
-		});
-
-		// 播放列表
-		if (listBtn) listBtn.addEventListener('click', () => {
-			playlistEl.classList.toggle('hidden');
-			if (!playlistEl.classList.contains('hidden')) updatePlaylistUI();
-		});
-		if (playlistClose) playlistClose.addEventListener('click', () => playlistEl.classList.add('hidden'));
-
-		window.playerPlayIndex = (index) => {
-			state.currentIndex = index;
-			const song = state.songs[index];
-			if (song) {
-				audio.src = song.audio_url;
-				audio.play().catch(() => {});
+			function updateModeUI() {
+				modeIconLoop.classList.add('hidden');
+				modeIconSingle.classList.add('hidden');
+				modeIconShuffle.classList.add('hidden');
+				if (state.playMode === 'single') {
+					modeIconSingle.classList.remove('hidden');
+					modeBtn.title = '单曲循环';
+				} else if (state.playMode === 'shuffle') {
+					modeIconShuffle.classList.remove('hidden');
+					modeBtn.title = '随机播放';
+				} else {
+					modeIconLoop.classList.remove('hidden');
+					modeBtn.title = '列表循环';
+				}
 			}
-		};
 
-		// 监听全局歌曲变化事件
-		window.addEventListener('player-song-change', (e) => {
-			updateSidebarSongUI();
-			updatePlaylistUI();
-		});
+			function updatePlaylistUI() {
+				if (!playlistItems) return;
+				playlistItems.innerHTML = state.songs.map((s, i) =>
+					'<div class="flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ' + (i === state.currentIndex ? 'bg-[#8B7CB3]/10' : 'hover:bg-black/5 dark:hover:bg-white/5') + '" onclick="window.playerPlayIndex(' + i + ')">' +
+						'<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[10px] font-bold">' + (i + 1) + '</div>' +
+						'<div class="flex-1 min-w-0">' +
+							'<div class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">' + s.title + '</div>' +
+							'<div class="text-[10px] text-[#999] truncate">' + (s.artist || '') + '</div>' +
+						'</div>' +
+						(i === state.currentIndex && state.isPlaying ? '<div class="flex items-end gap-[1px] h-3"><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay:0.1s"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay:0.2s"></div></div>' : '') +
+					'</div>'
+				).join('');
+			}
 
-		window.addEventListener('player-state-sync', (e) => {
 			updateSidebarSongUI();
 			updateSidebarPlayUI();
 			updateModeUI();
 			updatePlaylistUI();
-		});
 
-		window.addEventListener('player-mode-change', () => updateModeUI());
+			audio.addEventListener('timeupdate', function onTime() {
+				const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+				if (progressEl) progressEl.style.width = pct + '%';
+				if (currentEl) currentEl.textContent = formatTime(audio.currentTime);
+			});
 
-		// 初始化视觉
-		visualizer && state.songs.length && !state.isPlaying && visualizer.classList.add('opacity-30');
+			audio.addEventListener('loadedmetadata', function onMeta() {
+				if (durationEl) durationEl.textContent = formatTime(audio.duration);
+			});
 
-		// Hero 过渡区梦幻星尘 Canvas（流星划过版）
-		let heroDustAnimId = null;
-		let heroDustResizeHandler = null;
-		let heroDustVisHandler = null;
-
-		function initHeroDustCanvas() {
-			const canvas = document.getElementById('hero-dust-canvas');
-			if (!canvas) return;
-
-			if (heroDustAnimId) {
-				cancelAnimationFrame(heroDustAnimId);
-				heroDustAnimId = null;
-			}
-			if (heroDustResizeHandler) {
-				window.removeEventListener('resize', heroDustResizeHandler);
-			}
-			if (heroDustVisHandler) {
-				document.removeEventListener('visibilitychange', heroDustVisHandler);
-			}
-
-			const ctx = canvas.getContext('2d');
-			let width, height;
-			let particles = [];
-
-			function resize() {
-				const rect = canvas.getBoundingClientRect();
-				width = rect.width;
-				height = rect.height;
-				const dpr = window.devicePixelRatio || 1;
-				canvas.width = width * dpr;
-				canvas.height = height * dpr;
-				canvas.style.width = width + 'px';
-				canvas.style.height = height + 'px';
-				ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			}
-
-			function createParticles() {
-				particles = [];
-				const layers = [
-					{ count: 24, sizeMin: 3, sizeMax: 7, speedMin: 0.6, speedMax: 1.4, opacityMin: 0.15, opacityMax: 0.4, glow: 8, colors: ['#FF6B9D', '#f90275', '#8B7CB3'], types: ['star', 'cross'] },
-					{ count: 20, sizeMin: 5, sizeMax: 10, speedMin: 0.4, speedMax: 1.0, opacityMin: 0.1, opacityMax: 0.25, glow: 12, colors: ['#FF6B9D', '#39C5BB'], types: ['moon', 'star'] },
-					{ count: 16, sizeMin: 2, sizeMax: 4, speedMin: 0.8, speedMax: 1.8, opacityMin: 0.2, opacityMax: 0.45, glow: 6, colors: ['#f90275', '#FF1A4D', '#8B7CB3'], types: ['cross', 'star'] }
-				];
-
-				layers.forEach(layer => {
-					for (let i = 0; i < layer.count; i++) {
-						const speed = layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin);
-						const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.15;
-						let x, y, life;
-						const spawnZone = Math.random();
-						if (spawnZone > 0.5) {
-							// 已在画布内：正在划过
-							x = Math.random() * width;
-							y = Math.random() * height;
-							life = Math.floor(Math.random() * 120);
-						} else if (spawnZone > 0.25) {
-							// 从左侧边缘外准备进入
-							x = -Math.random() * 40;
-							y = Math.random() * height;
-							life = 0;
-						} else {
-							// 从顶部边缘外准备进入
-							x = Math.random() * width;
-							y = -Math.random() * 40;
-							life = 0;
-						}
-						particles.push({
-							x, y,
-							size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
-							type: layer.types[Math.floor(Math.random() * layer.types.length)],
-							color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
-							speedX: speed * Math.cos(angle),
-							speedY: speed * Math.sin(angle),
-							rotation: Math.random() * Math.PI * 2,
-							rotationSpeed: (Math.random() - 0.5) * 0.02,
-							baseOpacity: layer.opacityMin + Math.random() * (layer.opacityMax - layer.opacityMin),
-							glow: layer.glow + Math.random() * 4,
-							life
-						});
-					}
+			if (progressBar) {
+				progressBar.addEventListener('click', (e) => {
+					const rect = progressBar.getBoundingClientRect();
+					const pct = (e.clientX - rect.left) / rect.width;
+					if (audio.duration) audio.currentTime = pct * audio.duration;
 				});
 			}
 
-			function drawStar(c, x, y, size, rotation) {
-				c.save();
-				c.translate(x, y);
-				c.rotate(rotation);
-				c.beginPath();
-				const outer = size;
-				const inner = size * 0.35;
-				for (let i = 0; i < 8; i++) {
-					const r = i % 2 === 0 ? outer : inner;
-					const angle = (i * Math.PI) / 4 - Math.PI / 2;
-					const px = Math.cos(angle) * r;
-					const py = Math.sin(angle) * r;
-					if (i === 0) c.moveTo(px, py);
-					else c.lineTo(px, py);
-				}
-				c.closePath();
-				c.fill();
-				c.restore();
-			}
+			if (playBtn) playBtn.addEventListener('click', () => window.playerToggle && window.playerToggle());
+			if (prevBtn) prevBtn.addEventListener('click', () => {
+				const s = window.playerState;
+				if (!s || !s.songs.length) return;
+				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
+				else s.currentIndex = (s.currentIndex - 1 + s.songs.length) % s.songs.length;
+				const song = s.songs[s.currentIndex];
+				if (song) { audio.src = song.audio_url; audio.play().catch(() => {}); }
+			});
+			if (nextBtn) nextBtn.addEventListener('click', () => {
+				const s = window.playerState;
+				if (!s || !s.songs.length) return;
+				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
+				else s.currentIndex = (s.currentIndex + 1) % s.songs.length;
+				const song = s.songs[s.currentIndex];
+				if (song) { audio.src = song.audio_url; audio.play().catch(() => {}); }
+			});
+			if (modeBtn) modeBtn.addEventListener('click', () => {
+				const modes = ['loop', 'single', 'shuffle'];
+				const idx = modes.indexOf(state.playMode);
+				state.playMode = modes[(idx + 1) % 3];
+				updateModeUI();
+			});
 
-			function drawMoon(c, x, y, size, rotation) {
-				c.save();
-				c.translate(x, y);
-				c.rotate(rotation);
-				c.beginPath();
-				c.arc(0, 0, size, -Math.PI * 0.6, Math.PI * 0.6);
-				c.bezierCurveTo(size * 0.15, size * 0.5, size * 0.15, -size * 0.5, size * Math.cos(-Math.PI * 0.6), size * Math.sin(-Math.PI * 0.6));
-				c.closePath();
-				c.fill();
-				c.restore();
-			}
+			if (listBtn) listBtn.addEventListener('click', () => {
+				playlistEl.classList.toggle('hidden');
+				if (!playlistEl.classList.contains('hidden')) updatePlaylistUI();
+			});
+			if (playlistClose) playlistClose.addEventListener('click', () => playlistEl.classList.add('hidden'));
 
-			function drawCross(c, x, y, size, rotation) {
-				c.save();
-				c.translate(x, y);
-				c.rotate(rotation);
-				const s = size * 0.22;
-				const l = size;
-				c.beginPath();
-				c.moveTo(0, -l); c.lineTo(s, -l + s * 2.5); c.lineTo(0, -l + s * 4); c.lineTo(-s, -l + s * 2.5); c.closePath(); c.fill();
-				c.beginPath();
-				c.moveTo(0, l); c.lineTo(s, l - s * 2.5); c.lineTo(0, l - s * 4); c.lineTo(-s, l - s * 2.5); c.closePath(); c.fill();
-				c.beginPath();
-				c.moveTo(-l, 0); c.lineTo(-l + s * 2.5, s); c.lineTo(-l + s * 4, 0); c.lineTo(-l + s * 2.5, -s); c.closePath(); c.fill();
-				c.beginPath();
-				c.moveTo(l, 0); c.lineTo(l - s * 2.5, s); c.lineTo(l - s * 4, 0); c.lineTo(l - s * 2.5, -s); c.closePath(); c.fill();
-				c.restore();
-			}
-
-			function draw() {
-				ctx.clearRect(0, 0, width, height);
-				particles.forEach(p => {
-					let alpha = p.baseOpacity;
-					const fadeInFrames = 30;
-					// 淡入
-					if (p.life < fadeInFrames) {
-						alpha *= (p.life / fadeInFrames);
-					}
-					// 接近右下边界时淡出，避免截断感
-					const distToEdge = Math.min(width + 40 - p.x, height + 40 - p.y);
-					if (distToEdge < 50) {
-						alpha *= Math.max(0, distToEdge / 50);
-					}
-
-					ctx.save();
-					ctx.globalAlpha = Math.max(0, alpha);
-					ctx.shadowBlur = p.glow;
-					ctx.shadowColor = p.color;
-					ctx.fillStyle = p.color;
-					switch (p.type) {
-						case 'star': drawStar(ctx, p.x, p.y, p.size, p.rotation); break;
-						case 'moon': drawMoon(ctx, p.x, p.y, p.size, p.rotation); break;
-						case 'cross': drawCross(ctx, p.x, p.y, p.size, p.rotation); break;
-					}
-					ctx.restore();
-				});
-			}
-
-			function update() {
-				particles.forEach(p => {
-					p.life++;
-					p.x += p.speedX;
-					p.y += p.speedY;
-					p.rotation += p.rotationSpeed;
-
-					// 飞出边界后从左上边缘重新进入，循环不息
-					if (p.x > width + 40 || p.y > height + 40) {
-						if (Math.random() > 0.5) {
-							p.x = -Math.random() * 40;
-							p.y = Math.random() * height;
-						} else {
-							p.x = Math.random() * width;
-							p.y = -Math.random() * 40;
-						}
-						p.life = 0;
-					}
-				});
-			}
-
-			function animate() {
-				update();
-				draw();
-				heroDustAnimId = requestAnimationFrame(animate);
-			}
-
-			resize();
-			createParticles();
-			animate();
-
-			heroDustResizeHandler = () => { resize(); createParticles(); };
-			window.addEventListener('resize', heroDustResizeHandler);
-
-			heroDustVisHandler = () => {
-				if (document.hidden) {
-					cancelAnimationFrame(heroDustAnimId);
-				} else {
-					animate();
+			window.playerPlayIndex = (index) => {
+				state.currentIndex = index;
+				const song = state.songs[index];
+				if (song) {
+					audio.src = song.audio_url;
+					audio.play().catch(() => {});
 				}
 			};
-			document.addEventListener('visibilitychange', heroDustVisHandler);
+
+			window.addEventListener('player-song-change', (e) => {
+				updateSidebarSongUI();
+				updatePlaylistUI();
+			});
+
+			window.addEventListener('player-state-sync', (e) => {
+				updateSidebarSongUI();
+				updateSidebarPlayUI();
+				updateModeUI();
+				updatePlaylistUI();
+			});
+
+			window.addEventListener('player-mode-change', () => updateModeUI());
+
+			visualizer && state.songs.length && !state.isPlaying && visualizer.classList.add('opacity-30');
+
+			// Hero 过渡区梦幻星尘 Canvas（流星划过版）
+			let heroDustAnimId = null;
+			let heroDustResizeHandler = null;
+			let heroDustVisHandler = null;
+
+			function initHeroDustCanvas() {
+				const canvas = document.getElementById('hero-dust-canvas');
+				if (!canvas) return;
+
+				if (heroDustAnimId) {
+					cancelAnimationFrame(heroDustAnimId);
+					heroDustAnimId = null;
+				}
+				if (heroDustResizeHandler) {
+					window.removeEventListener('resize', heroDustResizeHandler);
+				}
+				if (heroDustVisHandler) {
+					document.removeEventListener('visibilitychange', heroDustVisHandler);
+				}
+
+				const ctx = canvas.getContext('2d');
+				let width, height;
+				let particles = [];
+
+				function resize() {
+					const rect = canvas.getBoundingClientRect();
+					width = rect.width;
+					height = rect.height;
+					const dpr = window.devicePixelRatio || 1;
+					canvas.width = width * dpr;
+					canvas.height = height * dpr;
+					canvas.style.width = width + 'px';
+					canvas.style.height = height + 'px';
+					ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+				}
+
+				function createParticles() {
+					particles = [];
+					const layers = [
+						{ count: 24, sizeMin: 3, sizeMax: 7, speedMin: 0.6, speedMax: 1.4, opacityMin: 0.15, opacityMax: 0.4, glow: 8, colors: ['#FF6B9D', '#f90275', '#8B7CB3'], types: ['star', 'cross'] },
+						{ count: 20, sizeMin: 5, sizeMax: 10, speedMin: 0.4, speedMax: 1.0, opacityMin: 0.1, opacityMax: 0.25, glow: 12, colors: ['#FF6B9D', '#39C5BB'], types: ['moon', 'star'] },
+						{ count: 16, sizeMin: 2, sizeMax: 4, speedMin: 0.8, speedMax: 1.8, opacityMin: 0.2, opacityMax: 0.45, glow: 6, colors: ['#f90275', '#FF1A4D', '#8B7CB3'], types: ['cross', 'star'] }
+					];
+
+					layers.forEach(layer => {
+						for (let i = 0; i < layer.count; i++) {
+							const speed = layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin);
+							const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.15;
+							let x, y, life;
+							const spawnZone = Math.random();
+							if (spawnZone > 0.5) {
+								x = Math.random() * width;
+								y = Math.random() * height;
+								life = Math.floor(Math.random() * 120);
+							} else if (spawnZone > 0.25) {
+								x = -Math.random() * 40;
+								y = Math.random() * height;
+								life = 0;
+							} else {
+								x = Math.random() * width;
+								y = -Math.random() * 40;
+								life = 0;
+							}
+							particles.push({
+								x, y,
+								size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
+								type: layer.types[Math.floor(Math.random() * layer.types.length)],
+								color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
+								speedX: speed * Math.cos(angle),
+								speedY: speed * Math.sin(angle),
+								rotation: Math.random() * Math.PI * 2,
+								rotationSpeed: (Math.random() - 0.5) * 0.02,
+								baseOpacity: layer.opacityMin + Math.random() * (layer.opacityMax - layer.opacityMin),
+								glow: layer.glow + Math.random() * 4,
+								life
+							});
+						}
+					});
+				}
+
+				function drawStar(c, x, y, size, rotation) {
+					c.save();
+					c.translate(x, y);
+					c.rotate(rotation);
+					c.beginPath();
+					const outer = size;
+					const inner = size * 0.35;
+					for (let i = 0; i < 8; i++) {
+						const r = i % 2 === 0 ? outer : inner;
+						const angle = (i * Math.PI) / 4 - Math.PI / 2;
+						const px = Math.cos(angle) * r;
+						const py = Math.sin(angle) * r;
+						if (i === 0) c.moveTo(px, py);
+						else c.lineTo(px, py);
+					}
+					c.closePath();
+					c.fill();
+					c.restore();
+				}
+
+				function drawMoon(c, x, y, size, rotation) {
+					c.save();
+					c.translate(x, y);
+					c.rotate(rotation);
+					c.beginPath();
+					c.arc(0, 0, size, -Math.PI * 0.6, Math.PI * 0.6);
+					c.bezierCurveTo(size * 0.15, size * 0.5, size * 0.15, -size * 0.5, size * Math.cos(-Math.PI * 0.6), size * Math.sin(-Math.PI * 0.6));
+					c.closePath();
+					c.fill();
+					c.restore();
+				}
+
+				function drawCross(c, x, y, size, rotation) {
+					c.save();
+					c.translate(x, y);
+					c.rotate(rotation);
+					const s = size * 0.22;
+					const l = size;
+					c.beginPath();
+					c.moveTo(0, -l); c.lineTo(s, -l + s * 2.5); c.lineTo(0, -l + s * 4); c.lineTo(-s, -l + s * 2.5); c.closePath(); c.fill();
+					c.beginPath();
+					c.moveTo(0, l); c.lineTo(s, l - s * 2.5); c.lineTo(0, l - s * 4); c.lineTo(-s, l - s * 2.5); c.closePath(); c.fill();
+					c.beginPath();
+					c.moveTo(-l, 0); c.lineTo(-l + s * 2.5, s); c.lineTo(-l + s * 4, 0); c.lineTo(-l + s * 2.5, -s); c.closePath(); c.fill();
+					c.beginPath();
+					c.moveTo(l, 0); c.lineTo(l - s * 2.5, s); c.lineTo(l - s * 4, 0); c.lineTo(l - s * 2.5, -s); c.closePath(); c.fill();
+					c.restore();
+				}
+
+				function draw() {
+					ctx.clearRect(0, 0, width, height);
+					particles.forEach(p => {
+						let alpha = p.baseOpacity;
+						const fadeInFrames = 30;
+						if (p.life < fadeInFrames) {
+							alpha *= (p.life / fadeInFrames);
+						}
+						const distToEdge = Math.min(width + 40 - p.x, height + 40 - p.y);
+						if (distToEdge < 50) {
+							alpha *= Math.max(0, distToEdge / 50);
+						}
+
+						ctx.save();
+						ctx.globalAlpha = Math.max(0, alpha);
+						ctx.shadowBlur = p.glow;
+						ctx.shadowColor = p.color;
+						ctx.fillStyle = p.color;
+						switch (p.type) {
+							case 'star': drawStar(ctx, p.x, p.y, p.size, p.rotation); break;
+							case 'moon': drawMoon(ctx, p.x, p.y, p.size, p.rotation); break;
+							case 'cross': drawCross(ctx, p.x, p.y, p.size, p.rotation); break;
+						}
+						ctx.restore();
+					});
+				}
+
+				function update() {
+					particles.forEach(p => {
+						p.life++;
+						p.x += p.speedX;
+						p.y += p.speedY;
+						p.rotation += p.rotationSpeed;
+
+						if (p.x > width + 40 || p.y > height + 40) {
+							if (Math.random() > 0.5) {
+								p.x = -Math.random() * 40;
+								p.y = Math.random() * height;
+							} else {
+								p.x = Math.random() * width;
+								p.y = -Math.random() * 40;
+							}
+							p.life = 0;
+						}
+					});
+				}
+
+				function animate() {
+					update();
+					draw();
+					heroDustAnimId = requestAnimationFrame(animate);
+				}
+
+				resize();
+				createParticles();
+				animate();
+
+				heroDustResizeHandler = () => { resize(); createParticles(); };
+				window.addEventListener('resize', heroDustResizeHandler);
+
+				heroDustVisHandler = () => {
+					if (document.hidden) {
+						cancelAnimationFrame(heroDustAnimId);
+					} else {
+						animate();
+					}
+				};
+				document.addEventListener('visibilitychange', heroDustVisHandler);
+			}
+
+			initHeroDustCanvas();
+			document.addEventListener('astro:page-load', initHeroDustCanvas);
 		}
 
-		initHeroDustCanvas();
-		document.addEventListener('astro:page-load', initHeroDustCanvas);
-	});
+		document.addEventListener('astro:page-load', init);
+		document.addEventListener('DOMContentLoaded', init);
+	})();
 </script>
 
 
