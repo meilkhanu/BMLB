@@ -1248,6 +1248,11 @@
     // CKEditor 5 初始化
     // ============================================================
     function initCKEditor() {
+      if (typeof ClassicEditor === 'undefined') {
+        console.error('CKEditor 5 未加载');
+        return;
+      }
+
       if (ckEditor) {
         ckEditor.destroy();
         ckEditor = null;
@@ -1348,7 +1353,6 @@
           },
           placeholder: '开始写作...',
           extraPlugins: [uploadPlugin],
-          removePlugins: ['CKBox', 'CKBoxImageEdit', 'EasyImage', 'CKFinder'],
         })
         .then(editor => {
           ckEditor = editor;
@@ -1453,9 +1457,9 @@
       const data = collectFormData();
       data.status = status;
 
-      // 先从 TinyMCE 获取最新正文内容（必须在校验之前）
-      if (tinymceReady) {
-        data.content = tinymce.get('field-content')?.getContent() || '';
+      // 先从 CKEditor 5 获取最新正文内容
+      if (ckEditor) {
+        data.content = ckEditor.getData() || '';
       }
 
       // 如果 Slug 为空，自动根据标题生成（新建/编辑都适用）
