@@ -6,7 +6,7 @@ import SearchIcon from '../components/icons/SearchIcon.astro';
 import UserIcon from '../components/icons/UserIcon.astro';
 import HamburgerIcon from '../components/icons/HamburgerIcon.astro';
 
-const { title = '贝谟拉比' } = Astro.props;
+const { title = '贝谟拉比', description } = Astro.props;
 const currentPath = Astro.url.pathname;
 const navLinkClass = (path: string) => {
 	const base = 'text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1';
@@ -21,6 +21,7 @@ const navLinkClass = (path: string) => {
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{title}</title>
+	{description && <meta name="description" content={description} />}
 	<script is:inline>
 		(function() {
 			const stored = localStorage.getItem('theme');
