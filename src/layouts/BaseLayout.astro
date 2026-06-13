@@ -109,36 +109,36 @@ const navLinkClass = (path: string) => {
 	<audio id="global-audio" data-astro-transition-persist="global-audio" preload="none"></audio>
 
 	<aside id="draggable-player" data-astro-transition-persist="draggable-player" data-expanded="false"
-		class="fixed z-[9999] cursor-grab active:cursor-grabbing bg-gradient-to-r from-[#4ade80] to-[#2dd4bf] rounded-full shadow-lg select-none transition-all duration-400 ease-out"
-		style="width:48px;height:48px;bottom:24px;right:24px;">
+		class="fixed z-[9999] cursor-grab active:cursor-grabbing rounded-full shadow-lg select-none transition-all duration-300 ease-out"
+		style="width:48px;height:48px;bottom:24px;right:24px;background:linear-gradient(135deg,#8B7CB3,#B26A8B);">
 		<!-- 收缩态：音乐图标 -->
 		<div id="player-collapsed" class="absolute inset-0 flex items-center justify-center">
-			<svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+			<svg id="float-music-icon" class="w-5 h-5 text-white transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
 				<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
 			</svg>
+			<!-- 播放中呼吸光环 -->
+			<div id="float-pulse-ring" class="absolute inset-[-4px] rounded-full border-2 border-white/40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 		</div>
 
 		<!-- 展开态：控制栏 -->
 		<div id="player-expanded" class="absolute inset-0 flex items-center justify-between px-4 opacity-0 pointer-events-none">
-			<!-- 左侧控制组 -->
 			<div class="flex items-center gap-2">
-				<button data-no-drag type="button" id="float-prev" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+				<button data-no-drag type="button" id="float-prev" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-play" class="w-8 h-8 flex items-center justify-center rounded-full bg-black text-[#4ade80] hover:scale-105 active:scale-95 transition-all cursor-pointer border-none">
+				<button data-no-drag type="button" id="float-play" class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#8B7CB3] hover:scale-105 active:scale-95 transition-all cursor-pointer border-none shadow-md">
 					<svg id="float-icon-play" class="w-4 h-4 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
 					<svg id="float-icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-next" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+				<button data-no-drag type="button" id="float-next" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-mode" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black text-[10px] font-bold" title="列表循环">🔁</button>
-				<button data-no-drag type="button" id="float-list" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors cursor-pointer border-none bg-transparent text-black">
+				<button data-no-drag type="button" id="float-mode" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white text-[10px] font-bold" title="列表循环">🔁</button>
+				<button data-no-drag type="button" id="float-list" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
 				</button>
 			</div>
-			<!-- 右侧歌曲标题 -->
-			<span id="float-title" class="text-sm font-bold text-black truncate max-w-[120px] ml-2">暂无音乐</span>
+			<span id="float-title" class="text-sm font-bold text-white truncate max-w-[120px] ml-2">暂无音乐</span>
 		</div>
 	</aside>
 
@@ -528,6 +528,7 @@ const navLinkClass = (path: string) => {
 			function updateFloatUI() {
 				if (!state.songs || state.songs.length === 0) {
 					floatTitle.textContent = '暂无音乐';
+					player.classList.remove('is-playing');
 					return;
 				}
 				const song = state.songs[state.currentIndex];
@@ -537,11 +538,12 @@ const navLinkClass = (path: string) => {
 				if (state.isPlaying) {
 					floatIconPlay.classList.add('hidden');
 					floatIconPause.classList.remove('hidden');
+					player.classList.add('is-playing');
 				} else {
 					floatIconPlay.classList.remove('hidden');
 					floatIconPause.classList.add('hidden');
+					player.classList.remove('is-playing');
 				}
-				// 模式按钮
 				const modeMap = { loop: '🔁', single: '🔂', shuffle: '🔀' };
 				if (floatModeBtn) floatModeBtn.textContent = modeMap[state.playMode] || '🔁';
 			}
@@ -640,14 +642,16 @@ const navLinkClass = (path: string) => {
 			document.getElementById('float-next').addEventListener('click', playNext);
 			floatModeBtn.addEventListener('click', switchMode);
 
-			// 点击收缩态圆点：开始播放或展开
+			// 点击收缩态：始终展开
 			collapsed.addEventListener('click', (e) => {
 				if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
-				if (state.songs.length && !state.isPlaying) {
-					window.playerToggle();
-				} else {
-					setExpanded(true);
-				}
+				setExpanded(true);
+			});
+
+			// 点击展开态空白区域：收起
+			expanded.addEventListener('click', (e) => {
+				if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+				if (e.target === expanded) setExpanded(false);
 			});
 
 			// ============================================================
@@ -848,5 +852,21 @@ const navLinkClass = (path: string) => {
 	#draggable-player[data-expanded="true"] #player-expanded {
 		opacity: 1;
 		pointer-events: auto;
+	}
+	/* 收缩态播放中呼吸动画 */
+	#draggable-player.is-playing #float-music-icon {
+		animation: float-icon-spin 3s linear infinite;
+	}
+	#draggable-player.is-playing #float-pulse-ring {
+		opacity: 1;
+		animation: float-pulse 2s ease-in-out infinite;
+	}
+	@keyframes float-icon-spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+	@keyframes float-pulse {
+		0%, 100% { transform: scale(1); opacity: 0.4; }
+		50% { transform: scale(1.15); opacity: 0.15; }
 	}
 </style>

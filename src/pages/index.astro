@@ -224,11 +224,11 @@ function formatDate(dateStr: string): string {
 						<div class="flex items-center gap-2">
 							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
 						</div>
-						<div id="player-visualizer" class="flex items-end gap-[2px] h-3">
-							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div>
-							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay: 0.2s"></div>
-							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[40%] animate-pulse" style="animation-delay: 0.4s"></div>
-							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[80%] animate-pulse" style="animation-delay: 0.1s"></div>
+						<div id="player-visualizer" class="flex items-end gap-[2px] h-3 opacity-30 transition-opacity duration-300">
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[60%]"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[100%]"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[40%]"></div>
+							<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[80%]"></div>
 						</div>
 					</div>
 
@@ -728,14 +728,20 @@ function formatDate(dateStr: string): string {
 			}
 
 			function updateSidebarPlayUI() {
+				const bars = visualizer ? visualizer.querySelectorAll('div') : [];
 				if (state.isPlaying) {
 					iconPlay.classList.add('hidden');
 					iconPause.classList.remove('hidden');
 					visualizer.classList.remove('opacity-30');
+					bars.forEach((bar, i) => {
+						bar.classList.add('animate-pulse');
+						bar.style.animationDelay = (i * 0.12) + 's';
+					});
 				} else {
 					iconPlay.classList.remove('hidden');
 					iconPause.classList.add('hidden');
 					visualizer.classList.add('opacity-30');
+					bars.forEach(bar => bar.classList.remove('animate-pulse'));
 				}
 			}
 
