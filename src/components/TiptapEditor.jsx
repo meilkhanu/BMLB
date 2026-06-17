@@ -48,21 +48,21 @@ function Dropdown({ label, value, options, onChange, className = '' }) {
 
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    document.addEventListener('pointerdown', handler);
+    return () => document.removeEventListener('pointerdown', handler);
   }, []);
 
   const current = options.find(o => o.value === value);
   return (
     <div ref={ref} className="relative">
-      <button type="button" onClick={() => setOpen(o => !o)}
+      <button type="button" onPointerDown={(e) => { e.stopPropagation(); setOpen(o => !o); }}
         className={`px-2 py-1 rounded-lg text-xs bg-transparent border border-[#E0E0E0] dark:border-[#333] text-[#666] dark:text-[#999] cursor-pointer hover:bg-[#8B7CB3]/10 ${className}`}>
         {current?.label || label}
       </button>
       {open && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] rounded-lg shadow-lg min-w-[120px] max-h-[240px] overflow-y-auto">
           {options.map(o => (
-            <button key={o.value} type="button" onClick={() => { onChange(o.value); setOpen(false); }}
+            <button key={o.value} type="button" onPointerDown={() => { onChange(o.value); setOpen(false); }}
               className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-[#8B7CB3]/10 cursor-pointer border-none bg-transparent ${o.value === value ? 'text-[#8B7CB3] font-bold' : 'text-[#666] dark:text-[#999]'}`}>
               {o.label}
             </button>
