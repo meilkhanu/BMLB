@@ -1,6 +1,7 @@
 ---
 // src/pages/admin/index.astro
-// 管理后台主页：文章列表 + 新建/编辑（CKEditor 5）+ 删除
+// 管理后台主页：文章列表 + 新建/编辑（Tiptap）+ 删除
+import TiptapEditor from '../../components/TiptapEditor.jsx';
 ---
 
 <!DOCTYPE html>
@@ -9,9 +10,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理后台 — 贝谟拉比</title>
-  <!-- CKEditor 5 CDN -->
-  <script is:inline src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-  <script is:inline src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/translations/zh-cn.js"></script>
 </head>
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
@@ -151,7 +149,9 @@
 
         <div class="mb-4">
           <label class="block text-xs font-medium text-[#999] mb-1.5">正文 *</label>
-          <textarea id="field-content" class="w-full min-h-[400px] px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] resize-y"></textarea>
+          <div id="tiptap-editor-container">
+            <TiptapEditor client:load placeholder="开始写作..." />
+          </div>
         </div>
 
         <!-- 操作按钮 -->
@@ -470,7 +470,6 @@
     // 全局状态
     // ============================================================
     let currentSlug = null;    // null = 新建模式，有值 = 编辑模式
-    let ckEditor = null;       // CKEditor 5 实例
     let deleteTarget = null;
     let nowStatusData = null;
     let currentMusicId = null;
@@ -984,15 +983,13 @@
         resetForm();
       }
 
-      // 初始化 CKEditor 5
-      initCKEditor();
+      // 设置 Tiptap 内容
+      if (slug) {
+        loadContentIntoEditor();
+      }
     }
 
     function closeEditor() {
-      if (ckEditor) {
-        ckEditor.destroy();
-        ckEditor = null;
-      }
       currentSlug = null;
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
@@ -1242,142 +1239,33 @@
       document.getElementById('field-coverImage').value = post.coverImage || '';
       document.getElementById('field-excerpt').value = post.excerpt || '';
       updateCoverPreview(post.coverImage || '');
-      // content 由 CKEditor 5 填充
+      // content 由 Tiptap 填充
     }
 
     // ============================================================
-    // CKEditor 5 初始化
+    // Tiptap 编辑器集成
     // ============================================================
-    function initCKEditor() {
-      if (typeof ClassicEditor === 'undefined') {
-        console.error('CKEditor 5 未加载');
-        return;
-      }
-
-      if (ckEditor) {
-        ckEditor.destroy();
-        ckEditor = null;
-      }
-
-      const textarea = document.getElementById('field-content');
-
-      // 自定义上传适配器
-      class UploadAdapter {
-        constructor(loader) {
-          this.loader = loader;
-        }
-        async upload() {
-          const file = await this.loader.file;
-          const formData = new FormData();
-          formData.append('file', file);
-
-          return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/upload', true);
-            xhr.onload = () => {
-              if (xhr.status === 401) {
-                reject('登录已过期，请刷新页面重新登录');
-                return;
-              }
-              if (xhr.status < 200 || xhr.status >= 300) {
-                try {
-                  const err = JSON.parse(xhr.responseText);
-                  reject(err.error || '上传失败');
-                } catch { reject('上传失败'); }
-                return;
-              }
-              try {
-                const result = JSON.parse(xhr.responseText);
-                if (result.url) {
-                  resolve({ default: result.url });
-                } else {
-                  reject('上传响应缺少 URL');
-                }
-              } catch { reject('上传响应解析失败'); }
-            };
-            xhr.onerror = () => reject('网络错误，上传失败');
-            xhr.send(formData);
-          });
-        }
-        abort() {}
-      }
-
-      function uploadPlugin(editor) {
-        editor.plugins.get('FileRepository').createUploadAdapter = (loader) => new UploadAdapter(loader);
-      }
-
-      ClassicEditor
-        .create(textarea, {
-          toolbar: [
-            'undo', 'redo',
-            '|', 'heading',
-            '|', 'bold', 'italic', 'underline', 'strikethrough',
-            '|', 'alignment',
-            '|', 'bulletedList', 'numberedList',
-            '|', 'outdent', 'indent',
-            '|', 'link', 'imageUpload', 'blockQuote',
-            '|', 'insertTable',
-          ],
-          heading: {
-            options: [
-              { model: 'paragraph', title: '正文', class: 'ck-heading_paragraph' },
-              { model: 'heading2', view: 'h2', title: '标题 2', class: 'ck-heading_heading2' },
-              { model: 'heading3', view: 'h3', title: '标题 3', class: 'ck-heading_heading3' },
-            ]
-          },
-          image: {
-            toolbar: [
-              'imageTextAlternative', 'toggleImageCaption',
-              '|', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
-            ]
-          },
-          table: {
-            contentToolbar: [
-              'tableColumn', 'tableRow', 'mergeTableCells',
-              'tableProperties', 'tableCellProperties'
-            ]
-          },
-          placeholder: '开始写作...',
-          extraPlugins: [uploadPlugin],
-          language: 'zh-cn',
-        })
-        .then(editor => {
-          ckEditor = editor;
-
-          // 全屏功能：添加按钮到工具栏
-          const toolbar = editor.ui.view.toolbar.element;
-          const fullscreenBtn = document.createElement('button');
-          fullscreenBtn.className = 'ck ck-button ck-toolbar__button';
-          fullscreenBtn.title = '全屏编辑';
-          fullscreenBtn.innerHTML = '<svg viewBox="0 0 20 20" width="20" height="20"><path d="M3 3h5v2H5v3H3V3zm9 0h5v5h-2V5h-3V3zM3 12h2v3h3v2H3v-5zm12 3h-3v2h5v-5h-2v3z"/></svg>';
-          fullscreenBtn.addEventListener('click', () => {
-            const container = editor.ui.view.editable.element.closest('.ck-editor');
-            container.classList.toggle('ck-editor-fullscreen');
-            editor.ui.update();
-          });
-          toolbar.appendChild(fullscreenBtn);
-
-          // 编辑模式下填充正文内容
-          if (currentSlug) {
-            loadContentIntoEditor(editor);
-          }
-        })
-        .catch(err => {
-          console.error('CKEditor 5 初始化失败:', err);
+    function loadContentIntoEditor() {
+      if (!currentSlug) return;
+      fetch(`/api/posts?slug=${currentSlug}&admin=1`)
+        .then(res => res.json())
+        .then(post => {
+          if (!post.content) return;
+          // 等 Tiptap React 组件挂载完成
+          const trySet = (retries = 0) => {
+            if (window._tiptapSetContent) {
+              window._tiptapSetContent(post.content);
+            } else if (retries < 20) {
+              setTimeout(() => trySet(retries + 1), 100);
+            }
+          };
+          trySet();
         });
     }
 
-    async function loadContentIntoEditor(editor) {
-      const res = await fetch(`/api/posts?slug=${currentSlug}&admin=1`);
-      const post = await res.json();
-      if (post.content && editor) {
-        editor.setData(post.content);
-      }
-    }
-
     function getContent() {
-      if (ckEditor) {
-        return ckEditor.getData() || '';
+      if (window._tiptapGetContent) {
+        return window._tiptapGetContent() || '';
       }
       return '';
     }
@@ -1444,10 +1332,8 @@
       const data = collectFormData();
       data.status = status;
 
-      // 先从 CKEditor 5 获取最新正文内容
-      if (ckEditor) {
-        data.content = ckEditor.getData() || '';
-      }
+      // 先从 Tiptap 获取最新正文内容
+      data.content = getContent();
 
       // 如果 Slug 为空，自动根据标题生成（新建/编辑都适用）
       if (!data.slug) {
@@ -1557,32 +1443,5 @@
       return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
     }
   </script>
-  <style>
-    /* CKEditor 5 全屏模式 */
-    .ck-editor-fullscreen {
-      position: fixed !important;
-      inset: 0;
-      z-index: 10000;
-      background: #FAFAFA;
-    }
-    .dark .ck-editor-fullscreen {
-      background: #0F0F0F;
-    }
-    .ck-editor-fullscreen .ck-editor__top,
-    .ck-editor-fullscreen .ck-editor__bottom {
-      position: sticky;
-      z-index: 10001;
-    }
-    .ck-editor-fullscreen .ck-editor__top {
-      top: 0;
-    }
-    .ck-editor-fullscreen .ck-editor__bottom {
-      bottom: 0;
-    }
-    .ck-editor-fullscreen .ck-editor__main {
-      height: calc(100vh - 100px);
-      overflow-y: auto;
-    }
-  </style>
 </body>
 </html>
