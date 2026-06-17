@@ -28,6 +28,28 @@ const TextIndent = Extension.create({
   },
 });
 
+// ── TextStyle 自定义属性扩展（fontFamily + fontSize） ──
+const TextStyleAttributes = Extension.create({
+  name: 'textStyleAttributes',
+  addGlobalAttributes() {
+    return [{
+      types: ['textStyle'],
+      attributes: {
+        fontFamily: {
+          default: null,
+          parseHTML: element => element.style.fontFamily?.replace(/['"]/g, '') || null,
+          renderHTML: attrs => attrs.fontFamily ? { style: `font-family: ${attrs.fontFamily}` } : {},
+        },
+        fontSize: {
+          default: null,
+          parseHTML: element => element.style.fontSize || null,
+          renderHTML: attrs => attrs.fontSize ? { style: `font-size: ${attrs.fontSize}` } : {},
+        },
+      },
+    }];
+  },
+});
+
 function ToolbarButton({ onClick, active, disabled, children, title }) {
   return (
     <button type="button" onMouseDown={e => { e.preventDefault(); onClick(); }} disabled={disabled} title={title}
@@ -112,6 +134,7 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
       Placeholder.configure({ placeholder }),
       TextAlign.configure({ types: ['heading', 'paragraph'], alignments: ['left', 'center', 'right', 'justify'] }),
       TextStyle,
+      TextStyleAttributes,
       Color,
       Table.configure({ resizable: true }), TableRow, TableCell, TableHeader,
       CodeBlock, TextIndent,
@@ -187,10 +210,10 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
         <Dropdown label="正文" value={getHeadingVal()} options={HEADING_OPTIONS}
           onChange={v => { v === 'paragraph' ? editor.chain().focus().setParagraph().run() : editor.chain().focus().toggleHeading({ level: parseInt(v) }).run(); }} />
         <Dropdown label="字体" value={getFontFamily()} options={FONT_FAMILIES}
-          onChange={v => editor.chain().focus().setTextStyle(v ? { fontFamily: v } : { fontFamily: null }).run()} className="max-w-[80px] truncate" />
+          onChange={v => editor.chain().focus().setMark('textStyle', v ? { fontFamily: v } : { fontFamily: null }).run()} className="max-w-[80px] truncate" />
         <ToolbarDivider />
         <Dropdown label="字号" value={getFontSize()} options={FONT_SIZES}
-          onChange={v => editor.chain().focus().setTextStyle({ fontSize: v }).run()} />
+          onChange={v => editor.chain().focus().setMark('textStyle', { fontSize: v }).run()} />
 
         <ToolbarDivider />
         <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="粗体"><b>B</b></ToolbarButton>
