@@ -15,7 +15,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
   <!-- ========== 顶部栏 ========== -->
   <header class="fixed top-0 left-0 w-full h-16 z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
-    <div class="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
+    <div class="max-w-[1600px] mx-auto px-8 h-full flex items-center justify-between">
       <div class="flex items-center gap-4">
         <a href="/" class="text-lg font-bold no-underline text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] transition-colors">贝谟拉比</a>
         <span class="text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
@@ -31,7 +31,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
   </header>
 
   <!-- ========== 主体区域 ========== -->
-  <main class="pt-20 pb-12 px-6 max-w-[1400px] mx-auto">
+  <main class="pt-20 pb-16 px-8 max-w-[1600px] mx-auto">
 
     <!-- —— 文章列表 —— -->
     <div id="list-view">
@@ -56,11 +56,11 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           <table class="w-full text-sm">
             <thead>
               <tr class="bg-[#F5F5F5] dark:bg-[#1A1A1A] text-left">
-                <th class="px-5 py-3 font-medium text-[#999] text-xs w-16">状态</th>
-                <th class="px-5 py-3 font-medium text-[#999] text-xs">标题</th>
-                <th class="px-5 py-3 font-medium text-[#999] text-xs w-20">分类</th>
-                <th class="px-5 py-3 font-medium text-[#999] text-xs w-28">日期</th>
-                <th class="px-5 py-3 font-medium text-[#999] text-xs w-36">操作</th>
+                <th class="px-6 py-4 font-medium text-[#999] text-xs w-20">状态</th>
+                <th class="px-6 py-4 font-medium text-[#999] text-xs">标题</th>
+                <th class="px-6 py-4 font-medium text-[#999] text-xs w-24">分类</th>
+                <th class="px-6 py-4 font-medium text-[#999] text-xs w-32">日期</th>
+                <th class="px-6 py-4 font-medium text-[#999] text-xs w-40">操作</th>
               </tr>
             </thead>
             <tbody id="posts-tbody" class="divide-y divide-[#EAEAEA] dark:divide-[#2A2A2A]"></tbody>
@@ -79,21 +79,21 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         </button>
 
         <!-- 字段区 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">标题 *</label>
-            <input type="text" id="field-title" required class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">标题 *</label>
+            <input type="text" id="field-title" required class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">Slug（URL标识）*</label>
+            <label class="block text-xs font-medium text-[#999] mb-2">Slug（URL标识）*</label>
             <div class="flex gap-2">
-              <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="flex-1 px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-              <button type="button" id="gen-slug-btn" class="px-4 py-2.5 rounded-xl bg-[#F5F5F5] dark:bg-[#252525] text-xs font-bold text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">随机生成</button>
+              <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="flex-1 px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <button type="button" id="gen-slug-btn" class="px-4 py-3 rounded-xl bg-[#F5F5F5] dark:bg-[#252525] text-xs font-bold text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">随机生成</button>
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">分类 *</label>
-            <select id="field-category" required class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
+            <label class="block text-xs font-medium text-[#999] mb-2">分类 *</label>
+            <select id="field-category" required class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
               <option value="notes">札记</option>
               <option value="critique">时评簿</option>
               <option value="stack">车间</option>
@@ -103,43 +103,40 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">发布日期</label>
-            <input type="text" id="field-publishedAt" placeholder="如 2026-05-04，留空则取今天" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">标签（逗号分隔）</label>
-            <input type="text" id="field-tags" placeholder="建站, Astro" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">发布日期</label>
+            <input type="text" id="field-publishedAt" placeholder="如 2026-05-04，留空则取今天" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">状态</label>
-            <select id="field-status" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
+            <label class="block text-xs font-medium text-[#999] mb-2">标签（逗号分隔）</label>
+            <input type="text" id="field-tags" placeholder="建站, Astro" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#999] mb-2">状态</label>
+            <select id="field-status" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all cursor-pointer">
               <option value="draft">草稿</option>
               <option value="published">发布</option>
             </select>
           </div>
         </div>
 
-        <div class="mb-4">
-          <label class="block text-xs font-medium text-[#999] mb-1.5">摘要</label>
-          <textarea id="field-excerpt" rows="2" placeholder="留空则自动从正文截取..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-[#999] mb-2">摘要</label>
+          <textarea id="field-excerpt" rows="2" placeholder="留空则自动从正文截取..." class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
         </div>
 
         <!-- 封面图：支持 URL 输入或本地上传 -->
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5 mb-5">
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">封面图（可选）</label>
-            <input type="text" id="field-coverImage" placeholder="https://... 或直接上传" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-            <div class="flex gap-2 mt-2">
+            <label class="block text-xs font-medium text-[#999] mb-2">封面图（可选）</label>
+            <input type="text" id="field-coverImage" placeholder="https://... 或直接上传" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <div class="flex gap-2 mt-2.5">
               <input type="file" id="cover-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-              <button type="button" id="cover-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+              <button type="button" id="cover-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
             </div>
-            <span id="cover-upload-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+            <span id="cover-upload-status" class="text-[11px] text-[#999] mt-2 block"></span>
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">预览</label>
+            <label class="block text-xs font-medium text-[#999] mb-2">预览</label>
             <div id="cover-preview-container" class="w-full aspect-[16/9] rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] flex items-center justify-center overflow-hidden">
               <span id="cover-placeholder" class="text-xs text-[#999]">暂无封面</span>
               <img id="cover-preview" src="" alt="封面预览" class="hidden w-full h-full object-cover" />
@@ -147,17 +144,17 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </div>
         </div>
 
-        <div class="mb-4">
-          <label class="block text-xs font-medium text-[#999] mb-1.5">正文 *</label>
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-[#999] mb-2">正文 *</label>
           <div id="tiptap-editor-container">
             <TiptapEditor client:load placeholder="开始写作..." />
           </div>
         </div>
 
         <!-- 操作按钮 -->
-        <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
-          <button type="button" id="save-draft-btn" class="px-6 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">保存草稿</button>
-          <button type="button" id="publish-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">发布</button>
+        <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <button type="button" id="save-draft-btn" class="px-8 py-3 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">保存草稿</button>
+          <button type="button" id="publish-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">发布</button>
           <span id="save-status" class="text-xs text-[#999] ml-2"></span>
         </div>
       </form>
@@ -211,55 +208,55 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       </div>
 
       <!-- 编辑表单 -->
-      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
-        <h3 class="text-lg font-bold mb-6">编辑 /now 状态面板</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 md:p-10 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-8">编辑 /now 状态面板</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">开始时间 *</label>
-            <input type="text" id="now-start-date" required placeholder="如 2026-04-30" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">开始时间 *</label>
+            <input type="text" id="now-start-date" required placeholder="如 2026-04-30" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">预计结束 *</label>
-            <input type="text" id="now-end-date" required placeholder="如 2026-05-20" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">预计结束 *</label>
+            <input type="text" id="now-end-date" required placeholder="如 2026-05-20" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">当前阶段 *</label>
-            <input type="text" id="now-phase" required placeholder="如 Phase 2" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">当前阶段 *</label>
+            <input type="text" id="now-phase" required placeholder="如 Phase 2" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">进度（0-100）</label>
-            <input type="number" id="now-progress" min="0" max="100" placeholder="72" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">进度（0-100）</label>
+            <input type="number" id="now-progress" min="0" max="100" placeholder="72" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-xs font-medium text-[#999] mb-1.5">事项描述 *</label>
-          <textarea id="now-description" rows="4" required placeholder="描述当前正在进行的事项..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-[#999] mb-2">事项描述 *</label>
+          <textarea id="now-description" rows="4" required placeholder="描述当前正在进行的事项..." class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
         </div>
 
         <!-- Current Project 编辑 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">状态标签文字</label>
-            <input type="text" id="now-badge-text" placeholder="如 高投入推进中" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">状态标签文字</label>
+            <input type="text" id="now-badge-text" placeholder="如 高投入推进中" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-xs font-medium text-[#999] mb-1.5">项目描述</label>
-            <textarea id="now-project-description" rows="3" placeholder="描述当前项目的推进状态..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-[#999] mb-2">项目描述</label>
+            <textarea id="now-project-description" rows="3" placeholder="描述当前项目的推进状态..." class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
           </div>
 
           <!-- 项目截图上传 -->
-          <div class="mb-4">
-            <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">项目截图</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-5">
+            <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-5">项目截图</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <!-- 左侧：上传控件 -->
               <div>
-                <label class="block text-xs font-medium text-[#999] mb-1.5">上传截图</label>
+                <label class="block text-xs font-medium text-[#999] mb-2">上传截图</label>
                 <div class="flex gap-2">
                   <input type="file" id="now-screenshot-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-                  <button type="button" id="now-screenshot-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+                  <button type="button" id="now-screenshot-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
                 </div>
-                <span id="now-screenshot-upload-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+                <span id="now-screenshot-upload-status" class="text-[11px] text-[#999] mt-2 block"></span>
                 <input type="hidden" id="now-screenshot-url" />
               </div>
               <!-- 右侧：预览 -->
@@ -274,58 +271,58 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </div>
 
           <!-- 并行卡片矩阵编辑 -->
-        <div class="mb-4">
-          <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4">并行卡片矩阵</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-5">
+          <h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-5">并行卡片矩阵</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <!-- 正在阅读 -->
-            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-5 border border-[#EAEAEA] dark:border-[#2A2A2A]">
               <div class="flex items-center gap-2 mb-3">
                 <span class="text-lg">📖</span>
                 <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在阅读</span>
               </div>
-              <div class="space-y-2">
-                <input type="text" id="now-reading-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
-                <input type="text" id="now-reading-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              <div class="space-y-2.5">
+                <input type="text" id="now-reading-title" placeholder="事项名称" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-reading-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
               </div>
             </div>
             <!-- 正在学习 -->
-            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-5 border border-[#EAEAEA] dark:border-[#2A2A2A]">
               <div class="flex items-center gap-2 mb-3">
                 <span class="text-lg">💻</span>
                 <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在学习</span>
               </div>
-              <div class="space-y-2">
-                <input type="text" id="now-learning-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
-                <input type="text" id="now-learning-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              <div class="space-y-2.5">
+                <input type="text" id="now-learning-title" placeholder="事项名称" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-learning-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
               </div>
             </div>
             <!-- 正在研究 -->
-            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-5 border border-[#EAEAEA] dark:border-[#2A2A2A]">
               <div class="flex items-center gap-2 mb-3">
                 <span class="text-lg">🔬</span>
                 <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在研究</span>
               </div>
-              <div class="space-y-2">
-                <input type="text" id="now-researching-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
-                <input type="text" id="now-researching-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              <div class="space-y-2.5">
+                <input type="text" id="now-researching-title" placeholder="事项名称" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-researching-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
               </div>
             </div>
             <!-- 正在听 -->
-            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-4 border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="bg-[#F5F5F5] dark:bg-[#1A1A1A] rounded-2xl p-5 border border-[#EAEAEA] dark:border-[#2A2A2A]">
               <div class="flex items-center gap-2 mb-3">
                 <span class="text-lg">🎵</span>
                 <span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">正在听</span>
               </div>
-              <div class="space-y-2">
-                <input type="text" id="now-listening-title" placeholder="事项名称" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
-                <input type="text" id="now-listening-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              <div class="space-y-2.5">
+                <input type="text" id="now-listening-title" placeholder="事项名称" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <input type="text" id="now-listening-subtitle" placeholder="进度或副标题" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
               </div>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
-          <button type="button" id="save-now-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
+        <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <button type="button" id="save-now-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
           <span id="now-save-status" class="text-xs text-[#999]"></span>
         </div>
       </div>
@@ -338,24 +335,24 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         返回列表
       </button>
 
-      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
-        <h3 class="text-lg font-bold mb-6">编辑微日志</h3>
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 md:p-10 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-8">编辑微日志</h3>
 
         <!-- 新增表单 -->
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_120px_100px] gap-3 mb-6 items-end">
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_140px_120px] gap-4 mb-8 items-end">
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">内容</label>
-            <input type="text" id="activity-new-content" placeholder="如 完成归档页设计" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">内容</label>
+            <input type="text" id="activity-new-content" placeholder="如 完成归档页设计" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-[#999] mb-1.5">日期</label>
-            <input type="text" id="activity-new-date" placeholder="MM-DD" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <label class="block text-xs font-medium text-[#999] mb-2">日期</label>
+            <input type="text" id="activity-new-date" placeholder="MM-DD" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
           </div>
           <div>
-            <button type="button" id="activity-add-btn" class="w-full py-2.5 rounded-xl bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">添加</button>
+            <button type="button" id="activity-add-btn" class="w-full py-3 rounded-xl bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">添加</button>
           </div>
         </div>
-        <span id="activity-add-status" class="text-[11px] text-[#999] block -mt-3 mb-4"></span>
+        <span id="activity-add-status" class="text-[11px] text-[#999] block -mt-4 mb-5"></span>
 
         <!-- 现有列表 -->
         <div id="activity-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
@@ -377,8 +374,8 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         返回列表
       </button>
 
-      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-6 md:p-8 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
-        <div class="flex items-center justify-between mb-6">
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 md:p-10 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <div class="flex items-center justify-between mb-8">
           <h3 class="text-lg font-bold">音乐管理</h3>
           <button type="button" id="music-new-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 添加歌曲</button>
         </div>
@@ -390,40 +387,40 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
         <!-- 歌曲编辑表单（默认隐藏） -->
         <div id="music-form" class="hidden pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
-          <h4 class="text-sm font-bold mb-4" id="music-form-title">添加歌曲</h4>
+          <h4 class="text-sm font-bold mb-5" id="music-form-title">添加歌曲</h4>
           <input type="hidden" id="music-id" />
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">歌曲标题 *</label>
-              <input type="text" id="music-title" placeholder="歌曲名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <label class="block text-xs font-medium text-[#999] mb-2">歌曲标题 *</label>
+              <input type="text" id="music-title" placeholder="歌曲名" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
             </div>
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">艺术家</label>
-              <input type="text" id="music-artist" placeholder="艺术家名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <label class="block text-xs font-medium text-[#999] mb-2">艺术家</label>
+              <input type="text" id="music-artist" placeholder="艺术家名" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
             </div>
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">专辑</label>
-              <input type="text" id="music-album" placeholder="专辑名" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <label class="block text-xs font-medium text-[#999] mb-2">专辑</label>
+              <input type="text" id="music-album" placeholder="专辑名" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
             </div>
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">排序</label>
-              <input type="number" id="music-sort" placeholder="0" class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <label class="block text-xs font-medium text-[#999] mb-2">排序</label>
+              <input type="number" id="music-sort" placeholder="0" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
             </div>
           </div>
 
           <!-- 封面 -->
-          <div class="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 mb-4">
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5 mb-5">
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">封面图 URL</label>
-              <input type="text" id="music-cover-url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-              <div class="flex gap-2 mt-2">
+              <label class="block text-xs font-medium text-[#999] mb-2">封面图 URL</label>
+              <input type="text" id="music-cover-url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <div class="flex gap-2 mt-2.5">
                 <input type="file" id="music-cover-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-                <button type="button" id="music-cover-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传封面</button>
+                <button type="button" id="music-cover-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传封面</button>
               </div>
-              <span id="music-cover-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+              <span id="music-cover-status" class="text-[11px] text-[#999] mt-2 block"></span>
             </div>
             <div>
-              <label class="block text-xs font-medium text-[#999] mb-1.5">封面预览</label>
+              <label class="block text-xs font-medium text-[#999] mb-2">封面预览</label>
               <div id="music-cover-preview-box" class="w-full aspect-square rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] flex items-center justify-center overflow-hidden">
                 <span id="music-cover-placeholder" class="text-xs text-[#999]">暂无封面</span>
                 <img id="music-cover-preview" src="" alt="封面预览" class="hidden w-full h-full object-cover" />
@@ -432,19 +429,19 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </div>
 
           <!-- 音频文件 -->
-          <div class="mb-4">
-            <label class="block text-xs font-medium text-[#999] mb-1.5">音频文件 *</label>
-            <input type="text" id="music-audio-url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-            <div class="flex gap-2 mt-2">
+          <div class="mb-5">
+            <label class="block text-xs font-medium text-[#999] mb-2">音频文件 *</label>
+            <input type="text" id="music-audio-url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            <div class="flex gap-2 mt-2.5">
               <input type="file" id="music-audio-file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/mp4" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-              <button type="button" id="music-audio-upload-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传音频</button>
+              <button type="button" id="music-audio-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传音频</button>
             </div>
-            <span id="music-audio-status" class="text-[11px] text-[#999] mt-1.5 block"></span>
+            <span id="music-audio-status" class="text-[11px] text-[#999] mt-2 block"></span>
           </div>
 
-          <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
-            <button type="button" id="music-save-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存</button>
-            <button type="button" id="music-cancel-btn" class="px-6 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">取消</button>
+          <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <button type="button" id="music-save-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存</button>
+            <button type="button" id="music-cancel-btn" class="px-8 py-3 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">取消</button>
             <span id="music-save-status" class="text-xs text-[#999]"></span>
           </div>
         </div>
@@ -939,14 +936,14 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         const date = p.publishedAt || '—';
         return `
           <tr class="hover:bg-[#F5F5F5] dark:hover:bg-[#1A1A1A] transition-colors">
-            <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${statusClass}">${statusText}</span></td>
-            <td class="px-5 py-3 font-medium">${escapeHtml(p.title)}</td>
-            <td class="px-5 py-3 text-[#999] text-xs">${catName}</td>
-            <td class="px-5 py-3 text-[#999] text-xs font-mono">${date}</td>
-            <td class="px-5 py-3">
-              <div class="flex gap-2">
-                <button onclick="editPost('${p.slug}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-[#8B7CB3] hover:text-white transition-colors cursor-pointer border-none">编辑</button>
-                <button onclick="confirmDelete('${p.slug}', '${escapeJs(p.title)}')" class="px-3 py-1 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-red-500 hover:text-white transition-colors cursor-pointer border-none">删除</button>
+            <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-md text-[10px] font-bold ${statusClass}">${statusText}</span></td>
+            <td class="px-6 py-4 font-medium">${escapeHtml(p.title)}</td>
+            <td class="px-6 py-4 text-[#999] text-xs">${catName}</td>
+            <td class="px-6 py-4 text-[#999] text-xs font-mono">${date}</td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2.5">
+                <button onclick="editPost('${p.slug}')" class="px-4 py-1.5 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-[#8B7CB3] hover:text-white transition-colors cursor-pointer border-none">编辑</button>
+                <button onclick="confirmDelete('${p.slug}', '${escapeJs(p.title)}')" class="px-4 py-1.5 rounded-lg text-xs font-medium bg-[#F5F5F5] dark:bg-[#252525] hover:bg-red-500 hover:text-white transition-colors cursor-pointer border-none">删除</button>
               </div>
             </td>
           </tr>

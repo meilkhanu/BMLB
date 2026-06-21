@@ -144,7 +144,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 
 	<div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-32 pb-12">
 		<!-- 标题区 -->
-		<div class="mb-12">
+		<div class="mb-12" data-animate>
 			<div class="mb-16 ml-2 md:ml-0">
 				<h1 class="text-4xl md:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 tracking-tight">Archive</h1>
 				<p class="text-base md:text-lg text-[#666] dark:text-[#999] tracking-wide">过往，现在，未来。因果能否超脱视界？</p>
@@ -173,7 +173,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 				<div class="absolute left-[12px] top-0 bottom-0 w-0 border-l-2 border-dashed border-[#E5E5E5] dark:border-[#222]"></div>
 
 				{yearGroups.length > 0 ? yearGroups.map((yg, yi) => (
-					<section id={`year-${yg.year}`} class="relative mb-12">
+					<section id={`year-${yg.year}`} class="relative mb-12" data-animate>
 						<!-- 年份大节点 -->
 						<div class="sticky top-16 z-20 flex items-center gap-4 py-4 -ml-2 px-2 bg-[#FAFAFA] dark:bg-[#0F0F0F] mb-4 relative transition-colors duration-300">
 							<div class="w-6 h-6 rounded-full border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10" style={`background-color: ${yearColors[yi % yearColors.length]}`}></div>

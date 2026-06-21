@@ -128,7 +128,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 		<!-- 右侧：主内容区 -->
 		<main class="flex-1 min-w-0">
 			<!-- ==================== 1. 首屏 Hero ==================== -->
-			<section id="hero" class="py-24 min-h-[70vh] flex items-center relative overflow-hidden">
+			<section id="hero" class="py-24 min-h-[70vh] flex items-center relative overflow-hidden" data-animate>
 				<!-- 极简底纹：微弱的制图网格 -->
 				<div class="absolute inset-0 bg-[linear-gradient(to_right,#8B7CB315_1px,transparent_1px),linear-gradient(to_bottom,#8B7CB315_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none z-0"></div>
 
@@ -152,7 +152,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 			</section>
 
 			<!-- ==================== 2. 文学感区 Spirit ==================== -->
-			<section id="spirit" class="py-12 md:py-16">
+			<section id="spirit" class="py-12 md:py-16" data-animate>
 				
 				<!-- 2.1 贝谟拉比 Naming -->
 				<div id="naming" class="py-8">
@@ -183,7 +183,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 				</div>
 
 				<!-- 2.2 Why This Site Exists -->
-				<div id="why" class="py-12 mt-4 md:mt-8">
+				<div id="why" class="py-12 mt-4 md:mt-8" data-animate>
 					<div class="max-w-[1000px] space-y-8 text-lg md:text-xl text-[#444] dark:text-[#AAA] leading-[1.8]">
 						<p class="transition-colors duration-300 hover:text-[#8B7CB3] dark:hover:text-[#E8913A]">
 							我想歇一歇，想记录，想分享，想保留一个属于自己的缓慢空间，<br />
@@ -216,7 +216,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						
 						<!-- 左侧：Site Information (紫色系微光) -->
 						<!-- 移除了 colophon-card，注入玻璃态与悬浮交互 -->
-						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30 transition-all duration-500 relative overflow-hidden">
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30" data-animate transition-all duration-500 relative overflow-hidden">
 							<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-6 tracking-tight group-hover:text-[#8B7CB3] transition-colors duration-500">Site Information</h3>
 							<ul class="space-y-2 text-sm text-[#666] dark:text-[#999]">
 								<!-- 列表项增加了 -mx-2 px-2 的内边距，实现 Hover 时整行背景微微高亮的交互 -->
@@ -240,7 +240,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						</div>
 
 						<!-- 右侧：Phase 2 状态卡片 (绿色系微光) -->
-						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#7CB38B]/30 transition-all duration-500 relative overflow-hidden">
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#7CB38B]/30" data-animate transition-all duration-500 relative overflow-hidden">
 							<!-- 将光晕改为绿色系，并添加悬浮时加深的过渡效果 -->
 							<div class="absolute top-0 right-0 w-32 h-32 bg-[#7CB38B]/10 dark:bg-[#7CB38B]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 							

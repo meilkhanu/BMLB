@@ -135,3 +135,140 @@ export async function deletePost(slug: string): Promise<{ success: boolean; dele
     body: JSON.stringify({ slug }),
   });
 }
+
+// —— About 页面 ——
+
+export interface AboutConfig {
+  heroImage: string;
+  heroSubtitle: string;
+  breadcrumbSub: string;
+  introTitle: string;
+  introParagraphs: string[];
+  basicTitle: string;
+  basicItems: { label: string; value: string }[];
+  skillsTitle: string;
+  statusTitle: string;
+  statusText: string;
+  altTitle: string;
+  altDescription: string;
+}
+
+export interface AboutSkill {
+  id: number;
+  name: string;
+  sortOrder: number;
+}
+
+export interface AboutWork {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+  sortOrder: number;
+}
+
+export interface AboutLink {
+  id: number;
+  title: string;
+  description: string;
+  url: string;
+  actionText: string;
+  sortOrder: number;
+}
+
+export interface AboutData {
+  config: AboutConfig;
+  skills: AboutSkill[];
+  works: AboutWork[];
+  links: AboutLink[];
+}
+
+/** 获取全部 about 数据（公开） */
+export async function getAboutData(): Promise<AboutData> {
+  return request<AboutData>("/about");
+}
+
+/** 更新 about 配置（需登录） */
+export async function updateAboutConfig(data: Partial<AboutConfig>): Promise<AboutConfig> {
+  return request<AboutConfig>("/about/config", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 获取技能列表（公开） */
+export async function getAboutSkills(): Promise<AboutSkill[]> {
+  return request<AboutSkill[]>("/about/skills");
+}
+
+/** 新增技能（需登录） */
+export async function createAboutSkill(data: { name: string; sortOrder?: number }): Promise<AboutSkill> {
+  return request<AboutSkill>("/about/skills", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 删除技能（需登录） */
+export async function deleteAboutSkill(id: number): Promise<{ success: boolean }> {
+  return request("/about/skills?id=" + id, {
+    method: "DELETE",
+  });
+}
+
+/** 获取作品列表（公开） */
+export async function getAboutWorks(): Promise<AboutWork[]> {
+  return request<AboutWork[]>("/about/works");
+}
+
+/** 新增作品（需登录） */
+export async function createAboutWork(data: { title: string; description?: string; tags?: string[]; image?: string; sortOrder?: number }): Promise<AboutWork> {
+  return request<AboutWork>("/about/works", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 更新作品（需登录） */
+export async function updateAboutWork(data: Partial<AboutWork> & { id: number }): Promise<AboutWork> {
+  return request<AboutWork>("/about/works", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 删除作品（需登录） */
+export async function deleteAboutWork(id: number): Promise<{ success: boolean }> {
+  return request("/about/works?id=" + id, {
+    method: "DELETE",
+  });
+}
+
+/** 获取链接列表（公开） */
+export async function getAboutLinks(): Promise<AboutLink[]> {
+  return request<AboutLink[]>("/about/links");
+}
+
+/** 新增链接（需登录） */
+export async function createAboutLink(data: { title: string; description?: string; url: string; actionText?: string; sortOrder?: number }): Promise<AboutLink> {
+  return request<AboutLink>("/about/links", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 更新链接（需登录） */
+export async function updateAboutLink(data: Partial<AboutLink> & { id: number }): Promise<AboutLink> {
+  return request<AboutLink>("/about/links", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+/** 删除链接（需登录） */
+export async function deleteAboutLink(id: number): Promise<{ success: boolean }> {
+  return request("/about/links?id=" + id, {
+    method: "DELETE",
+  });
+}

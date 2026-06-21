@@ -151,7 +151,8 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
 <BaseLayout title="/now">
   <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-[100px] pb-16 space-y-8">
     <!-- 第一行：状态面板 -->
-    <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 p-6 md:p-8 relative overflow-hidden">
+    <div
+      class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm p-6 md:p-8 relative overflow-hidden mb-8">
 			<!-- 装饰性光晕（在左上角放置环境光，与下方超大卡片的右上角光晕形成对角呼应） -->
       <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0"></div>
 	  		<div class="flex flex-col md:flex-row gap-6 relative z-10">
@@ -205,7 +206,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       
       <!-- 卡片 1：正在阅读 -->
-      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-0" data-animate>
         <!-- 隐性交互：背景巨型模糊 Emoji -->
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">📖</div>
         <!-- 前景内容区 -->
@@ -218,7 +219,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
       </div>
 
       <!-- 卡片 2：正在学习 -->
-      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-1" data-animate>
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">💻</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">💻</div>
@@ -229,7 +230,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
       </div>
 
       <!-- 卡片 3：正在研究 -->
-      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-2" data-animate>
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🔬</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🔬</div>
@@ -240,7 +241,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
       </div>
 
       <!-- 卡片 4：正在听 -->
-      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer">
+            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-3" data-animate>
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🎵</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🎵</div>
@@ -253,7 +254,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     </div>
 
     <!-- 第三行：Current Project 超大卡片 -->
-    <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden">
+        <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden" data-animate>
 			<!-- 装饰性光晕（在卡片右上角微微发光，增加空间感） -->
 			<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
       		<div class="flex flex-col md:flex-row gap-8">
@@ -316,7 +317,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     <!-- 第四行：左右双栏 -->
     <div class="grid grid-cols-1 md:grid-cols-[30%_1fr] gap-6">
     <!-- 左侧：微日志 (Dashboard Activity Feed 风格) -->
-        <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col justify-between">
+            <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col justify-between" data-animate>
           <div class="flex items-center justify-between mb-5">
             <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Activity Feed</p>
             <span class="text-[9px] font-bold text-[#999] uppercase tracking-wider bg-black/5 dark:bg-white/5 px-2 py-1 rounded-md">Recent</span>
@@ -357,7 +358,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
           </div>
         </div>
       <!-- 右侧：留言板 -->
-      <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col h-full">
+            <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col h-full" data-animate>
         <!-- 头部栏 -->
         <div class="flex items-center justify-between mb-5">
           <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Leave a Message</p>

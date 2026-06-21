@@ -13,6 +13,7 @@ import { handleNowActivity } from "../../lib/now-activity";
 import { handleNowMessages } from "../../lib/now-messages";
 import { handleComments } from "../../lib/comments";
 import { handleSongs } from "../../lib/songs";
+import { handleAbout } from "../../lib/about";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
@@ -43,6 +44,10 @@ export const ALL = async (ctx: APIContext): Promise<Response> => {
 
   if (url.pathname.startsWith("/api/now")) {
     return handleNow(ctx);
+  }
+
+  if (url.pathname.startsWith("/api/about")) {
+    return handleAbout(ctx);
   }
 
   if (url.pathname.startsWith("/api/songs")) {
