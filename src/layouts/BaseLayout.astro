@@ -251,10 +251,13 @@ try {
 		window.addEventListener('scroll', handleScroll);
 		handleScroll();
 
-		// 页脚 Canvas 星月粒子背景
-		let footerCanvasAnimId = null;
-		let footerCanvasResizeHandler = null;
-		let footerCanvasVisHandler = null;
+			// 页脚 Canvas 星月粒子背景
+			let footerCanvasAnimId = null;
+			let footerCanvasResizeHandler = null;
+			let footerCanvasVisHandler = null;
+			let footerCanvasViewObserver = null;
+			let footerCanvasDpr = 1;
+			let footerCanvasResizeFrameId = null;
 
 		function initFooterCanvas() {
 			const canvas = document.getElementById('footer-canvas');
@@ -269,25 +272,67 @@ try {
 			if (footerCanvasResizeHandler) {
 				window.removeEventListener('resize', footerCanvasResizeHandler);
 			}
-			if (footerCanvasVisHandler) {
-				document.removeEventListener('visibilitychange', footerCanvasVisHandler);
-			}
+				if (footerCanvasVisHandler) {
+					document.removeEventListener('visibilitychange', footerCanvasVisHandler);
+				}
+				if (footerCanvasViewObserver) {
+					footerCanvasViewObserver.disconnect();
+					footerCanvasViewObserver = null;
+				}
+				if (footerCanvasResizeFrameId) {
+					cancelAnimationFrame(footerCanvasResizeFrameId);
+					footerCanvasResizeFrameId = null;
+				}
 
-			const ctx = canvas.getContext('2d');
-			let width, height;
-			let particles = [];
+				const ctx = canvas.getContext('2d');
+				let width, height;
+				let particles = [];
+				let isFooterVisible = false;
+				let isAnimating = false;
 
-			function resize() {
-				const rect = footer.getBoundingClientRect();
-				width = rect.width;
-				height = rect.height;
-				const dpr = window.devicePixelRatio || 1;
-				canvas.width = width * dpr;
-				canvas.height = height * dpr;
-				canvas.style.width = width + 'px';
-				canvas.style.height = height + 'px';
-				ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			}
+				function resize() {
+					const rect = footer.getBoundingClientRect();
+					width = rect.width;
+					height = rect.height;
+					footerCanvasDpr = window.devicePixelRatio || 1;
+					canvas.width = width * footerCanvasDpr;
+					canvas.height = height * footerCanvasDpr;
+					canvas.style.width = width + 'px';
+					canvas.style.height = height + 'px';
+					ctx.setTransform(footerCanvasDpr, 0, 0, footerCanvasDpr, 0, 0);
+				}
+
+				function createSprite(p) {
+					const radius = Math.ceil(p.size + p.glow + 6);
+					const spriteSize = radius * 2;
+					const sprite = document.createElement('canvas');
+					sprite.width = spriteSize * footerCanvasDpr;
+					sprite.height = spriteSize * footerCanvasDpr;
+
+					const spriteCtx = sprite.getContext('2d');
+					spriteCtx.scale(footerCanvasDpr, footerCanvasDpr);
+					spriteCtx.translate(radius, radius);
+					spriteCtx.globalAlpha = p.opacity;
+					spriteCtx.shadowBlur = p.glow;
+					spriteCtx.shadowColor = p.color;
+					spriteCtx.fillStyle = p.color;
+
+					switch (p.type) {
+						case 'star':
+							drawStar(spriteCtx, 0, 0, p.size, 0);
+							break;
+						case 'moon':
+							drawMoon(spriteCtx, 0, 0, p.size, 0);
+							break;
+						case 'cross':
+							drawCross(spriteCtx, 0, 0, p.size, 0);
+							break;
+					}
+
+					p.sprite = sprite;
+					p.spriteOffset = radius;
+					p.spriteSize = spriteSize;
+				}
 
 			function createParticles() {
 				particles = [];
@@ -299,21 +344,23 @@ try {
 
 				layers.forEach(layer => {
 					for (let i = 0; i < layer.count; i++) {
-						particles.push({
-							x: Math.random() * width,
-							y: Math.random() * height,
-							size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
-							type: layer.types[Math.floor(Math.random() * layer.types.length)],
-							color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
+							const particle = {
+								x: Math.random() * width,
+								y: Math.random() * height,
+								size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
+								type: layer.types[Math.floor(Math.random() * layer.types.length)],
+								color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
 							speed: layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin),
 							rotation: Math.random() * Math.PI * 2,
-							rotationSpeed: (Math.random() - 0.5) * 0.015,
-							opacity: layer.opacityMin + Math.random() * (layer.opacityMax - layer.opacityMin),
-							glow: layer.glow + Math.random() * 4
-						});
-					}
-				});
-			}
+								rotationSpeed: (Math.random() - 0.5) * 0.015,
+								opacity: layer.opacityMin + Math.random() * (layer.opacityMax - layer.opacityMin),
+								glow: layer.glow + Math.random() * 4
+							};
+							createSprite(particle);
+							particles.push(particle);
+						}
+					});
+				}
 
 			function drawStar(ctx, x, y, size, rotation) {
 				ctx.save();
@@ -397,31 +444,17 @@ try {
 				ctx.restore();
 			}
 
-			function draw() {
-				ctx.clearRect(0, 0, width, height);
+				function draw() {
+					ctx.clearRect(0, 0, width, height);
 
-				particles.forEach(p => {
-					ctx.save();
-					ctx.globalAlpha = p.opacity;
-					ctx.shadowBlur = p.glow;
-					ctx.shadowColor = p.color;
-					ctx.fillStyle = p.color;
-
-					switch (p.type) {
-						case 'star':
-							drawStar(ctx, p.x, p.y, p.size, p.rotation);
-							break;
-						case 'moon':
-							drawMoon(ctx, p.x, p.y, p.size, p.rotation);
-							break;
-						case 'cross':
-							drawCross(ctx, p.x, p.y, p.size, p.rotation);
-							break;
-					}
-
-					ctx.restore();
-				});
-			}
+					particles.forEach(p => {
+						ctx.save();
+						ctx.translate(p.x, p.y);
+						ctx.rotate(p.rotation);
+						ctx.drawImage(p.sprite, -p.spriteOffset, -p.spriteOffset, p.spriteSize, p.spriteSize);
+						ctx.restore();
+					});
+				}
 
 			function update() {
 				particles.forEach(p => {
@@ -436,31 +469,60 @@ try {
 				});
 			}
 
-			function animate() {
-				update();
-				draw();
-				footerCanvasAnimId = requestAnimationFrame(animate);
-			}
+				function animate() {
+					if (!isAnimating) return;
+					update();
+					draw();
+					footerCanvasAnimId = requestAnimationFrame(animate);
+				}
 
-			resize();
-			createParticles();
-			animate();
-
-			footerCanvasResizeHandler = () => {
-				resize();
-				createParticles();
-			};
-			window.addEventListener('resize', footerCanvasResizeHandler);
-
-			footerCanvasVisHandler = () => {
-				if (document.hidden) {
-					cancelAnimationFrame(footerCanvasAnimId);
-				} else {
+				function start() {
+					if (isAnimating || document.hidden || !isFooterVisible) return;
+					isAnimating = true;
 					animate();
 				}
-			};
-			document.addEventListener('visibilitychange', footerCanvasVisHandler);
-		}
+
+				function stop() {
+					isAnimating = false;
+					if (footerCanvasAnimId) {
+						cancelAnimationFrame(footerCanvasAnimId);
+						footerCanvasAnimId = null;
+					}
+				}
+
+				resize();
+				createParticles();
+
+				footerCanvasResizeHandler = () => {
+					if (footerCanvasResizeFrameId) return;
+					footerCanvasResizeFrameId = requestAnimationFrame(() => {
+						footerCanvasResizeFrameId = null;
+						resize();
+						createParticles();
+						draw();
+					});
+				};
+				window.addEventListener('resize', footerCanvasResizeHandler);
+
+				footerCanvasVisHandler = () => {
+					if (document.hidden) {
+						stop();
+					} else {
+						start();
+					}
+				};
+				document.addEventListener('visibilitychange', footerCanvasVisHandler);
+
+				footerCanvasViewObserver = new IntersectionObserver((entries) => {
+					isFooterVisible = entries.some(entry => entry.isIntersecting);
+					if (isFooterVisible) {
+						start();
+					} else {
+						stop();
+					}
+				}, { rootMargin: '160px 0px' });
+				footerCanvasViewObserver.observe(footer);
+			}
 
 		initFooterCanvas();
 		document.addEventListener('astro:page-load', initFooterCanvas);
@@ -851,28 +913,55 @@ try {
 					updateFloatUI();
 				})();
 
-				// ============================================================
-				// 全局滚动淡入动画（IntersectionObserver）
-								// 全局滚动淡入动画（IntersectionObserver，可重复触发）
-								(function () {
-									const observer = new IntersectionObserver((entries) => {
-										entries.forEach(entry => {
-											if (entry.isIntersecting) {
-												entry.target.classList.add('animate-fade-in-up');
-											} else {
-												entry.target.classList.remove('animate-fade-in-up');
-											}
-										});
-									}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+					// ============================================================
+					// 全局滚动淡入动画（IntersectionObserver，可重复触发）
+					(function () {
+						if (window.__scrollFadeAnimator) {
+							window.__scrollFadeAnimator.scan();
+							return;
+						}
 
-									function scan() {
-										document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
-									}
+						const observedElements = new WeakSet();
+						const pendingEntries = new Map();
+						let frameId = 0;
 
-									document.addEventListener('astro:page-load', scan);
-									document.addEventListener('DOMContentLoaded', scan);
-									scan();
-								})();
+						function flushAnimations() {
+							frameId = 0;
+							pendingEntries.forEach((isIntersecting, target) => {
+								target.classList.toggle('animate-fade-in-up', isIntersecting);
+							});
+							pendingEntries.clear();
+						}
+
+						const observer = new IntersectionObserver((entries) => {
+							entries.forEach(entry => {
+								pendingEntries.set(entry.target, entry.isIntersecting);
+							});
+
+							if (!frameId) {
+								frameId = requestAnimationFrame(flushAnimations);
+							}
+						}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+						function isInitiallyVisible(el) {
+							const rect = el.getBoundingClientRect();
+							const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+							return rect.top < viewportHeight && rect.bottom > 0;
+						}
+
+						function scan() {
+							document.querySelectorAll('[data-animate]').forEach(el => {
+								if (observedElements.has(el) || isInitiallyVisible(el)) return;
+								observedElements.add(el);
+								observer.observe(el);
+							});
+						}
+
+						document.addEventListener('astro:page-load', scan);
+						document.addEventListener('DOMContentLoaded', scan);
+						window.__scrollFadeAnimator = { scan };
+						scan();
+					})();
 	</script>
 </body>
 </html>
@@ -969,14 +1058,18 @@ try {
 		animation: sweep 1.5s ease-in-out infinite;
 	} 
 	/* --- 元素淡入上浮动画（弹簧版） --- */
-	@keyframes fadeInUp {
-		from { opacity: 0; transform: translateY(28px) scale(0.96); }
-		to { opacity: 1; transform: translateY(0) scale(1); }
-	}
-	.animate-fade-in-up {
-		opacity: 0;
-		animation: fadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-	}
+		@keyframes fadeInUp {
+			from { opacity: 0; transform: translate3d(0, 28px, 0); }
+			to { opacity: 1; transform: translate3d(0, 0, 0); }
+		}
+		.animate-fade-in-up {
+			opacity: 0;
+			transform: translate3d(0, 28px, 0);
+			backface-visibility: hidden;
+			will-change: opacity, transform;
+			contain: paint;
+			animation: fadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+		}
 		/* 延迟变体（用于卡片依次出现） */
 		.animate-fade-in-up.delay-0 { animation-delay: 0s; }
 		.animate-fade-in-up.delay-1 { animation-delay: 0.08s; }

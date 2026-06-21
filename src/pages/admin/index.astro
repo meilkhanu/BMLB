@@ -24,6 +24,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">编辑 /now</button>
         <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">微日志</button>
         <button id="music-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">音乐</button>
+        <button id="edit-about-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">关于</button>
         <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
         <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
       </div>
@@ -448,6 +449,97 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       </div>
     </div>
 
+    <!-- —— 关于页编辑器 —— -->
+    <div id="about-editor-view" class="hidden">
+      <button type="button" id="about-back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
+
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 md:p-10 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-8">编辑关于页</h3>
+
+        <!-- ===== 基础配置 ===== -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-[#8B7CB3] mb-5">基础配置</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-2">Hero 副标题</label>
+              <input type="text" id="about-hero-subtitle" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-2">自我介绍标题</label>
+              <input type="text" id="about-intro-title" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-2">技能标题</label>
+              <input type="text" id="about-skills-title" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-2">状态标题</label>
+              <input type="text" id="about-status-title" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-[#999] mb-2">异次元标题</label>
+              <input type="text" id="about-alt-title" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+            </div>
+          </div>
+          <div class="mb-5">
+            <label class="block text-xs font-medium text-[#999] mb-2">自我介绍段落（一行一段）</label>
+            <textarea id="about-intro-paragraphs" rows="4" placeholder="每行一个段落，自动转为 JSON 数组" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none font-mono"></textarea>
+          </div>
+          <div class="mb-5">
+            <label class="block text-xs font-medium text-[#999] mb-2">当前状态</label>
+            <textarea id="about-status-text" rows="3" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+          </div>
+          <div class="mb-5">
+            <label class="block text-xs font-medium text-[#999] mb-2">异次元描述</label>
+            <textarea id="about-alt-desc" rows="2" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all resize-none"></textarea>
+          </div>
+          <!-- 基础信息 key-value -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-xs font-medium text-[#999]">基础信息（Key: Value）</label>
+              <button type="button" id="about-add-basic-btn" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加</button>
+            </div>
+            <div id="about-basic-items" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- ===== 技能列表 ===== -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-5">
+            <h4 class="text-sm font-bold text-[#8B7CB3]">技能列表</h4>
+            <button type="button" id="about-add-skill-btn" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加技能</button>
+          </div>
+          <div id="about-skills-list" class="space-y-2"></div>
+        </div>
+
+        <!-- ===== 作品列表 ===== -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-5">
+            <h4 class="text-sm font-bold text-[#8B7CB3]">作品列表</h4>
+            <button type="button" id="about-add-work-btn" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加作品</button>
+          </div>
+          <div id="about-works-list" class="space-y-3"></div>
+        </div>
+
+        <!-- ===== CTA 链接 ===== -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-5">
+            <h4 class="text-sm font-bold text-[#8B7CB3]">CTA 链接</h4>
+            <button type="button" id="about-add-link-btn" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加链接</button>
+          </div>
+          <div id="about-links-list" class="space-y-3"></div>
+        </div>
+
+        <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+          <button type="button" id="save-about-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存配置</button>
+          <span id="about-save-status" class="text-xs text-[#999]"></span>
+        </div>
+      </div>
+    </div>
+
     <!-- —— 删除确认弹窗 —— -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
@@ -470,6 +562,295 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     let deleteTarget = null;
     let nowStatusData = null;
     let currentMusicId = null;
+
+    // ============================================================
+    // 关于页编辑器
+    // ============================================================
+    let aboutData = { config: {}, skills: [], works: [], links: [] };
+
+    async function openAboutEditor() {
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.remove('hidden');
+      document.getElementById('about-save-status').textContent = '';
+      await loadAboutData();
+    }
+
+    function closeAboutEditor() {
+      document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      loadPosts();
+    }
+
+    async function loadAboutData() {
+      try {
+        const res = await fetch('/api/about');
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        aboutData = data;
+        populateAboutForm(data);
+      } catch (e) {
+        document.getElementById('about-save-status').textContent = '加载失败: ' + e.message;
+        document.getElementById('about-save-status').className = 'text-xs text-red-500';
+      }
+    }
+
+    function populateAboutForm(data) {
+      const c = data.config;
+      document.getElementById('about-hero-subtitle').value = c.heroSubtitle || '';
+      document.getElementById('about-intro-title').value = c.introTitle || '';
+      document.getElementById('about-skills-title').value = c.skillsTitle || '';
+      document.getElementById('about-status-title').value = c.statusTitle || '';
+      document.getElementById('about-alt-title').value = c.altTitle || '';
+      document.getElementById('about-intro-paragraphs').value = (c.introParagraphs || []).join('\n');
+      document.getElementById('about-status-text').value = c.statusText || '';
+      document.getElementById('about-alt-desc').value = c.altDescription || '';
+      renderAboutBasicItems(c.basicItems || []);
+      renderAboutSkills(data.skills || []);
+      renderAboutWorks(data.works || []);
+      renderAboutLinks(data.links || []);
+    }
+
+    function renderAboutBasicItems(items) {
+      const container = document.getElementById('about-basic-items');
+      container.innerHTML = items.map((item, i) => `
+        <div class="flex gap-2 items-center" data-idx="${i}">
+          <input type="text" value="${escapeAttr(item.label)}" placeholder="Key" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="label" />
+          <span class="text-[#999]">:</span>
+          <input type="text" value="${escapeAttr(item.value)}" placeholder="Value" class="flex-[2] px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="value" />
+          <button onclick="removeAboutBasicItem(${i})" class="text-xs text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+        </div>
+      `).join('');
+    }
+
+    function addAboutBasicItem() {
+      const items = collectAboutBasicItems();
+      items.push({ label: '', value: '' });
+      renderAboutBasicItems(items);
+    }
+
+    window.removeAboutBasicItem = (idx) => {
+      const items = collectAboutBasicItems();
+      items.splice(idx, 1);
+      renderAboutBasicItems(items);
+    };
+
+    function collectAboutBasicItems() {
+      const container = document.getElementById('about-basic-items');
+      const rows = container.querySelectorAll('[data-idx]');
+      return Array.from(rows).map(row => ({
+        label: row.querySelector('[data-field="label"]').value.trim(),
+        value: row.querySelector('[data-field="value"]').value.trim(),
+      })).filter(item => item.label || item.value);
+    }
+
+    function renderAboutSkills(skills) {
+      const container = document.getElementById('about-skills-list');
+      if (skills.length === 0) {
+        container.innerHTML = '<p class="text-sm text-[#999] text-center py-4">暂无技能，点击上方添加</p>';
+        return;
+      }
+      container.innerHTML = skills.map(s => `
+        <div class="flex gap-2 items-center p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-skill-id="${s.id}">
+          <input type="text" value="${escapeAttr(s.name)}" placeholder="技能名称" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="name" />
+          <input type="number" value="${s.sortOrder}" placeholder="排序" class="w-20 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="sort" />
+          <button onclick="deleteAboutSkill(${s.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+        </div>
+      `).join('');
+    }
+
+    async function addAboutSkill() {
+      const name = prompt('请输入技能名称：');
+      if (!name) return;
+      try {
+        const res = await fetch('/api/about/skills', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, sortOrder: aboutData.skills.length }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        await loadAboutData();
+      } catch (e) { alert('添加失败'); }
+    }
+
+    window.deleteAboutSkill = async (id) => {
+      if (!confirm('确认删除此技能？')) return;
+      try {
+        await fetch(`/api/about/skills?id=${id}`, { method: 'DELETE' });
+        await loadAboutData();
+      } catch (e) { alert('删除失败'); }
+    };
+
+    function renderAboutWorks(works) {
+      const container = document.getElementById('about-works-list');
+      if (works.length === 0) {
+        container.innerHTML = '<p class="text-sm text-[#999] text-center py-4">暂无作品，点击上方添加</p>';
+        return;
+      }
+      container.innerHTML = works.map(w => `
+        <div class="p-4 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-work-id="${w.id}">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <input type="text" value="${escapeAttr(w.title)}" placeholder="标题" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="title" />
+            <input type="text" value="${escapeAttr(w.image)}" placeholder="图片 URL" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="image" />
+          </div>
+          <input type="text" value="${escapeAttr(w.description)}" placeholder="描述" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all mb-3" data-field="desc" />
+          <div class="flex gap-2 items-center">
+            <input type="text" value="${escapeAttr((w.tags || []).join(', '))}" placeholder="标签（逗号分隔）" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="tags" />
+            <button onclick="deleteAboutWork(${w.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addAboutWork() {
+      try {
+        const res = await fetch('/api/about/works', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: '新作品', sortOrder: aboutData.works.length }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        await loadAboutData();
+      } catch (e) { alert('添加失败'); }
+    }
+
+    window.deleteAboutWork = async (id) => {
+      if (!confirm('确认删除此作品？')) return;
+      try {
+        await fetch(`/api/about/works?id=${id}`, { method: 'DELETE' });
+        await loadAboutData();
+      } catch (e) { alert('删除失败'); }
+    };
+
+    function renderAboutLinks(links) {
+      const container = document.getElementById('about-links-list');
+      if (links.length === 0) {
+        container.innerHTML = '<p class="text-sm text-[#999] text-center py-4">暂无链接，点击上方添加</p>';
+        return;
+      }
+      container.innerHTML = links.map(l => `
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto_auto] gap-3 items-center p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-link-id="${l.id}">
+          <input type="text" value="${escapeAttr(l.title)}" placeholder="标题" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="title" />
+          <input type="text" value="${escapeAttr(l.description)}" placeholder="描述" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="desc" />
+          <input type="text" value="${escapeAttr(l.url)}" placeholder="URL" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] transition-all" data-field="url" />
+          <input type="text" value="${escapeAttr(l.actionText)}" placeholder="按钮文字" class="w-28 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="action" />
+          <button onclick="deleteAboutLink(${l.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+        </div>
+      `).join('');
+    }
+
+    async function addAboutLink() {
+      try {
+        const res = await fetch('/api/about/links', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: '新链接', url: 'https://', sortOrder: aboutData.links.length }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        await loadAboutData();
+      } catch (e) { alert('添加失败'); }
+    }
+
+    window.deleteAboutLink = async (id) => {
+      if (!confirm('确认删除此链接？')) return;
+      try {
+        await fetch(`/api/about/links?id=${id}`, { method: 'DELETE' });
+        await loadAboutData();
+      } catch (e) { alert('删除失败'); }
+    };
+
+    async function saveAboutConfig() {
+      const statusEl = document.getElementById('about-save-status');
+      statusEl.textContent = '保存中...';
+      statusEl.className = 'text-xs text-[#999]';
+
+      // 1. 保存基础配置
+      const introParagraphs = document.getElementById('about-intro-paragraphs').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const configData = {
+        heroSubtitle: document.getElementById('about-hero-subtitle').value.trim(),
+        introTitle: document.getElementById('about-intro-title').value.trim(),
+        introParagraphs,
+        skillsTitle: document.getElementById('about-skills-title').value.trim(),
+        statusTitle: document.getElementById('about-status-title').value.trim(),
+        statusText: document.getElementById('about-status-text').value.trim(),
+        altTitle: document.getElementById('about-alt-title').value.trim(),
+        altDescription: document.getElementById('about-alt-desc').value.trim(),
+        basicItems: collectAboutBasicItems(),
+      };
+
+      try {
+        const res = await fetch('/api/about/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(configData),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+      } catch (e) {
+        statusEl.textContent = '配置保存失败: ' + e.message;
+        statusEl.className = 'text-xs text-red-500';
+        return;
+      }
+
+      // 2. 批量更新技能排序
+      const skillRows = document.querySelectorAll('[data-skill-id]');
+      for (const row of skillRows) {
+        const id = Number(row.dataset.skillId);
+        const name = row.querySelector('[data-field="name"]').value.trim();
+        const sortOrder = parseInt(row.querySelector('[data-field="sort"]').value) || 0;
+        if (!name) continue;
+        await fetch('/api/about/skills', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, name, sortOrder }),
+        });
+      }
+
+      // 3. 批量更新作品
+      const workRows = document.querySelectorAll('[data-work-id]');
+      for (const row of workRows) {
+        const id = Number(row.dataset.workId);
+        const title = row.querySelector('[data-field="title"]').value.trim();
+        const image = row.querySelector('[data-field="image"]').value.trim();
+        const description = row.querySelector('[data-field="desc"]').value.trim();
+        const tagsRaw = row.querySelector('[data-field="tags"]').value;
+        const tags = tagsRaw ? tagsRaw.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
+        if (!title) continue;
+        await fetch('/api/about/works', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, title, description, image, tags }),
+        });
+      }
+
+      // 4. 批量更新链接
+      const linkRows = document.querySelectorAll('[data-link-id]');
+      for (const row of linkRows) {
+        const id = Number(row.dataset.linkId);
+        const title = row.querySelector('[data-field="title"]').value.trim();
+        const description = row.querySelector('[data-field="desc"]').value.trim();
+        const url = row.querySelector('[data-field="url"]').value.trim();
+        const actionText = row.querySelector('[data-field="action"]').value.trim();
+        if (!title || !url) continue;
+        await fetch('/api/about/links', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, title, description, url, actionText }),
+        });
+      }
+
+      statusEl.textContent = '✓ 已保存';
+      statusEl.className = 'text-xs text-[#7CB38B]';
+      setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 2000);
+    }
+
+    function escapeAttr(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
 
     // ============================================================
     // /now 状态面板编辑器
@@ -496,6 +877,15 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     document.getElementById('activity-back-btn').addEventListener('click', () => closeActivityEditor());
     document.getElementById('activity-add-btn').addEventListener('click', () => addActivity());
 
+    // About 编辑器
+    document.getElementById('edit-about-btn').addEventListener('click', () => openAboutEditor());
+    document.getElementById('about-back-btn').addEventListener('click', () => closeAboutEditor());
+    document.getElementById('save-about-btn').addEventListener('click', () => saveAboutConfig());
+    document.getElementById('about-add-basic-btn').addEventListener('click', () => addAboutBasicItem());
+    document.getElementById('about-add-skill-btn').addEventListener('click', () => addAboutSkill());
+    document.getElementById('about-add-work-btn').addEventListener('click', () => addAboutWork());
+    document.getElementById('about-add-link-btn').addEventListener('click', () => addAboutLink());
+
     // 实时预览
     ['now-start-date','now-end-date','now-phase','now-progress','now-description'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateNowPreview);
@@ -505,6 +895,8 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
       await loadNowStatus();
@@ -514,6 +906,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
@@ -674,12 +1067,15 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('list-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.remove('hidden');
       await Promise.all([loadActivities(), loadAdminMessages()]);
     }
 
     function closeActivityEditor() {
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
     }
@@ -965,6 +1361,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
 
@@ -992,6 +1389,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
       loadPosts();
     }
@@ -1004,6 +1402,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.remove('hidden');
       hideMusicForm();
       await loadSongs();
@@ -1011,6 +1410,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
     function closeMusicEditor() {
       document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
       document.getElementById('list-view').classList.remove('hidden');
     }
 
