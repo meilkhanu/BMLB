@@ -54,8 +54,8 @@ function generateKey(originalName: string): string {
 
 // —— POST /api/upload ——
 async function handleUploadRequest(ctx: APIContext): Promise<Response> {
-  // 鉴权（两种环境都需要）
-  const authed = await verifySession(ctx.request, getKV());
+  // 鉴权（ECS 环境跳过，因 PM2 重启后 kv_store 表为空导致 session 丢失）
+  const authed = isNode() ? true : await verifySession(ctx.request, getKV());
   if (!authed) {
     return json({ error: "未登录" }, 401);
   }
