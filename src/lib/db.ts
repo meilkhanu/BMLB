@@ -118,6 +118,9 @@ export function getBucket(): null {
   return null;
 }
 
+/** 始终为 true — ECS 运行在 Node.js */
+export const isNode = () => true;
+
 export function getRawDb(): any {
   return getNodeDb();
 }
