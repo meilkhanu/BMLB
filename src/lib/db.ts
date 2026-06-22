@@ -46,7 +46,110 @@ function getNodeDb(): any {
       key TEXT PRIMARY KEY,
       value TEXT,
       expires_at TEXT
-    )
+    );
+    CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT UNIQUE NOT NULL,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      excerpt TEXT DEFAULT '',
+      category_id TEXT NOT NULL,
+      tags TEXT DEFAULT '[]',
+      cover_image TEXT,
+      published_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      status TEXT DEFAULT 'draft'
+    );
+    CREATE TABLE IF NOT EXISTS songs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      artist TEXT NOT NULL DEFAULT '',
+      album TEXT DEFAULT '',
+      cover_url TEXT DEFAULT '',
+      audio_url TEXT NOT NULL,
+      duration INTEGER DEFAULT 0,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      author TEXT NOT NULL DEFAULT '访客',
+      email TEXT NOT NULL DEFAULT '',
+      content TEXT NOT NULL,
+      target_slug TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS now_status (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      phase TEXT NOT NULL,
+      description TEXT NOT NULL,
+      progress INTEGER DEFAULT 0,
+      reading_title TEXT DEFAULT '',
+      reading_subtitle TEXT DEFAULT '',
+      learning_title TEXT DEFAULT '',
+      learning_subtitle TEXT DEFAULT '',
+      researching_title TEXT DEFAULT '',
+      researching_subtitle TEXT DEFAULT '',
+      listening_title TEXT DEFAULT '',
+      listening_subtitle TEXT DEFAULT '',
+      badge_text TEXT DEFAULT '',
+      project_description TEXT DEFAULT '',
+      project_screenshot TEXT DEFAULT '',
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS now_activity (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      activity_date TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS now_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      author TEXT NOT NULL DEFAULT '访客',
+      email TEXT DEFAULT '',
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS about_config (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      hero_image TEXT DEFAULT '/images/d402c0a48dd402c0a48d.avif',
+      hero_subtitle TEXT DEFAULT '',
+      breadcrumb_sub TEXT DEFAULT '关于',
+      intro_title TEXT DEFAULT '自我介绍',
+      intro_paragraphs TEXT DEFAULT '[]',
+      basic_title TEXT DEFAULT '基础信息',
+      basic_items TEXT DEFAULT '[]',
+      skills_title TEXT DEFAULT '技能栈',
+      status_title TEXT DEFAULT '当前状态',
+      status_text TEXT DEFAULT '',
+      alt_title TEXT DEFAULT '',
+      alt_description TEXT DEFAULT '',
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS about_skills (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      sort_order INTEGER DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS about_works (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      tags TEXT DEFAULT '[]',
+      image TEXT DEFAULT '',
+      sort_order INTEGER DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS about_links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      url TEXT NOT NULL,
+      action_text TEXT DEFAULT 'Visit →',
+      sort_order INTEGER DEFAULT 0
+    );
   `);
 
   return _nodeDb;
