@@ -2,7 +2,7 @@ name: Deploy to ECS
 
 on:
   push:
-    branches: [main]
+    branches: [isNode]
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
             cd /var/www/bmlb
 
             echo "=== Pull 最新代码 ==="
-            git pull origin main
+            git pull origin isNode
 
             echo "=== 安装依赖 ==="
             npm install --legacy-peer-deps
