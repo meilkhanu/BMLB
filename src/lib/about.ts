@@ -168,6 +168,7 @@ const DEFAULT_LINKS: AboutLink[] = [
 // —— 数据转换 ——
 
 function rowToConfig(row: any): AboutConfig {
+  if (!row) return DEFAULT_CONFIG;
   return {
     heroImage: row.hero_image || DEFAULT_CONFIG.heroImage,
     heroSubtitle: row.hero_subtitle || DEFAULT_CONFIG.heroSubtitle,
@@ -185,10 +186,12 @@ function rowToConfig(row: any): AboutConfig {
 }
 
 function rowToSkill(row: any): AboutSkill {
+  if (!row) return { id: 0, name: '', sortOrder: 0 };
   return { id: row.id, name: row.name, sortOrder: row.sort_order ?? 0 };
 }
 
 function rowToWork(row: any): AboutWork {
+  if (!row) return { id: 0, title: '', description: '', tags: [], image: '', sortOrder: 0 };
   return {
     id: row.id,
     title: row.title,
@@ -200,6 +203,7 @@ function rowToWork(row: any): AboutWork {
 }
 
 function rowToLink(row: any): AboutLink {
+  if (!row) return { id: 0, title: '', description: '', url: '', actionText: 'Visit →', sortOrder: 0 };
   return {
     id: row.id,
     title: row.title,
@@ -361,7 +365,7 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
 }
 
 // ============================================================
-// Skills: GET / POST / DELETE
+// Skills: GET / POST / PUT / DELETE
 // ============================================================
 
 async function handleGetSkills(ctx: APIContext): Promise<Response> {
@@ -394,6 +398,40 @@ async function handlePostSkill(ctx: APIContext): Promise<Response> {
   } catch (e: any) {
     console.error("POST /api/about/skills error:", e);
     return json({ error: "新增失败" }, 500);
+  }
+}
+
+async function handlePutSkill(ctx: APIContext): Promise<Response> {
+  const db = await getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
+
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
+    if (e instanceof Response) return e; throw e;
+  }
+
+  let body: any;
+  try { body = await ctx.request.json(); } catch { return json({ error: "无效的请求体" }, 400); }
+
+  const { id, name, sortOrder } = body;
+  if (!id) return json({ error: "缺少必填字段: id" }, 400);
+
+  try {
+    const sets: string[] = [];
+    const vals: any[] = [];
+
+    if (name !== undefined) { sets.push("name = ?"); vals.push(name); }
+    if (sortOrder !== undefined) { sets.push("sort_order = ?"); vals.push(sortOrder); }
+
+    if (sets.length === 0) return json({ error: "没有要更新的字段" }, 400);
+
+    vals.push(Number(id));
+    await db.prepare(`UPDATE about_skills SET ${sets.join(", ")} WHERE id = ?`).bind(...vals).run();
+
+    const row = await db.prepare("SELECT * FROM about_skills WHERE id = ?").bind(Number(id)).first();
+    return json(rowToSkill(row));
+  } catch (e: any) {
+    console.error("PUT /api/about/skills error:", e);
+    return json({ error: "更新失败" }, 500);
   }
 }
 
@@ -627,6 +665,7 @@ export async function handleAbout(ctx: APIContext): Promise<Response> {
   if (path === "/api/about/skills") {
     if (method === "GET") return handleGetSkills(ctx);
     if (method === "POST") return handlePostSkill(ctx);
+    if (method === "PUT") return handlePutSkill(ctx);
     if (method === "DELETE") return handleDeleteSkill(ctx);
     return json({ error: "Method Not Allowed" }, 405);
   }
