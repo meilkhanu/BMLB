@@ -180,6 +180,21 @@ function wrapNodeDb(rawDb: any): D1Compat {
             },
           };
         },
+        // D1 兼容：直接 .all() .first() .run()（无参数时跳过 bind）
+        all(): Promise<{ results: any[] }> {
+          const results = 'all' in stmt ? stmt.all() : stmt.all();
+          return Promise.resolve({ results: Array.isArray(results) ? results : [results] });
+        },
+        first<T = any>(): Promise<T | null> {
+          return Promise.resolve(stmt.get() ?? null);
+        },
+        run(): Promise<{ meta: { last_row_id?: number; changes?: number } }> {
+          const info = stmt.run();
+          return Promise.resolve({ meta: { last_row_id: info.lastInsertRowid, changes: info.changes } });
+        },
+        get<T = any>(...p: any[]): T | null {
+          return stmt.get(...p) ?? null;
+        },
       };
     },
     exec(sql: string) { rawDb.exec(sql); },
