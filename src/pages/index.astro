@@ -48,9 +48,9 @@ try {
 // —— 获取最后活动时间（含草稿，回退到已发布文章）——
 let lastActiveTime = '';
 try {
-  const runtimeEnv = await getDb() as any;
-  if (runtimeEnv?.DB) {
-    const row = await runtimeEnv.DB.prepare(
+  const db = await getDb();
+  if (db) {
+    const row = await db.prepare(
       "SELECT MAX(updated_at) as last_active FROM posts"
     ).first();
     if (row?.last_active) {

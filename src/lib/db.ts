@@ -1,9 +1,6 @@
 // ============================================================
-// src/lib/db.ts
-// 统一数据访问抽象层 — Workers (D1/KV/R2) / ECS (better-sqlite3)
-//
-// 运行时检测：Node.js 环境 → better-sqlite3
-//             Workers 环境 → cloudflare:workers
+// src/lib/db.ts — Workers 版（main 分支）
+// 使用 cloudflare:workers 原生绑定 + 保留 isNode 分支给 ECS
 // ============================================================
 
 // —— 运行时检测 ——
@@ -50,7 +47,7 @@ function getCfEnv(): any {
 }
 
 // ============================================================
-// Node.js 环境 — better-sqlite3
+// Node.js 环境 — better-sqlite3（ECS 用，isNode 分支用单独版本）
 // ============================================================
 
 let _nodeDb: any = null;
@@ -58,7 +55,7 @@ let _nodeDbInstance: any = null;
 
 function getNodeDb(): any {
   if (_nodeDbInstance) return _nodeDbInstance;
-  if (_nodeDb) return _nodeDb; // 已初始化但未连接
+  if (_nodeDb) return _nodeDb;
 
   try {
     const Database = require('better-sqlite3');
@@ -75,7 +72,6 @@ function getNodeDb(): any {
     _nodeDb.pragma('journal_mode = WAL');
     _nodeDb.pragma('foreign_keys = ON');
 
-    // —— 创建 KV 模拟表 ——
     _nodeDb.exec(`
       CREATE TABLE IF NOT EXISTS kv_store (
         key TEXT PRIMARY KEY,
@@ -92,97 +88,56 @@ function getNodeDb(): any {
   }
 }
 
-// ============================================================
-// D1 兼容包装器（给 better-sqlite3 加 D1 风格的 API）
-// ============================================================
-
 function wrapNodeDb(rawDb: any): D1Compat {
   const stmtCache = new Map<string, any>();
-
   return {
     prepare(sql: string) {
       let stmt = stmtCache.get(sql);
-      if (!stmt) {
-        stmt = rawDb.prepare(sql);
-        stmtCache.set(sql, stmt);
-      }
+      if (!stmt) { stmt = rawDb.prepare(sql); stmtCache.set(sql, stmt); }
       return {
         bind(...params: any[]) {
           return {
             all(): Promise<{ results: any[] }> {
-              try {
-                const results = 'all' in stmt ? stmt.all(...params) : stmt.bind(params).all();
-                return Promise.resolve({ results });
-              } catch (e: any) {
-                return Promise.reject(e);
-              }
+              try { const results = stmt.all(...params); return Promise.resolve({ results }); }
+              catch (e: any) { return Promise.reject(e); }
             },
             first<T = any>(): Promise<T | null> {
-              try {
-                const result = 'get' in stmt ? stmt.get(...params) : stmt.bind(params).get();
-                return Promise.resolve(result ?? null);
-              } catch (e: any) {
-                return Promise.reject(e);
-              }
+              try { return Promise.resolve(stmt.get(...params) ?? null); }
+              catch (e: any) { return Promise.reject(e); }
             },
             run(): Promise<{ meta: { last_row_id?: number; changes?: number } }> {
               try {
-                const info = 'run' in stmt ? stmt.run(...params) : stmt.bind(params).run();
-                return Promise.resolve({
-                  meta: {
-                    last_row_id: info.lastInsertRowid,
-                    changes: info.changes,
-                  },
-                });
-              } catch (e: any) {
-                return Promise.reject(e);
-              }
+                const info = stmt.run(...params);
+                return Promise.resolve({ meta: { last_row_id: info.lastInsertRowid, changes: info.changes } });
+              } catch (e: any) { return Promise.reject(e); }
             },
             get<T = any>(...p: any[]): T | null {
-              try {
-                return stmt.get(...(p.length ? p : params)) ?? null;
-              } catch {
-                return null;
-              }
+              try { return stmt.get(...(p.length ? p : params)) ?? null; } catch { return null; }
             },
           };
         },
       };
     },
-    exec(sql: string) {
-      rawDb.exec(sql);
-    },
+    exec(sql: string) { rawDb.exec(sql); },
   };
 }
-
-// ============================================================
-// KV 兼容包装器（ECS 用 SQLite 表模拟 Cloudflare KV）
-// ============================================================
 
 function createNodeKV(rawDb: any): KVCompat {
   return {
     async get(key: string): Promise<string | null> {
       try {
-        const row = rawDb
-          .prepare('SELECT value, expires_at FROM kv_store WHERE key = ?')
-          .get(key);
+        const row = rawDb.prepare('SELECT value, expires_at FROM kv_store WHERE key = ?').get(key);
         if (!row) return null;
         if (row.expires_at && new Date(row.expires_at) < new Date()) {
           rawDb.prepare('DELETE FROM kv_store WHERE key = ?').run(key);
           return null;
         }
         return row.value;
-      } catch {
-        return null;
-      }
+      } catch { return null; }
     },
     async put(key: string, value: string, opts?: { expirationTtl?: number }): Promise<void> {
-      const expiresAt = opts?.expirationTtl
-        ? new Date(Date.now() + opts.expirationTtl * 1000).toISOString()
-        : null;
-      rawDb
-        .prepare('INSERT OR REPLACE INTO kv_store (key, value, expires_at) VALUES (?, ?, ?)')
-        .run(key, value, expiresAt);
+      const expiresAt = opts?.expirationTtl ? new Date(Date.now() + opts.expirationTtl * 1000).toISOString() : null;
+      rawDb.prepare('INSERT OR REPLACE INTO kv_store (key, value, expires_at) VALUES (?, ?, ?)').run(key, value, expiresAt);
     },
     async delete(key: string): Promise<void> {
       rawDb.prepare('DELETE FROM kv_store WHERE key = ?').run(key);
@@ -194,53 +149,29 @@ function createNodeKV(rawDb: any): KVCompat {
 // 公开 API
 // ============================================================
 
-/**
- * 获取数据库实例（D1 兼容 API）
- * Workers → D1 binding
- * ECS     → better-sqlite3 (带 D1 兼容层)
- */
 export function getDb(): D1Compat | null {
   if (isNode()) {
     const rawDb = getNodeDb();
     return rawDb ? wrapNodeDb(rawDb) : null;
   }
-
-  // Workers 环境
   const env = getCfEnv();
   return (env as any)?.DB ?? null;
 }
 
-/**
- * 获取 KV 存储（类 Cloudflare KV API）
- * Workers → KV binding
- * ECS     → SQLite kv_store 表
- */
 export function getKV(): KVCompat | null {
   if (isNode()) {
     const rawDb = getNodeDb();
     return rawDb ? createNodeKV(rawDb) : null;
   }
-
   const env = getCfEnv();
-  const kv = (env as any)?.CONFIG;
-  return kv ?? null;
+  return (env as any)?.CONFIG ?? null;
 }
 
-/**
- * 获取对象存储（R2 兼容）
- * Workers → R2 binding
- * ECS     → null（上传走本地文件系统，由 upload.ts 处理）
- */
 export function getBucket(): BucketCompat | null {
-  if (isNode()) return null; // ECS 不需要 bucket 对象
-
+  if (isNode()) return null;
   const env = getCfEnv();
   return (env as any)?.BUCKET ?? null;
 }
-
-// ============================================================
-// 辅助：获取原始 better-sqlite3 实例（ECS 特有操作）
-// ============================================================
 
 export function getRawDb(): any {
   if (!isNode()) return null;

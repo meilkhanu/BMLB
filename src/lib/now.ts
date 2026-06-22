@@ -208,7 +208,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 
 export async function handleNow(ctx: APIContext): Promise<Response> {
   const db = await getDb();
-  if (!env) {
+  if (!db) {
     console.error("[now] FATAL: runtime.env is undefined — D1 binding missing");
   }
 
