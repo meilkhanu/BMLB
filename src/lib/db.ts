@@ -2,13 +2,6 @@
 // src/lib/db.ts — Workers 版（main 分支）
 // ============================================================
 
-// —— 运行时检测 ——
-export const isNode = (): boolean =>
-  typeof require !== 'undefined' &&
-  typeof process !== 'undefined' &&
-  typeof process.versions !== 'undefined' &&
-  typeof process.versions.node !== 'undefined';
-
 export interface D1Compat {
   prepare(sql: string): {
     bind(...params: any[]): {
@@ -31,6 +24,13 @@ export interface BucketCompat {
   put(key: string, data: ArrayBuffer, opts?: { httpMetadata?: { contentType?: string; cacheControl?: string } }): Promise<void>;
 }
 
+// Workers 环境下 isNode 始终返回 false（upload.ts 需要此函数）
+export const isNode = (): boolean => false;
+
+// ============================================================
+// Workers 绑定 — 从 cloudflare:workers 获取
+// ============================================================
+
 import { env as _workersEnv } from 'cloudflare:workers';
 
 let _cfEnv: any = null;
@@ -41,19 +41,16 @@ function getCfEnv(): any {
 }
 
 export function getDb(): D1Compat | null {
-  if (isNode()) return null;
   const env = getCfEnv();
   return (env as any)?.DB ?? null;
 }
 
 export function getKV(): KVCompat | null {
-  if (isNode()) return null;
   const env = getCfEnv();
   return (env as any)?.CONFIG ?? null;
 }
 
 export function getBucket(): BucketCompat | null {
-  if (isNode()) return null;
   const env = getCfEnv();
   return (env as any)?.BUCKET ?? null;
 }
