@@ -20,7 +20,7 @@ interface ApiPost {
 
 let allPosts: ApiPost[] = [];
 try {
-  const db = getDb();
+  const db = await getDb();
   if (db) {
     const { results } = await db.prepare(
       "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 100"

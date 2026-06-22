@@ -262,7 +262,7 @@ export async function getAboutLinks(db: any): Promise<AboutLink[]> {
 // ============================================================
 
 async function handleGetAll(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const [config, skills, works, links] = await Promise.all([
@@ -280,7 +280,7 @@ async function handleGetAll(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutConfig(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -365,13 +365,13 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetSkills(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
   return json(await getAboutSkills(db));
 }
 
 async function handlePostSkill(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -398,7 +398,7 @@ async function handlePostSkill(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteSkill(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -423,13 +423,13 @@ async function handleDeleteSkill(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetWorks(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
   return json(await getAboutWorks(db));
 }
 
 async function handlePostWork(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -456,7 +456,7 @@ async function handlePostWork(ctx: APIContext): Promise<Response> {
 }
 
 async function handlePutWork(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -493,7 +493,7 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteWork(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -518,13 +518,13 @@ async function handleDeleteWork(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetLinks(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
   return json(await getAboutLinks(db));
 }
 
 async function handlePostLink(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -551,7 +551,7 @@ async function handlePostLink(ctx: APIContext): Promise<Response> {
 }
 
 async function handlePutLink(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {
@@ -588,7 +588,7 @@ async function handlePutLink(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteLink(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try { await requireAuth(ctx.request, getKV()); } catch (e) {

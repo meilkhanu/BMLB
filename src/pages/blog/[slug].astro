@@ -31,7 +31,7 @@ let postData: ApiPost | null = null;
 let allPublished: ApiPost[] = [];
 
 try {
-  const db = getDb();
+  const db = await getDb();
   if (db) {
     // 获取单篇文章
     const postRow = await db.prepare(
@@ -107,7 +107,7 @@ const dateFormatted = isValidDate
 let comments: any[] = [];
 
 try {
-  const db = getDb();
+  const db = await getDb();
   if (db) {
     const { results } = await db.prepare(
       "SELECT * FROM comments WHERE target_slug = ? ORDER BY created_at ASC"

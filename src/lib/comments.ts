@@ -51,7 +51,7 @@ interface Comment {
 // ============================================================
 
 async function handleGetComments(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const url = new URL(ctx.request.url);
@@ -115,7 +115,7 @@ async function handleGetComments(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostComment(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   let body: any;
@@ -174,7 +174,7 @@ async function handlePostComment(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteComment(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {

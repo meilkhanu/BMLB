@@ -83,7 +83,7 @@ const DEFAULT_STATUS = {
 // ============================================================
 
 async function handleGetNow(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -103,7 +103,7 @@ async function handleGetNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutNow(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -207,7 +207,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 export async function handleNow(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!env) {
     console.error("[now] FATAL: runtime.env is undefined — D1 binding missing");
   }

@@ -57,7 +57,7 @@ const DEFAULT_MESSAGES: NowMessage[] = [
 // ============================================================
 
 async function handleGetMessages(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -89,7 +89,7 @@ async function handleGetMessages(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostMessage(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   let body: any;
@@ -142,7 +142,7 @@ async function handlePostMessage(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteMessage(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {

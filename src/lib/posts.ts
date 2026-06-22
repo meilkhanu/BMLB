@@ -59,7 +59,7 @@ function rowToPost(row: any) {
 // ============================================================
 
 async function handleGetPosts(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const { request, url } = ctx;
@@ -128,7 +128,7 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostPosts(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -172,7 +172,7 @@ async function handlePostPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutPosts(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -240,7 +240,7 @@ async function handlePutPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeletePosts(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -267,7 +267,7 @@ async function handleDeletePosts(ctx: APIContext): Promise<Response> {
 
 export async function handlePosts(ctx: APIContext): Promise<Response> {
   // 启动时断言
-  const db = getDb();
+  const db = await getDb();
   if (!env) {
     console.error("[posts] FATAL: runtime.env is undefined — D1 binding missing");
   }

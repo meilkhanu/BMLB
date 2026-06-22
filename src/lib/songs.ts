@@ -21,7 +21,7 @@ function json(data: unknown, status = 200) {
 
 // —— GET /api/songs ——
 async function handleGetSongs(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -37,7 +37,7 @@ async function handleGetSongs(ctx: APIContext): Promise<Response> {
 
 // —— POST /api/songs ——
 async function handleCreateSong(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, getKV());
@@ -80,7 +80,7 @@ async function handleCreateSong(ctx: APIContext): Promise<Response> {
 
 // —— PUT /api/songs?id=X ——
 async function handleUpdateSong(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, getKV());
@@ -137,7 +137,7 @@ async function handleUpdateSong(ctx: APIContext): Promise<Response> {
 
 // —— DELETE /api/songs?id=X ——
 async function handleDeleteSong(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   const authed = await verifySession(ctx.request, getKV());

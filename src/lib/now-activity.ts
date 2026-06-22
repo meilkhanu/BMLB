@@ -57,7 +57,7 @@ const DEFAULT_ACTIVITIES: NowActivity[] = [
 // ============================================================
 
 async function handleGetActivity(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -88,7 +88,7 @@ async function handleGetActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostActivity(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
@@ -136,7 +136,7 @@ async function handlePostActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteActivity(ctx: APIContext): Promise<Response> {
-  const db = getDb();
+  const db = await getDb();
   if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {

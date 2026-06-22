@@ -19,7 +19,7 @@ let status: NowStatus = {
 };
 
 try {
-  const db = getDb();
+  const db = await getDb();
   if (db) {
     const row = await db.prepare("SELECT phase, progress, badge_text, updated_at FROM now_status WHERE id = 1").first();
     if (row) {
@@ -43,7 +43,7 @@ let activities: NowActivityItem[] = [
 ];
 
 try {
-  const db = getDb();
+  const db = await getDb();
   if (db) {
     const { results } = await db.prepare("SELECT id, content, activity_date FROM now_activity ORDER BY activity_date DESC, id DESC").all();
     if (results && results.length > 0) {
