@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getDb } from '../lib/db';
 import { getAboutConfig, getAboutSkills, getAboutWorks, getAboutLinks } from '../lib/about';
 
-const db = getDb();
+const db = await getDb();
 
 const [config, skills, works, links] = await Promise.all([
   getAboutConfig(db),

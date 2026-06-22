@@ -9,7 +9,6 @@ interface ApiPost {
   id: number;
   slug: string;
   title: string;
-  content: string;
   excerpt: string;
   categoryId: string;
   tags: string[];
@@ -25,13 +24,12 @@ try {
   const db = (cfEnv as any)?.DB;
   if (db) {
     const { results } = await db.prepare(
-      "SELECT * FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 50"
+      "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 50"
     ).all();
     allPosts = (results || []).map((row: any) => ({
       id: row.id,
       slug: row.slug,
       title: row.title,
-      content: row.content,
       excerpt: row.excerpt || '',
       categoryId: row.category_id,
       tags: JSON.parse(row.tags || '[]'),
@@ -45,31 +43,6 @@ try {
   }
 } catch (e: any) {
   console.error('[index] D1 posts 查询失败:', e?.message || e);
-}
-
-// —— 服务端获取歌曲列表 ——
-interface Song {
-  id: number;
-  title: string;
-  artist: string;
-  album: string;
-  cover_url: string;
-  audio_url: string;
-  duration: number;
-  sort_order: number;
-}
-
-let songs: Song[] = [];
-try {
-  const db = (cfEnv as any)?.DB;
-  if (db) {
-    const { results: songRows } = await db.prepare(
-      "SELECT * FROM songs ORDER BY sort_order ASC, id ASC"
-    ).all();
-    songs = (songRows || []) as Song[];
-  }
-} catch (e: any) {
-  console.error('[index] D1 songs 查询失败:', e?.message || e);
 }
 
 // —— 获取最后活动时间（含草稿，回退到已发布文章）——
@@ -300,7 +273,7 @@ function formatDate(dateStr: string): string {
 						<div id="playlist-items" class="space-y-1 max-h-[300px] overflow-y-auto hide-scrollbar"></div>
 					</div>
 
-				<div id="songs-data" data-songs={JSON.stringify(songs)} class="hidden"></div>
+
 				</div>
 				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 delay-2" data-animate>
 					<div class="flex items-center justify-between mb-4">

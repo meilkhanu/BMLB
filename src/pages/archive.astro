@@ -8,7 +8,6 @@ interface ApiPost {
   id: number;
   slug: string;
   title: string;
-  content: string;
   excerpt: string;
   categoryId: string;
   tags: string[];
@@ -24,13 +23,12 @@ try {
   const db = (cfEnv as any)?.DB;
   if (db) {
     const { results } = await db.prepare(
-      "SELECT * FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 100"
+      "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 100"
     ).all();
     allPosts = (results || []).map((row: any) => ({
       id: row.id,
       slug: row.slug,
       title: row.title,
-      content: row.content,
       excerpt: row.excerpt || '',
       categoryId: row.category_id,
       tags: JSON.parse(row.tags || '[]'),

@@ -97,7 +97,7 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
     if (admin) {
       await requireAuth(request, env);
       const { results } = await env.DB.prepare(
-        "SELECT * FROM posts ORDER BY updated_at DESC LIMIT 50"
+        "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts ORDER BY updated_at DESC LIMIT 50"
       ).all();
       return json(results.map(rowToPost));
     }
