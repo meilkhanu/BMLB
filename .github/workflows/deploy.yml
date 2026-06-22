@@ -19,7 +19,8 @@ jobs:
             cd /var/www/bmlb
 
             echo "=== Pull 最新代码 ==="
-            git pull origin isNode
+            git fetch origin isNode
+            git checkout -B isNode origin/isNode
 
             echo "=== 安装依赖 ==="
             npm install --legacy-peer-deps
