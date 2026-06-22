@@ -9,7 +9,7 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { getDb, getKV } from "./db";
+import { getDb, getKV, isNode } from "./db";
 
 // ============================================================
 // Env 类型（简化，不再绑定 Cloudflare 特定类型）
@@ -39,11 +39,13 @@ async function sha256(text: string): Promise<string> {
 }
 
 function setCookie(value: string, maxAge = 86400) {
-  return `auth_token=${value}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+  const secure = isNode() ? '' : ' Secure;';
+  return `auth_token=${value}; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=${maxAge}`;
 }
 
 function clearCookie() {
-  return "auth_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0";
+  const secure = isNode() ? '' : ' Secure;';
+  return `auth_token=; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=0`;
 }
 
 // ============================================================
