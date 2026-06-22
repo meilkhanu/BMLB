@@ -1,0 +1,34 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches: [isNode]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          password: ${{ secrets.ECS_PASSWORD }}
+          script: |
+            set -e
+            cd /var/www/bmlb
+
+            echo "=== Pull 最新代码 ==="
+            git pull origin isNode
+
+            echo "=== 安装依赖 ==="
+            npm install --legacy-peer-deps
+
+            echo "=== 构建 ==="
+            DEPLOY_TARGET=ecs npx astro build
+
+            echo "=== 重启服务 ==="
+            pm2 restart bmlb
+
+            echo "=== 部署完成 ==="
+            pm2 list
