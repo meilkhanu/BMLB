@@ -1,16 +1,16 @@
 // ============================================================
 // src/lib/upload.ts
-// 图片上传到 R2 — 由 [...all].ts 调用
+// 图片上传 — 由 [...all].ts 调用
+// Workers → R2  /  ECS → 本地 public/uploads/
 //
-// POST /api/upload  → 接收 multipart/form-data，上传到 R2
+// POST /api/upload  → 接收 multipart/form-data
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV, getBucket, isNode } from "./db";
+import { verifySession } from "./auth";
 
 // —— R2 公开访问基础 URL ——
-// Cloudflare R2 S3 endpoint; 需在 Cloudflare 控制台开启 Public Access
 const R2_PUBLIC_BASE =
   "https://pub-5eb99be06b64411bbfd2b80c94822c5f.r2.dev";
 
@@ -44,10 +44,6 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
-
 // —— 生成唯一文件名 ——
 function generateKey(originalName: string): string {
   const ext = originalName.split(".").pop()?.toLowerCase() || "png";
@@ -58,13 +54,8 @@ function generateKey(originalName: string): string {
 
 // —— POST /api/upload ——
 async function handleUploadRequest(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) {
-    return json({ error: "运行时不可用（R2 binding 缺失）" }, 500);
-  }
-
-  // 鉴权
-  const authed = await verifySession(ctx.request, env);
+  // 鉴权（两种环境都需要）
+  const authed = await verifySession(ctx.request, getKV());
   if (!authed) {
     return json({ error: "未登录" }, 401);
   }
@@ -102,8 +93,30 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   const key = generateKey(file.name);
   const buffer = await file.arrayBuffer();
 
+  // —— ECS 环境：写入本地 public/uploads/ ——
+  if (isNode()) {
+    try {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await fs.mkdir(uploadDir, { recursive: true });
+      await fs.writeFile(path.join(uploadDir, key), Buffer.from(buffer));
+      const url = `/uploads/${key}`;
+      return json({ success: true, url, key, size: file.size, type: file.type });
+    } catch (e: any) {
+      console.error("[upload] ECS local write error:", e);
+      return json({ error: "上传失败，请稍后重试" }, 500);
+    }
+  }
+
+  // —— Workers 环境：上传到 R2 ——
+  const bucket = getBucket();
+  if (!bucket) {
+    return json({ error: "运行时不可用（R2 binding 缺失）" }, 500);
+  }
+
   try {
-    await env.BUCKET.put(key, buffer, {
+    await bucket.put(key, buffer, {
       httpMetadata: {
         contentType: file.type,
         cacheControl: "public, max-age=31536000, immutable",

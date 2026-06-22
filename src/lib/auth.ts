@@ -4,28 +4,24 @@
 //
 // GET  /api/auth  → 检查登录状态
 // POST /api/auth  → 登录 / 首次 SETUP / 登出
+//
+// 双部署兼容：Workers(KV) / ECS(SQLite kv_store)
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
+import { getDb, getKV } from "./db";
 
 // ============================================================
-// Env 类型
+// Env 类型（简化，不再绑定 Cloudflare 特定类型）
 // ============================================================
 
 export interface Env {
-  CONFIG: KVNamespace;
-  DB: D1Database;
-  BUCKET: R2Bucket;
+  DB: any;
 }
 
 // ============================================================
 // 工具函数
 // ============================================================
-
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
 
 function json(data: unknown, status = 200, extraHeaders?: Record<string, string>) {
   return new Response(JSON.stringify(data), {
@@ -51,12 +47,12 @@ function clearCookie() {
 }
 
 // ============================================================
-// Session 管理
+// Session 管理（通过 KV 兼容层）
 // ============================================================
 
-async function createSession(env: Env) {
+async function createSession(kv: NonNullable<ReturnType<typeof getKV>>) {
   const token = crypto.randomUUID();
-  await env.CONFIG.put(
+  await kv.put(
     `session:${token}`,
     JSON.stringify({ created_at: new Date().toISOString() }),
     { expirationTtl: 86400 }
@@ -64,11 +60,11 @@ async function createSession(env: Env) {
   return token;
 }
 
-export async function verifySession(request: Request, env: Env): Promise<boolean> {
+export async function verifySession(request: Request, kv: NonNullable<ReturnType<typeof getKV>>): Promise<boolean> {
   const cookieHeader = request.headers.get("Cookie") || "";
   const match = cookieHeader.match(/auth_token=([^;]+)/);
   if (!match) return false;
-  const session = await env.CONFIG.get(`session:${match[1]}`);
+  const session = await kv.get(`session:${match[1]}`);
   return !!session;
 }
 
@@ -77,13 +73,13 @@ export async function verifySession(request: Request, env: Env): Promise<boolean
 // ============================================================
 
 async function handleGetAuth(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) {
-    console.error("[auth] D1 binding missing — env is undefined");
-    return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
+  const kv = getKV();
+  if (!kv) {
+    console.error("[auth] KV binding missing");
+    return json({ error: "运行时不可用（KV 存储丢失）" }, 500);
   }
 
-  const authed = await verifySession(ctx.request, env);
+  const authed = await verifySession(ctx.request, kv);
   return json({ logged_in: authed });
 }
 
@@ -92,10 +88,10 @@ async function handleGetAuth(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostAuth(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) {
-    console.error("[auth] D1 binding missing — env is undefined");
-    return json({ error: "运行时不可用（D1 binding丢失）" }, 500);
+  const kv = getKV();
+  if (!kv) {
+    console.error("[auth] KV binding missing");
+    return json({ error: "运行时不可用（KV 存储丢失）" }, 500);
   }
 
   let body: Record<string, string>;
@@ -120,13 +116,13 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
     return json({ error: "密码至少 4 位" }, 400);
   }
 
-  const storedHash = await env.CONFIG.get("admin_password_hash");
+  const storedHash = await kv.get("admin_password_hash");
 
   // 首次设置密码（SETUP 模式）
   if (!storedHash) {
     const newHash = await sha256(password);
-    await env.CONFIG.put("admin_password_hash", newHash);
-    const token = await createSession(env);
+    await kv.put("admin_password_hash", newHash);
+    const token = await createSession(kv);
     return json(
       { success: true, setup: true },
       200,
@@ -140,7 +136,7 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
     return json({ error: "密码错误" }, 401);
   }
 
-  const token = await createSession(env);
+  const token = await createSession(kv);
   return json(
     { success: true },
     200,
@@ -154,9 +150,9 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
 
 export async function handleAuth(ctx: APIContext): Promise<Response> {
   // 启动时断言
-  const env = getEnv();
-  if (!env) {
-    console.error("[auth] FATAL: runtime.env is undefined — D1/KV bindings missing");
+  const kv = getKV();
+  if (!kv) {
+    console.error("[auth] FATAL: KV 存储不可用");
   }
 
   switch (ctx.request.method) {

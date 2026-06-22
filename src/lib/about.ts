@@ -18,8 +18,8 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV } from "./db";
+import { verifySession } from "./auth";
 
 // ============================================================
 // 工具函数
@@ -32,12 +32,9 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
 
-async function requireAuth(request: Request, env: Env) {
-  const authed = await verifySession(request, env);
+async function requireAuth(request: Request, kv: any) {
+  const authed = await verifySession(request, kv);
   if (!authed) {
     throw new Response(JSON.stringify({ error: "未登录" }), {
       status: 401,
@@ -265,14 +262,14 @@ export async function getAboutLinks(db: any): Promise<AboutLink[]> {
 // ============================================================
 
 async function handleGetAll(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   const [config, skills, works, links] = await Promise.all([
-    getAboutConfig(env.DB),
-    getAboutSkills(env.DB),
-    getAboutWorks(env.DB),
-    getAboutLinks(env.DB),
+    getAboutConfig(db),
+    getAboutSkills(db),
+    getAboutWorks(db),
+    getAboutLinks(db),
   ]);
 
   return json({ config, skills, works, links });
@@ -283,11 +280,11 @@ async function handleGetAll(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutConfig(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -309,7 +306,7 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
   } = body;
 
   try {
-    const existing = await env.DB.prepare("SELECT id FROM about_config WHERE id = 1").first();
+    const existing = await db.prepare("SELECT id FROM about_config WHERE id = 1").first();
 
     const introParagraphsJson = introParagraphs ? JSON.stringify(introParagraphs) : undefined;
     const basicItemsJson = basicItems ? JSON.stringify(basicItems) : undefined;
@@ -333,10 +330,10 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
 
       if (sets.length > 0) {
         sets.push("updated_at = datetime('now')");
-        await env.DB.prepare(`UPDATE about_config SET ${sets.join(", ")} WHERE id = 1`).bind(...vals).run();
+        await db.prepare(`UPDATE about_config SET ${sets.join(", ")} WHERE id = 1`).bind(...vals).run();
       }
     } else {
-      await env.DB.prepare(
+      await db.prepare(
         `INSERT INTO about_config (id, hero_image, hero_subtitle, breadcrumb_sub, intro_title, intro_paragraphs, basic_title, basic_items, skills_title, status_title, status_text, alt_title, alt_description)
          VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       ).bind(
@@ -355,7 +352,7 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
       ).run();
     }
 
-    const row = await env.DB.prepare("SELECT * FROM about_config WHERE id = 1").first();
+    const row = await db.prepare("SELECT * FROM about_config WHERE id = 1").first();
     return json(rowToConfig(row));
   } catch (e: any) {
     console.error("PUT /api/about/config error:", e);
@@ -368,16 +365,16 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetSkills(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
-  return json(await getAboutSkills(env.DB));
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
+  return json(await getAboutSkills(db));
 }
 
 async function handlePostSkill(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -388,11 +385,11 @@ async function handlePostSkill(ctx: APIContext): Promise<Response> {
   if (!name) return json({ error: "缺少必填字段: name" }, 400);
 
   try {
-    const result = await env.DB.prepare(
+    const result = await db.prepare(
       "INSERT INTO about_skills (name, sort_order) VALUES (?, ?)"
     ).bind(name, sortOrder ?? 0).run();
 
-    const row = await env.DB.prepare("SELECT * FROM about_skills WHERE id = ?").bind(result.meta.last_row_id).first();
+    const row = await db.prepare("SELECT * FROM about_skills WHERE id = ?").bind(result.meta.last_row_id).first();
     return json(rowToSkill(row));
   } catch (e: any) {
     console.error("POST /api/about/skills error:", e);
@@ -401,10 +398,10 @@ async function handlePostSkill(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteSkill(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -413,7 +410,7 @@ async function handleDeleteSkill(ctx: APIContext): Promise<Response> {
   if (!id) return json({ error: "缺少参数: id" }, 400);
 
   try {
-    await env.DB.prepare("DELETE FROM about_skills WHERE id = ?").bind(Number(id)).run();
+    await db.prepare("DELETE FROM about_skills WHERE id = ?").bind(Number(id)).run();
     return json({ success: true });
   } catch (e: any) {
     console.error("DELETE /api/about/skills error:", e);
@@ -426,16 +423,16 @@ async function handleDeleteSkill(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetWorks(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
-  return json(await getAboutWorks(env.DB));
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
+  return json(await getAboutWorks(db));
 }
 
 async function handlePostWork(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -446,11 +443,11 @@ async function handlePostWork(ctx: APIContext): Promise<Response> {
   if (!title) return json({ error: "缺少必填字段: title" }, 400);
 
   try {
-    const result = await env.DB.prepare(
+    const result = await db.prepare(
       "INSERT INTO about_works (title, description, tags, image, sort_order) VALUES (?, ?, ?, ?, ?)"
     ).bind(title, description ?? "", JSON.stringify(tags ?? []), image ?? "", sortOrder ?? 0).run();
 
-    const row = await env.DB.prepare("SELECT * FROM about_works WHERE id = ?").bind(result.meta.last_row_id).first();
+    const row = await db.prepare("SELECT * FROM about_works WHERE id = ?").bind(result.meta.last_row_id).first();
     return json(rowToWork(row));
   } catch (e: any) {
     console.error("POST /api/about/works error:", e);
@@ -459,10 +456,10 @@ async function handlePostWork(ctx: APIContext): Promise<Response> {
 }
 
 async function handlePutWork(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -485,9 +482,9 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
     if (sets.length === 0) return json({ error: "没有要更新的字段" }, 400);
 
     vals.push(Number(id));
-    await env.DB.prepare(`UPDATE about_works SET ${sets.join(", ")} WHERE id = ?`).bind(...vals).run();
+    await db.prepare(`UPDATE about_works SET ${sets.join(", ")} WHERE id = ?`).bind(...vals).run();
 
-    const row = await env.DB.prepare("SELECT * FROM about_works WHERE id = ?").bind(Number(id)).first();
+    const row = await db.prepare("SELECT * FROM about_works WHERE id = ?").bind(Number(id)).first();
     return json(rowToWork(row));
   } catch (e: any) {
     console.error("PUT /api/about/works error:", e);
@@ -496,10 +493,10 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteWork(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -508,7 +505,7 @@ async function handleDeleteWork(ctx: APIContext): Promise<Response> {
   if (!id) return json({ error: "缺少参数: id" }, 400);
 
   try {
-    await env.DB.prepare("DELETE FROM about_works WHERE id = ?").bind(Number(id)).run();
+    await db.prepare("DELETE FROM about_works WHERE id = ?").bind(Number(id)).run();
     return json({ success: true });
   } catch (e: any) {
     console.error("DELETE /api/about/works error:", e);
@@ -521,16 +518,16 @@ async function handleDeleteWork(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleGetLinks(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
-  return json(await getAboutLinks(env.DB));
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
+  return json(await getAboutLinks(db));
 }
 
 async function handlePostLink(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -541,11 +538,11 @@ async function handlePostLink(ctx: APIContext): Promise<Response> {
   if (!title || !url) return json({ error: "缺少必填字段: title, url" }, 400);
 
   try {
-    const result = await env.DB.prepare(
+    const result = await db.prepare(
       "INSERT INTO about_links (title, description, url, action_text, sort_order) VALUES (?, ?, ?, ?, ?)"
     ).bind(title, description ?? "", url, actionText ?? "Visit →", sortOrder ?? 0).run();
 
-    const row = await env.DB.prepare("SELECT * FROM about_links WHERE id = ?").bind(result.meta.last_row_id).first();
+    const row = await db.prepare("SELECT * FROM about_links WHERE id = ?").bind(result.meta.last_row_id).first();
     return json(rowToLink(row));
   } catch (e: any) {
     console.error("POST /api/about/links error:", e);
@@ -554,10 +551,10 @@ async function handlePostLink(ctx: APIContext): Promise<Response> {
 }
 
 async function handlePutLink(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -580,9 +577,9 @@ async function handlePutLink(ctx: APIContext): Promise<Response> {
     if (sets.length === 0) return json({ error: "没有要更新的字段" }, 400);
 
     vals.push(Number(id));
-    await env.DB.prepare(`UPDATE about_links SET ${sets.join(", ")} WHERE id = ?`).bind(...vals).run();
+    await db.prepare(`UPDATE about_links SET ${sets.join(", ")} WHERE id = ?`).bind(...vals).run();
 
-    const row = await env.DB.prepare("SELECT * FROM about_links WHERE id = ?").bind(Number(id)).first();
+    const row = await db.prepare("SELECT * FROM about_links WHERE id = ?").bind(Number(id)).first();
     return json(rowToLink(row));
   } catch (e: any) {
     console.error("PUT /api/about/links error:", e);
@@ -591,10 +588,10 @@ async function handlePutLink(ctx: APIContext): Promise<Response> {
 }
 
 async function handleDeleteLink(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  try { await requireAuth(ctx.request, env); } catch (e) {
+  try { await requireAuth(ctx.request, getKV()); } catch (e) {
     if (e instanceof Response) return e; throw e;
   }
 
@@ -603,7 +600,7 @@ async function handleDeleteLink(ctx: APIContext): Promise<Response> {
   if (!id) return json({ error: "缺少参数: id" }, 400);
 
   try {
-    await env.DB.prepare("DELETE FROM about_links WHERE id = ?").bind(Number(id)).run();
+    await db.prepare("DELETE FROM about_links WHERE id = ?").bind(Number(id)).run();
     return json({ success: true });
   } catch (e: any) {
     console.error("DELETE /api/about/links error:", e);

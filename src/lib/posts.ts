@@ -11,8 +11,8 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV } from "./db";
+import { verifySession } from "./auth";
 
 // ============================================================
 // 工具函数
@@ -25,12 +25,9 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
 
-async function requireAuth(request: Request, env: Env) {
-  const authed = await verifySession(request, env);
+async function requireAuth(request: Request, kv: any) {
+  const authed = await verifySession(request, kv);
   if (!authed) {
     throw new Response(JSON.stringify({ error: "未登录" }), {
       status: 401,
@@ -62,8 +59,8 @@ function rowToPost(row: any) {
 // ============================================================
 
 async function handleGetPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   const { request, url } = ctx;
   const slug = url.searchParams.get("slug");
@@ -72,8 +69,8 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
   try {
     // 管理端获取单篇
     if (slug && admin) {
-      await requireAuth(request, env);
-      const row = await env.DB.prepare(
+      await requireAuth(request, getKV());
+      const row = await db.prepare(
         "SELECT * FROM posts WHERE slug = ?"
       )
         .bind(slug)
@@ -84,7 +81,7 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
 
     // 公开获取单篇
     if (slug) {
-      const row = await env.DB.prepare(
+      const row = await db.prepare(
         "SELECT * FROM posts WHERE slug = ? AND status = 'published'"
       )
         .bind(slug)
@@ -95,8 +92,8 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
 
     // 管理列表
     if (admin) {
-      await requireAuth(request, env);
-      const { results } = await env.DB.prepare(
+      await requireAuth(request, getKV());
+      const { results } = await db.prepare(
         "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts ORDER BY updated_at DESC LIMIT 50"
       ).all();
       return json(results.map(rowToPost));
@@ -117,7 +114,7 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
     sql += " ORDER BY published_at DESC LIMIT ?";
     params.push(limit);
 
-    const { results } = await env.DB.prepare(sql).bind(...params).all();
+    const { results } = await db.prepare(sql).bind(...params).all();
     return json(results.map(rowToPost));
   } catch (e: any) {
     if (e instanceof Response) throw e; // 401 等
@@ -131,11 +128,11 @@ async function handleGetPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
+  const db = getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -155,18 +152,18 @@ async function handlePostPosts(ctx: APIContext): Promise<Response> {
   }
 
   // 检查 slug 唯一性
-  const existing = await env.DB.prepare("SELECT id FROM posts WHERE slug = ?").bind(slug).first();
+  const existing = await db.prepare("SELECT id FROM posts WHERE slug = ?").bind(slug).first();
   if (existing) {
     return json({ error: `slug "${slug}" 已存在` }, 409);
   }
 
-  await env.DB.prepare(
+  await db.prepare(
     `INSERT INTO posts (slug, title, content, excerpt, category_id, tags, cover_image, published_at, status)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(slug, title, content, excerpt, categoryId, JSON.stringify(tags), coverImage, publishedAt, status).run();
 
   // 返回新建的文章
-  const row = await env.DB.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
+  const row = await db.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
   return json(rowToPost(row), 201);
 }
 
@@ -175,11 +172,11 @@ async function handlePostPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutPosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
+  const db = getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -196,7 +193,7 @@ async function handlePutPosts(ctx: APIContext): Promise<Response> {
   if (!slug) return json({ error: "缺少 slug" }, 400);
 
   // 检查存在
-  const existing = await env.DB.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
+  const existing = await db.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
   if (!existing) return json({ error: "文章不存在" }, 404);
 
   // 构建动态 SET
@@ -232,9 +229,9 @@ async function handlePutPosts(ctx: APIContext): Promise<Response> {
   setClauses.push("updated_at = datetime('now')");
   params.push(slug);
 
-  await env.DB.prepare(`UPDATE posts SET ${setClauses.join(", ")} WHERE slug = ?`).bind(...params).run();
+  await db.prepare(`UPDATE posts SET ${setClauses.join(", ")} WHERE slug = ?`).bind(...params).run();
 
-  const row = await env.DB.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
+  const row = await db.prepare("SELECT * FROM posts WHERE slug = ?").bind(slug).first();
   return json(rowToPost(row));
 }
 
@@ -243,11 +240,11 @@ async function handlePutPosts(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeletePosts(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
+  const db = getDb();
   if (!env) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -256,10 +253,10 @@ async function handleDeletePosts(ctx: APIContext): Promise<Response> {
   const slug = ctx.url.searchParams.get("slug");
   if (!slug) return json({ error: "缺少 slug 参数" }, 400);
 
-  const existing = await env.DB.prepare("SELECT id FROM posts WHERE slug = ?").bind(slug).first();
+  const existing = await db.prepare("SELECT id FROM posts WHERE slug = ?").bind(slug).first();
   if (!existing) return json({ error: "文章不存在" }, 404);
 
-  await env.DB.prepare("DELETE FROM posts WHERE slug = ?").bind(slug).run();
+  await db.prepare("DELETE FROM posts WHERE slug = ?").bind(slug).run();
 
   return json({ success: true, deleted: slug });
 }
@@ -270,7 +267,7 @@ async function handleDeletePosts(ctx: APIContext): Promise<Response> {
 
 export async function handlePosts(ctx: APIContext): Promise<Response> {
   // 启动时断言
-  const env = getEnv();
+  const db = getDb();
   if (!env) {
     console.error("[posts] FATAL: runtime.env is undefined — D1 binding missing");
   }

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_CONFIG } from '../config.ts';
-import { env as cfEnv } from 'cloudflare:workers';
+import { getDb } from '../lib/db';
 
 // —— 服务端获取 /now 状态数据 ——
 interface NowStatus {
@@ -19,7 +19,7 @@ let status: NowStatus = {
 };
 
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const row = await db.prepare("SELECT phase, progress, badge_text, updated_at FROM now_status WHERE id = 1").first();
     if (row) {
@@ -43,7 +43,7 @@ let activities: NowActivityItem[] = [
 ];
 
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const { results } = await db.prepare("SELECT id, content, activity_date FROM now_activity ORDER BY activity_date DESC, id DESC").all();
     if (results && results.length > 0) {

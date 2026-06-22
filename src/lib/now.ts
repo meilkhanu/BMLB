@@ -7,8 +7,8 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV } from "./db";
+import { verifySession } from "./auth";
 
 // ============================================================
 // 工具函数
@@ -21,12 +21,9 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
 
-async function requireAuth(request: Request, env: Env) {
-  const authed = await verifySession(request, env);
+async function requireAuth(request: Request, kv: any) {
+  const authed = await verifySession(request, kv);
   if (!authed) {
     throw new Response(JSON.stringify({ error: "未登录" }), {
       status: 401,
@@ -86,11 +83,11 @@ const DEFAULT_STATUS = {
 // ============================================================
 
 async function handleGetNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    const row = await env.DB.prepare("SELECT * FROM now_status WHERE id = 1").first();
+    const row = await db.prepare("SELECT * FROM now_status WHERE id = 1").first();
     if (!row) {
       return json(DEFAULT_STATUS);
     }
@@ -106,11 +103,11 @@ async function handleGetNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePutNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -140,11 +137,11 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 
   try {
     // 检查记录是否存在
-    const existing = await env.DB.prepare("SELECT id FROM now_status WHERE id = 1").first();
+    const existing = await db.prepare("SELECT id FROM now_status WHERE id = 1").first();
 
     if (existing) {
       // 更新
-      await env.DB.prepare(
+      await db.prepare(
         `UPDATE now_status
          SET start_date = ?, end_date = ?, phase = ?, description = ?, progress = ?,
              badge_text = ?, project_description = ?,
@@ -171,7 +168,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
       ).run();
     } else {
       // 插入
-      await env.DB.prepare(
+      await db.prepare(
         `INSERT INTO now_status (
            id, start_date, end_date, phase, description, progress,
            badge_text, project_description,
@@ -197,7 +194,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
       ).run();
     }
 
-    const row = await env.DB.prepare("SELECT * FROM now_status WHERE id = 1").first();
+    const row = await db.prepare("SELECT * FROM now_status WHERE id = 1").first();
     return json(rowToStatus(row));
   } catch (e: any) {
     console.error("PUT /api/now error:", e);
@@ -210,7 +207,7 @@ async function handlePutNow(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 export async function handleNow(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
+  const db = getDb();
   if (!env) {
     console.error("[now] FATAL: runtime.env is undefined — D1 binding missing");
   }

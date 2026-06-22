@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { env as cfEnv } from 'cloudflare:workers';
+import { getDb } from '../lib/db';
 
 import { md5 } from '../lib/md5';
 
@@ -54,7 +54,7 @@ let status: NowStatus = {
 };
 
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const row = await db.prepare("SELECT * FROM now_status WHERE id = 1").first();
     if (row) {
@@ -93,7 +93,7 @@ let activities: NowActivityItem[] = [
 ];
 
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const { results } = await db.prepare(
       "SELECT * FROM now_activity ORDER BY activity_date DESC, id DESC"
@@ -126,7 +126,7 @@ let messages: NowMessage[] = [
 ];
 
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const { results } = await db.prepare(
       "SELECT * FROM now_messages ORDER BY created_at DESC"

@@ -8,8 +8,8 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV } from "./db";
+import { verifySession } from "./auth";
 
 // ============================================================
 // 工具函数
@@ -22,12 +22,9 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
 
-async function requireAuth(request: Request, env: Env) {
-  const authed = await verifySession(request, env);
+async function requireAuth(request: Request, kv: any) {
+  const authed = await verifySession(request, kv);
   if (!authed) {
     throw new Response(JSON.stringify({ error: "未登录" }), {
       status: 401,
@@ -60,11 +57,11 @@ const DEFAULT_ACTIVITIES: NowActivity[] = [
 // ============================================================
 
 async function handleGetActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    const rows = await env.DB.prepare(
+    const rows = await db.prepare(
       "SELECT * FROM now_activity ORDER BY activity_date DESC, id DESC"
     ).all();
 
@@ -91,11 +88,11 @@ async function handleGetActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handlePostActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -114,11 +111,11 @@ async function handlePostActivity(ctx: APIContext): Promise<Response> {
   }
 
   try {
-    const result = await env.DB.prepare(
+    const result = await db.prepare(
       "INSERT INTO now_activity (content, activity_date) VALUES (?, ?)"
     ).bind(content, activityDate).run();
 
-    const row = await env.DB.prepare(
+    const row = await db.prepare(
       "SELECT * FROM now_activity WHERE id = ?"
     ).bind(result.meta.last_row_id).first();
 
@@ -139,11 +136,11 @@ async function handlePostActivity(ctx: APIContext): Promise<Response> {
 // ============================================================
 
 async function handleDeleteActivity(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    await requireAuth(ctx.request, env);
+    await requireAuth(ctx.request, getKV());
   } catch (e) {
     if (e instanceof Response) return e;
     throw e;
@@ -154,7 +151,7 @@ async function handleDeleteActivity(ctx: APIContext): Promise<Response> {
   if (!id) return json({ error: "缺少参数: id" }, 400);
 
   try {
-    await env.DB.prepare(
+    await db.prepare(
       "DELETE FROM now_activity WHERE id = ?"
     ).bind(Number(id)).run();
 

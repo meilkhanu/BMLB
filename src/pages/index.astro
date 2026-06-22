@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_CONFIG } from '../config.ts';
 import CalendarIcon from '../components/icons/CalendarIcon.astro';
-import { env as cfEnv } from 'cloudflare:workers';
+import { getDb } from '../lib/db';
 
 // —— 服务端获取全部已发布文章 ——
 interface ApiPost {
@@ -21,7 +21,7 @@ interface ApiPost {
 
 let allPosts: ApiPost[] = [];
 try {
-  const db = (cfEnv as any)?.DB;
+  const db = getDb();
   if (db) {
     const { results } = await db.prepare(
       "SELECT id, slug, title, excerpt, category_id, tags, cover_image, published_at, created_at, updated_at, status FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 50"
@@ -48,7 +48,7 @@ try {
 // —— 获取最后活动时间（含草稿，回退到已发布文章）——
 let lastActiveTime = '';
 try {
-  const runtimeEnv = cfEnv as any;
+  const runtimeEnv = getDb() as any;
   if (runtimeEnv?.DB) {
     const row = await runtimeEnv.DB.prepare(
       "SELECT MAX(updated_at) as last_active FROM posts"

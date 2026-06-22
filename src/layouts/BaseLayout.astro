@@ -1,6 +1,6 @@
 ---
 import { SITE_CONFIG } from '../config.ts';
-import { env as cfEnv } from 'cloudflare:workers';
+import { getDb } from '../lib/db';
 import SunIcon from '../components/icons/SunIcon.astro';
 import MoonIcon from '../components/icons/MoonIcon.astro';
 import SearchIcon from '../components/icons/SearchIcon.astro';
@@ -16,7 +16,7 @@ const navLinkClass = (path: string) => {
 
 let songs: any[] = [];
 try {
-	const db = (cfEnv as any)?.DB;
+	const db = getDb();
 	if (db) {
 		const { results } = await db.prepare("SELECT * FROM songs ORDER BY sort_order ASC, id ASC").all();
 		songs = results || [];

@@ -9,8 +9,8 @@
 // ============================================================
 
 import type { APIContext } from "astro";
-import { env as cloudflareEnv } from 'cloudflare:workers';
-import { verifySession, type Env } from "./auth";
+import { getDb, getKV } from "./db";
+import { verifySession } from "./auth";
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -19,21 +19,13 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function getEnv(): Env | undefined {
-  return cloudflareEnv as unknown as Env | undefined;
-}
-
-function getDb(env: Env) {
-  return env.DB;
-}
-
 // —— GET /api/songs ——
 async function handleGetSongs(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
   try {
-    const { results } = await getDb(env)
+    const { results } = await db
       .prepare("SELECT * FROM songs ORDER BY sort_order ASC, id ASC")
       .all();
     return json(results || []);
@@ -45,10 +37,10 @@ async function handleGetSongs(ctx: APIContext): Promise<Response> {
 
 // —— POST /api/songs ——
 async function handleCreateSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  const authed = await verifySession(ctx.request, env);
+  const authed = await verifySession(ctx.request, getKV());
   if (!authed) return json({ error: "未登录" }, 401);
 
   let body: any;
@@ -64,7 +56,7 @@ async function handleCreateSong(ctx: APIContext): Promise<Response> {
   }
 
   try {
-    const result = await getDb(env)
+    const result = await db
       .prepare(
         `INSERT INTO songs (title, artist, album, cover_url, audio_url, duration, sort_order)
          VALUES (?, ?, ?, ?, ?, ?, ?)`
@@ -88,10 +80,10 @@ async function handleCreateSong(ctx: APIContext): Promise<Response> {
 
 // —— PUT /api/songs?id=X ——
 async function handleUpdateSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  const authed = await verifySession(ctx.request, env);
+  const authed = await verifySession(ctx.request, getKV());
   if (!authed) return json({ error: "未登录" }, 401);
 
   const url = new URL(ctx.request.url);
@@ -132,7 +124,7 @@ async function handleUpdateSong(ctx: APIContext): Promise<Response> {
   values.push(id);
 
   try {
-    await getDb(env)
+    await db
       .prepare(`UPDATE songs SET ${updates.join(", ")} WHERE id = ?`)
       .bind(...values)
       .run();
@@ -145,10 +137,10 @@ async function handleUpdateSong(ctx: APIContext): Promise<Response> {
 
 // —— DELETE /api/songs?id=X ——
 async function handleDeleteSong(ctx: APIContext): Promise<Response> {
-  const env = getEnv();
-  if (!env) return json({ error: "运行时不可用" }, 500);
+  const db = getDb();
+  if (!db) return json({ error: "运行时不可用" }, 500);
 
-  const authed = await verifySession(ctx.request, env);
+  const authed = await verifySession(ctx.request, getKV());
   if (!authed) return json({ error: "未登录" }, 401);
 
   const url = new URL(ctx.request.url);
@@ -156,7 +148,7 @@ async function handleDeleteSong(ctx: APIContext): Promise<Response> {
   if (!id) return json({ error: "缺少 id 参数" }, 400);
 
   try {
-    await getDb(env)
+    await db
       .prepare("DELETE FROM songs WHERE id = ?")
       .bind(id)
       .run();
