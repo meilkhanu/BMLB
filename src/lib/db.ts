@@ -39,17 +39,13 @@ export interface BucketCompat {
 // Workers 环境 — 使用 cloudflare:workers 原生绑定
 // ============================================================
 
+import { env as _workersEnv } from 'cloudflare:workers';
+
 let _cfEnv: any = null;
 
 function getCfEnv(): any {
   if (_cfEnv) return _cfEnv;
-  try {
-    // 动态 import — Workers 环境
-    const mod = require('cloudflare:workers') as any;
-    _cfEnv = mod.env;
-  } catch {
-    _cfEnv = undefined;
-  }
+  _cfEnv = _workersEnv ?? (globalThis as any).__cfEnv;
   return _cfEnv;
 }
 
