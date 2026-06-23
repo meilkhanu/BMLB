@@ -126,12 +126,27 @@ function ensureDb(): any {
       alt_description TEXT DEFAULT '',
       updated_at      TEXT DEFAULT (datetime('now'))
     );
+  `);
 
-    -- 新字段：Hero 管理 + 头像（渐进式迁移，已有表不会丢失数据）
-    ALTER TABLE about_config ADD COLUMN index_hero_image TEXT DEFAULT '/images/hero-bg.avif';
-    ALTER TABLE about_config ADD COLUMN index_hero_position TEXT DEFAULT 'center 40%';
-    ALTER TABLE about_config ADD COLUMN about_hero_position TEXT DEFAULT 'center 15%';
-    ALTER TABLE about_config ADD COLUMN avatar TEXT DEFAULT '/images/avatar.avif';
+  // —— 渐进式列迁移（try-catch 兜底，已存在的列静默跳过）——
+  const MIGRATIONS = [
+    'ALTER TABLE about_config ADD COLUMN index_hero_image TEXT DEFAULT \'/images/hero-bg.avif\'',
+    'ALTER TABLE about_config ADD COLUMN index_hero_position TEXT DEFAULT \'center 40%\'',
+    'ALTER TABLE about_config ADD COLUMN about_hero_position TEXT DEFAULT \'center 15%\'',
+    'ALTER TABLE about_config ADD COLUMN avatar TEXT DEFAULT \'/images/avatar.avif\'',
+    'ALTER TABLE about_works ADD COLUMN slug TEXT DEFAULT \'\'',
+    'ALTER TABLE about_works ADD COLUMN content TEXT DEFAULT \'\'',
+    'ALTER TABLE about_works ADD COLUMN gallery TEXT DEFAULT \'[]\'',
+    'ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT \'[]\'',
+    'ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0',
+  ];
+  for (const sql of MIGRATIONS) {
+    try { _db.exec(sql); } catch (e: any) {
+      if (!e.message.includes('duplicate column')) console.error('[db] migration error:', e.message);
+    }
+  }
+
+  _db.exec(`
 
     CREATE TABLE IF NOT EXISTS about_skills (
       id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -161,13 +176,6 @@ function ensureDb(): any {
       action_text TEXT DEFAULT '',
       sort_order  INTEGER DEFAULT 0
     );
-
-    -- about_works 渐进式迁移
-    ALTER TABLE about_works ADD COLUMN slug TEXT DEFAULT '';
-    ALTER TABLE about_works ADD COLUMN content TEXT DEFAULT '';
-    ALTER TABLE about_works ADD COLUMN gallery TEXT DEFAULT '[]';
-    ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT '[]';
-    ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0;
 
     CREATE TABLE IF NOT EXISTS comments (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
