@@ -669,6 +669,8 @@ try {
 					if (floatModeBtn) floatModeBtn.textContent = modeMap[state.playMode] || '🔁';
 				}
 
+				window.__floatUpdateUI = updateFloatUI;
+
 				function loadCurrentSong() {
 					const song = state.songs[state.currentIndex];
 					if (!song) return;
@@ -758,8 +760,9 @@ try {
 						});
 					}
 					if (collapsed) {
-						collapsed.addEventListener('click', (e) => {
-							if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+						collapsed.addEventListener('pointerdown', (e) => {
+							e.stopPropagation();
+							e.preventDefault();
 							setExpanded(true);
 						});
 					}
@@ -835,12 +838,14 @@ try {
 				window.__audioListenersBound = true;
 				audio.addEventListener('play', () => {
 					state.isPlaying = true;
+					if (window.__floatUpdateUI) window.__floatUpdateUI();
 					window.dispatchEvent(new CustomEvent('player-state-sync', {
 						detail: { currentIndex: state.currentIndex, isPlaying: true, playMode: state.playMode, songs: state.songs }
 					}));
 				});
 				audio.addEventListener('pause', () => {
 					state.isPlaying = false;
+					if (window.__floatUpdateUI) window.__floatUpdateUI();
 					window.dispatchEvent(new CustomEvent('player-state-sync', {
 						detail: { currentIndex: state.currentIndex, isPlaying: false, playMode: state.playMode, songs: state.songs }
 					}));
