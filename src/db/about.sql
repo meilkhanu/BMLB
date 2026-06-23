@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS about_config (
   updated_at      TEXT DEFAULT (datetime('now'))
 );
 
+ALTER TABLE about_config ADD COLUMN index_hero_image TEXT DEFAULT '/images/hero-bg.avif';
+ALTER TABLE about_config ADD COLUMN index_hero_position TEXT DEFAULT 'center 40%';
+ALTER TABLE about_config ADD COLUMN about_hero_position TEXT DEFAULT 'center 15%';
+ALTER TABLE about_config ADD COLUMN avatar TEXT DEFAULT '/images/avatar.avif';
+
 -- 技能列表
 CREATE TABLE IF NOT EXISTS about_skills (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_CONFIG } from '../config.ts';
 import CalendarIcon from '../components/icons/CalendarIcon.astro';
 import { getDb } from '../lib/db';
+import { getAboutConfig } from '../lib/about';
 
 // —— 服务端获取全部已发布文章 ——
 interface ApiPost {
@@ -83,12 +84,24 @@ function formatDate(dateStr: string): string {
 }
 
 // 分类映射直接通过 SITE_CONFIG.categories 遍历获取，无需额外变量
+
+// —— 读取 about_config 获取 Hero 配置 ——
+let indexHeroImage = '/images/hero-bg.avif';
+let indexHeroPosition = 'center 40%';
+try {
+  const aboutDb = await getDb();
+  if (aboutDb) {
+    const aboutConfig = await getAboutConfig(aboutDb);
+    indexHeroImage = aboutConfig.indexHeroImage || indexHeroImage;
+    indexHeroPosition = aboutConfig.indexHeroPosition || indexHeroPosition;
+  }
+} catch {}
 ---
 
 <BaseLayout title="贝谟拉比">
 	<!-- 模块2：Hero区 -->
 	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden border-[#EAEAEA] dark:border-[#1A1A1A]">
-		<img src="/images/hero-bg.avif" alt="" class="absolute inset-0 w-full h-full object-cover object-[center_40%]" />
+		<img src={indexHeroImage} alt="" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${indexHeroPosition}`} />
 		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
 		<!-- 梦幻星尘 Canvas：上沿覆盖 Hero，粒子从图片区就开始出现 -->
 		<canvas id="hero-dust-canvas" class="absolute bottom-0 left-0 w-full h-[180px] md:h-[260px] z-[5] pointer-events-none"></canvas>

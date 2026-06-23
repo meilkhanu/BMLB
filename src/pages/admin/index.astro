@@ -25,6 +25,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">微日志</button>
         <button id="music-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">音乐</button>
         <button id="edit-about-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">关于</button>
+        <button id="edit-site-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">站点设置</button>
         <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
         <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
       </div>
@@ -540,6 +541,107 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       </div>
     </div>
 
+    <!-- —— 站点设置编辑器 —— -->
+    <div id="site-editor-view" class="hidden">
+      <button type="button" id="site-back-btn" class="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-colors mb-6 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
+
+      <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 md:p-10 border border-[#EAEAEA] dark:border-[#2A2A2A] shadow-sm">
+        <h3 class="text-lg font-bold mb-8">站点设置</h3>
+
+        <!-- ===== 首页 Hero ===== -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-[#8B7CB3] mb-5">首页 Hero</h4>
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-[400px] shrink-0">
+              <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] border border-[#EAEAEA] dark:border-[#333]">
+                <img id="site-index-hero-preview" src="/images/hero-bg.avif" class="w-full h-full object-cover" style="object-position: center 40%" />
+              </div>
+              <div class="mt-3 flex items-center gap-2">
+                <label class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-xs font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">
+                  上传新图
+                  <input type="file" accept="image/*" id="site-index-hero-file" class="hidden" />
+                </label>
+                <span id="site-index-hero-status" class="text-[11px] text-[#999]"></span>
+              </div>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-medium text-[#999] mb-3">位置</label>
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs text-[#999] w-12">水平</span>
+                <button type="button" data-dir="left" data-target="index" class="site-pos-btn px-3 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] text-sm hover:bg-[#8B7CB3] hover:text-white transition-all cursor-pointer border border-[#E0E0E0] dark:border-[#333]">←</button>
+                <button type="button" data-dir="right" data-target="index" class="site-pos-btn px-3 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] text-sm hover:bg-[#8B7CB3] hover:text-white transition-all cursor-pointer border border-[#E0E0E0] dark:border-[#333]">→</button>
+                <span class="text-xs text-[#999] w-12 ml-4">垂直</span>
+                <button type="button" data-dir="up" data-target="index" class="site-pos-btn px-3 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] text-sm hover:bg-[#8B7CB3] hover:text-white transition-all cursor-pointer border border-[#E0E0E0] dark:border-[#333]">↑</button>
+                <button type="button" data-dir="down" data-target="index" class="site-pos-btn px-3 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] text-sm hover:bg-[#8B7CB3] hover:text-white transition-all cursor-pointer border border-[#E0E0E0] dark:border-[#333]">↓</button>
+              </div>
+              <div class="text-xs text-[#999]">当前：<code id="site-index-hero-pos-text" class="bg-[#F5F5F5] dark:bg-[#252525] px-2 py-0.5 rounded">center 40%</code></div>
+              <input type="hidden" id="site-index-hero-pos" value="center 40%" />
+              <button type="button" id="save-index-hero-btn" class="mt-4 px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存首页 Hero</button>
+              <span id="save-index-hero-status" class="text-xs text-[#999] ml-3"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-[#EAEAEA] dark:border-[#2A2A2A] my-8"></div>
+
+        <!-- ===== 关于页 Hero ===== -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-[#8B7CB3] mb-5">关于页 Hero</h4>
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-[400px] shrink-0">
+              <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] border border-[#EAEAEA] dark:border-[#333]">
+                <img id="site-about-hero-preview" src="/images/d402c0a48dd402c0a48d.avif" class="w-full h-full object-cover" style="object-position: center 15%" />
+              </div>
+              <div class="mt-3 flex items-center gap-2">
+                <label class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-xs font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">
+                  上传新图
+                  <input type="file" accept="image/*" id="site-about-hero-file" class="hidden" />
+                </label>
+                <span id="site-about-hero-status" class="text-[11px] text-[#999]"></span>
+              </div>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-medium text-[#999] mb-3">垂直位置</label>
+              <div class="flex items-center gap-3">
+                <input type="range" id="site-about-hero-slider" min="0" max="100" value="15" class="flex-1 accent-[#8B7CB3]" />
+                <span id="site-about-hero-slider-val" class="text-xs text-[#999] w-10 text-right">15%</span>
+              </div>
+              <input type="hidden" id="site-about-hero-pos" value="center 15%" />
+              <button type="button" id="save-about-hero-btn" class="mt-4 px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存关于页 Hero</button>
+              <span id="save-about-hero-status" class="text-xs text-[#999] ml-3"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-[#EAEAEA] dark:border-[#2A2A2A] my-8"></div>
+
+        <!-- ===== 头像 ===== -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-[#8B7CB3] mb-5">头像</h4>
+          <div class="flex flex-col md:flex-row gap-6 items-start">
+            <div class="w-[120px] h-[120px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] border border-[#EAEAEA] dark:border-[#333] shrink-0">
+              <img id="site-avatar-preview" src="/images/avatar.avif" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <label class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-xs font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">
+                上传新头像
+                <input type="file" accept="image/*" id="site-avatar-file" class="hidden" />
+              </label>
+              <span id="site-avatar-status" class="text-[11px] text-[#999] ml-2"></span>
+              <input type="hidden" id="site-avatar-url" value="/images/avatar.avif" />
+              <div class="mt-3">
+                <button type="button" id="save-avatar-btn" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存头像</button>
+                <span id="save-avatar-status" class="text-xs text-[#999] ml-3"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- —— 删除确认弹窗 —— -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div class="bg-white dark:bg-[#1A1A1A] rounded-3xl p-8 max-w-[360px] w-full shadow-xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
@@ -574,6 +676,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.remove('hidden');
       document.getElementById('about-save-status').textContent = '';
       await loadAboutData();
@@ -886,6 +989,10 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     document.getElementById('about-add-work-btn').addEventListener('click', () => addAboutWork());
     document.getElementById('about-add-link-btn').addEventListener('click', () => addAboutLink());
 
+    // 站点设置
+    document.getElementById('edit-site-btn').addEventListener('click', () => openSiteEditor());
+    document.getElementById('site-back-btn').addEventListener('click', () => closeSiteEditor());
+
     // 实时预览
     ['now-start-date','now-end-date','now-phase','now-progress','now-description'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateNowPreview);
@@ -896,6 +1003,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
@@ -1068,6 +1176,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.remove('hidden');
       await Promise.all([loadActivities(), loadAdminMessages()]);
@@ -1362,6 +1471,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.add('hidden');
       document.getElementById('editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
 
@@ -1403,6 +1513,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('now-editor-view').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.remove('hidden');
       hideMusicForm();
       await loadSongs();
@@ -1820,6 +1931,231 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         body: JSON.stringify({ action: 'logout' }),
       });
       window.location.href = '/';
+    });
+
+    // ============================================================
+    // 站点设置编辑器
+    // ============================================================
+    let siteData = { indexHeroImage: '/images/hero-bg.avif', indexHeroPosition: 'center 40%', heroImage: '/images/d402c0a48dd402c0a48d.avif', aboutHeroPosition: 'center 15%', avatar: '/images/avatar.avif' };
+
+    async function openSiteEditor() {
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('editor-view').classList.add('hidden');
+      document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('activity-editor-view').classList.add('hidden');
+      document.getElementById('about-editor-view').classList.add('hidden');
+      document.getElementById('music-editor-view').classList.add('hidden');
+      document.getElementById('site-editor-view').classList.remove('hidden');
+      await loadSiteData();
+    }
+
+    function closeSiteEditor() {
+      document.getElementById('site-editor-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      loadPosts();
+    }
+
+    async function loadSiteData() {
+      try {
+        const res = await fetch('/api/about');
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        const c = data.config || {};
+        siteData = {
+          indexHeroImage: c.indexHeroImage || '/images/hero-bg.avif',
+          indexHeroPosition: c.indexHeroPosition || 'center 40%',
+          heroImage: c.heroImage || '/images/d402c0a48dd402c0a48d.avif',
+          aboutHeroPosition: c.aboutHeroPosition || 'center 15%',
+          avatar: c.avatar || '/images/avatar.avif',
+        };
+        populateSiteForm();
+      } catch (e) {
+        console.error('加载站点设置失败:', e);
+      }
+    }
+
+    function populateSiteForm() {
+      // 首页 Hero
+      document.getElementById('site-index-hero-preview').src = siteData.indexHeroImage;
+      document.getElementById('site-index-hero-preview').style.objectPosition = siteData.indexHeroPosition;
+      document.getElementById('site-index-hero-pos').value = siteData.indexHeroPosition;
+      document.getElementById('site-index-hero-pos-text').textContent = siteData.indexHeroPosition;
+
+      // 关于页 Hero
+      document.getElementById('site-about-hero-preview').src = siteData.heroImage;
+      document.getElementById('site-about-hero-preview').style.objectPosition = siteData.aboutHeroPosition;
+      document.getElementById('site-about-hero-pos').value = siteData.aboutHeroPosition;
+      const aboutMatch = siteData.aboutHeroPosition.match(/(\d+)%/);
+      const aboutVal = aboutMatch ? parseInt(aboutMatch[1]) : 15;
+      document.getElementById('site-about-hero-slider').value = aboutVal;
+      document.getElementById('site-about-hero-slider-val').textContent = aboutVal + '%';
+
+      // 头像
+      document.getElementById('site-avatar-preview').src = siteData.avatar;
+      document.getElementById('site-avatar-url').value = siteData.avatar;
+    }
+
+    // 位置按钮
+    document.querySelectorAll('.site-pos-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dir = btn.dataset.dir;
+        const target = btn.dataset.target;
+        const posInput = document.getElementById('site-' + target + '-hero-pos');
+        const posText = document.getElementById('site-' + target + '-hero-pos-text');
+        const preview = document.getElementById('site-' + target + '-hero-preview');
+        let [h, v] = posInput.value.split(' ');
+        let vNum = parseInt(v) || 40;
+        let hVal = h || 'center';
+        if (dir === 'left') {
+          if (hVal === 'center') hVal = 'right';
+          else if (hVal === 'right') hVal = 'left';
+          else if (hVal === 'left') hVal = 'left';
+          else hVal = 'center';
+        } else if (dir === 'right') {
+          if (hVal === 'center') hVal = 'left';
+          else if (hVal === 'left') hVal = 'right';
+          else if (hVal === 'right') hVal = 'right';
+          else hVal = 'center';
+        } else if (dir === 'up') {
+          vNum = Math.max(0, vNum - 5);
+        } else if (dir === 'down') {
+          vNum = Math.min(100, vNum + 5);
+        }
+        const newPos = hVal + ' ' + vNum + '%';
+        posInput.value = newPos;
+        posText.textContent = newPos;
+        preview.style.objectPosition = newPos;
+      });
+    });
+
+    // 关于页 Hero 滑块
+    document.getElementById('site-about-hero-slider').addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('site-about-hero-slider-val').textContent = val + '%';
+      const newPos = 'center ' + val + '%';
+      document.getElementById('site-about-hero-pos').value = newPos;
+      document.getElementById('site-about-hero-preview').style.objectPosition = newPos;
+    });
+
+    // 上传：首页 Hero
+    document.getElementById('site-index-hero-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('site-index-hero-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999]';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) { statusEl.textContent = result.error; statusEl.className = 'text-[11px] text-red-500'; }
+        else {
+          siteData.indexHeroImage = result.url;
+          document.getElementById('site-index-hero-preview').src = result.url;
+          statusEl.textContent = '✓ 上传成功'; statusEl.className = 'text-[11px] text-[#7CB38B]';
+          e.target.value = '';
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 3000);
+        }
+      } catch { statusEl.textContent = '网络错误'; statusEl.className = 'text-[11px] text-red-500'; }
+    });
+
+    // 上传：关于页 Hero
+    document.getElementById('site-about-hero-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('site-about-hero-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999]';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) { statusEl.textContent = result.error; statusEl.className = 'text-[11px] text-red-500'; }
+        else {
+          siteData.heroImage = result.url;
+          document.getElementById('site-about-hero-preview').src = result.url;
+          statusEl.textContent = '✓ 上传成功'; statusEl.className = 'text-[11px] text-[#7CB38B]';
+          e.target.value = '';
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 3000);
+        }
+      } catch { statusEl.textContent = '网络错误'; statusEl.className = 'text-[11px] text-red-500'; }
+    });
+
+    // 上传：头像
+    document.getElementById('site-avatar-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('site-avatar-status');
+      statusEl.textContent = '上传中...';
+      statusEl.className = 'text-[11px] text-[#999]';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) { statusEl.textContent = result.error; statusEl.className = 'text-[11px] text-red-500'; }
+        else {
+          siteData.avatar = result.url;
+          document.getElementById('site-avatar-preview').src = result.url;
+          document.getElementById('site-avatar-url').value = result.url;
+          statusEl.textContent = '✓ 上传成功'; statusEl.className = 'text-[11px] text-[#7CB38B]';
+          e.target.value = '';
+          setTimeout(() => { if (statusEl.textContent.includes('✓')) statusEl.textContent = ''; }, 3000);
+        }
+      } catch { statusEl.textContent = '网络错误'; statusEl.className = 'text-[11px] text-red-500'; }
+    });
+
+    // 保存：首页 Hero
+    document.getElementById('save-index-hero-btn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('save-index-hero-status');
+      statusEl.textContent = '保存中...';
+      try {
+        const res = await fetch('/api/about/config', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ indexHeroImage: siteData.indexHeroImage, indexHeroPosition: document.getElementById('site-index-hero-pos').value }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+        statusEl.textContent = '✓ 已保存'; statusEl.className = 'text-xs text-[#7CB38B]';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      } catch (e) { statusEl.textContent = '失败: ' + e.message; statusEl.className = 'text-xs text-red-500'; }
+    });
+
+    // 保存：关于页 Hero
+    document.getElementById('save-about-hero-btn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('save-about-hero-status');
+      statusEl.textContent = '保存中...';
+      try {
+        const res = await fetch('/api/about/config', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ heroImage: siteData.heroImage, aboutHeroPosition: document.getElementById('site-about-hero-pos').value }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+        statusEl.textContent = '✓ 已保存'; statusEl.className = 'text-xs text-[#7CB38B]';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      } catch (e) { statusEl.textContent = '失败: ' + e.message; statusEl.className = 'text-xs text-red-500'; }
+    });
+
+    // 保存：头像
+    document.getElementById('save-avatar-btn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('save-avatar-status');
+      statusEl.textContent = '保存中...';
+      try {
+        const res = await fetch('/api/about/config', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ avatar: document.getElementById('site-avatar-url').value }),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+        statusEl.textContent = '✓ 已保存'; statusEl.className = 'text-xs text-[#7CB38B]';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      } catch (e) { statusEl.textContent = '失败: ' + e.message; statusEl.className = 'text-xs text-red-500'; }
     });
 
     // ============================================================

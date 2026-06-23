@@ -58,6 +58,10 @@ export interface AboutConfig {
   statusText: string;
   altTitle: string;
   altDescription: string;
+  indexHeroImage: string;
+  indexHeroPosition: string;
+  aboutHeroPosition: string;
+  avatar: string;
 }
 
 export interface AboutSkill {
@@ -107,6 +111,10 @@ const DEFAULT_CONFIG: AboutConfig = {
   statusText: 'Exploring parametric structural systems & CAD workflow optimization.',
   altTitle: '异次元之旅 / Interlinked System',
   altDescription: '二次元萌站备案互通系统构建中...',
+  indexHeroImage: '/images/hero-bg.avif',
+  indexHeroPosition: 'center 40%',
+  aboutHeroPosition: 'center 15%',
+  avatar: '/images/avatar.avif',
 };
 
 const DEFAULT_SKILLS: AboutSkill[] = [
@@ -182,6 +190,10 @@ function rowToConfig(row: any): AboutConfig {
     statusText: row.status_text || DEFAULT_CONFIG.statusText,
     altTitle: row.alt_title || DEFAULT_CONFIG.altTitle,
     altDescription: row.alt_description || DEFAULT_CONFIG.altDescription,
+    indexHeroImage: row.index_hero_image || DEFAULT_CONFIG.indexHeroImage,
+    indexHeroPosition: row.index_hero_position || DEFAULT_CONFIG.indexHeroPosition,
+    aboutHeroPosition: row.about_hero_position || DEFAULT_CONFIG.aboutHeroPosition,
+    avatar: row.avatar || DEFAULT_CONFIG.avatar,
   };
 }
 
@@ -307,6 +319,7 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
     basicTitle, basicItems,
     skillsTitle, statusTitle, statusText,
     altTitle, altDescription,
+    indexHeroImage, indexHeroPosition, aboutHeroPosition, avatar,
   } = body;
 
   try {
@@ -331,6 +344,10 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
       if (statusText !== undefined) { sets.push("status_text = ?"); vals.push(statusText); }
       if (altTitle !== undefined) { sets.push("alt_title = ?"); vals.push(altTitle); }
       if (altDescription !== undefined) { sets.push("alt_description = ?"); vals.push(altDescription); }
+      if (indexHeroImage !== undefined) { sets.push("index_hero_image = ?"); vals.push(indexHeroImage); }
+      if (indexHeroPosition !== undefined) { sets.push("index_hero_position = ?"); vals.push(indexHeroPosition); }
+      if (aboutHeroPosition !== undefined) { sets.push("about_hero_position = ?"); vals.push(aboutHeroPosition); }
+      if (avatar !== undefined) { sets.push("avatar = ?"); vals.push(avatar); }
 
       if (sets.length > 0) {
         sets.push("updated_at = datetime('now')");
@@ -338,8 +355,8 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
       }
     } else {
       await db.prepare(
-        `INSERT INTO about_config (id, hero_image, hero_subtitle, breadcrumb_sub, intro_title, intro_paragraphs, basic_title, basic_items, skills_title, status_title, status_text, alt_title, alt_description)
-         VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO about_config (id, hero_image, hero_subtitle, breadcrumb_sub, intro_title, intro_paragraphs, basic_title, basic_items, skills_title, status_title, status_text, alt_title, alt_description, index_hero_image, index_hero_position, about_hero_position, avatar)
+         VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       ).bind(
         heroImage ?? DEFAULT_CONFIG.heroImage,
         heroSubtitle ?? DEFAULT_CONFIG.heroSubtitle,
@@ -353,6 +370,10 @@ async function handlePutConfig(ctx: APIContext): Promise<Response> {
         statusText ?? DEFAULT_CONFIG.statusText,
         altTitle ?? DEFAULT_CONFIG.altTitle,
         altDescription ?? DEFAULT_CONFIG.altDescription,
+        indexHeroImage ?? DEFAULT_CONFIG.indexHeroImage,
+        indexHeroPosition ?? DEFAULT_CONFIG.indexHeroPosition,
+        aboutHeroPosition ?? DEFAULT_CONFIG.aboutHeroPosition,
+        avatar ?? DEFAULT_CONFIG.avatar,
       ).run();
     }
 
