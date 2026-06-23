@@ -88,12 +88,14 @@ function formatDate(dateStr: string): string {
 // —— 读取 about_config 获取 Hero 配置 ——
 let indexHeroImage = '/images/hero-bg.avif';
 let indexHeroPosition = 'center 40%';
+let avatarUrl = '/images/avatar.avif';
 try {
   const aboutDb = await getDb();
   if (aboutDb) {
     const aboutConfig = await getAboutConfig(aboutDb);
     indexHeroImage = aboutConfig.indexHeroImage || indexHeroImage;
     indexHeroPosition = aboutConfig.indexHeroPosition || indexHeroPosition;
+    avatarUrl = aboutConfig.avatar || avatarUrl;
   }
 } catch {}
 ---
@@ -119,7 +121,7 @@ try {
 			<!-- 3.1 头像 -->
 			<div class="w-[160px] md:w-full aspect-square rounded-[20px] bg-[#E8913A] md:-mt-[130px] xl:-mt-[140px] ring-4 ring-white dark:ring-[#0F0F0F] flex-shrink-0 overflow-hidden relative cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 group">
 				<img
-					src={SITE_CONFIG.images.avatar}
+					src={avatarUrl}
 					alt="头像"
 					class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
 					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"

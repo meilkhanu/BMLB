@@ -127,6 +127,12 @@ function ensureDb(): any {
       updated_at      TEXT DEFAULT (datetime('now'))
     );
 
+    -- 新字段：Hero 管理 + 头像（渐进式迁移，已有表不会丢失数据）
+    ALTER TABLE about_config ADD COLUMN index_hero_image TEXT DEFAULT '/images/hero-bg.avif';
+    ALTER TABLE about_config ADD COLUMN index_hero_position TEXT DEFAULT 'center 40%';
+    ALTER TABLE about_config ADD COLUMN about_hero_position TEXT DEFAULT 'center 15%';
+    ALTER TABLE about_config ADD COLUMN avatar TEXT DEFAULT '/images/avatar.avif';
+
     CREATE TABLE IF NOT EXISTS about_skills (
       id         INTEGER PRIMARY KEY AUTOINCREMENT,
       name       TEXT NOT NULL,
