@@ -1,7 +1,7 @@
 // ============================================================
 // src/lib/upload.ts
 // 图片上传 — 由 [...all].ts 调用
-// Workers → R2  /  ECS → 本地 public/uploads/
+// Workers → R2 binding  /  ECS → R2 S3 API
 //
 // POST /api/upload  → 接收 multipart/form-data
 // ============================================================
@@ -9,6 +9,7 @@
 import type { APIContext } from "astro";
 import { getDb, getKV, getBucket, isNode } from "./db";
 import { verifySession } from "./auth";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 // —— R2 公开访问基础 URL ——
 const R2_PUBLIC_BASE =
@@ -93,18 +94,31 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   const key = generateKey(file.name);
   const buffer = await file.arrayBuffer();
 
-  // —— ECS 环境：写入本地 public/uploads/ ——
+  // —— ECS 环境：上传到 R2 ——
   if (isNode()) {
     try {
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadDir, { recursive: true });
-      await fs.writeFile(path.join(uploadDir, key), Buffer.from(buffer));
-      const url = `/uploads/${key}`;
+      const r2 = new S3Client({
+        region: "auto",
+        endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID || "cd4393394949ae27ca79e9dfc0263f3c"}.r2.cloudflarestorage.com`,
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY || "",
+          secretAccessKey: process.env.R2_SECRET_KEY || "",
+        },
+        forcePathStyle: true,
+      });
+
+      await r2.send(new PutObjectCommand({
+        Bucket: "bmlb-images",
+        Key: key,
+        Body: Buffer.from(buffer),
+        ContentType: file.type,
+        CacheControl: "public, max-age=31536000, immutable",
+      }));
+
+      const url = `${R2_PUBLIC_BASE}/${key}`;
       return json({ success: true, url, key, size: file.size, type: file.type });
     } catch (e: any) {
-      console.error("[upload] ECS local write error:", e);
+      console.error("[upload] ECS R2 upload error:", e);
       return json({ error: "上传失败，请稍后重试" }, 500);
     }
   }
