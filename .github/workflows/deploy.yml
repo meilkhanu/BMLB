@@ -24,11 +24,6 @@ jobs:
             git fetch origin isNode
             git checkout -B isNode origin/isNode
 
-            echo "=== 写入环境变量 ==="
-            echo "R2_ACCESS_KEY=${{ secrets.R2_ACCESS_KEY }}" > .env
-            echo "R2_SECRET_KEY=${{ secrets.R2_SECRET_KEY }}" >> .env
-            echo "CLOUDFLARE_ACCOUNT_ID=cd4393394949ae27ca79e9dfc0263f3c" >> .env
-
             echo "=== 安装依赖 ==="
             npm install --legacy-peer-deps
 
