@@ -49,7 +49,7 @@ function generateKey(originalName: string): string {
   const ext = originalName.split(".").pop()?.toLowerCase() || "png";
   const ts = Date.now();
   const random = crypto.randomUUID().slice(0, 8);
-  return `uploads/${ts}-${random}.${ext}`;
+  return `${ts}-${random}.${ext}`;
 }
 
 // —— POST /api/upload ——
