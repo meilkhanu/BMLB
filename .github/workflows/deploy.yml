@@ -36,7 +36,7 @@ jobs:
             DEPLOY_TARGET=ecs npx astro build
 
             echo "=== 重启服务 ==="
-            pm2 restart bmlb --update-env
+            pm2 start ecosystem.config.cjs || pm2 restart bmlb
 
             echo "=== 部署完成 ==="
             pm2 list
