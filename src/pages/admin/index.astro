@@ -523,6 +523,93 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
             <button type="button" id="about-add-work-btn" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加作品</button>
           </div>
           <div id="about-works-list" class="space-y-3"></div>
+
+          <!-- 作品编辑面板（展开时显示） -->
+          <div id="work-edit-panel" class="hidden mt-4 p-6 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]">
+            <div class="flex items-center justify-between mb-5">
+              <h5 class="text-sm font-bold text-[#8B7CB3]" id="work-edit-title">编辑作品</h5>
+              <button type="button" id="work-edit-close" class="text-xs text-[#999] hover:text-[#8B7CB3] transition-colors bg-transparent border-none cursor-pointer">收起</button>
+            </div>
+            <input type="hidden" id="work-edit-id" value="" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-medium text-[#999] mb-1.5">标题</label>
+                <input type="text" id="work-edit-f-title" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-[#999] mb-1.5">Slug</label>
+                <input type="text" id="work-edit-f-slug" placeholder="url-friendly-name" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] transition-all" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-medium text-[#999] mb-1.5">描述</label>
+              <input type="text" id="work-edit-f-desc" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-medium text-[#999] mb-1.5">封面图</label>
+              <div class="flex gap-3 items-start">
+                <input type="text" id="work-edit-f-image" placeholder="图片 URL" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+                <label class="px-4 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-xs font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border border-[#E0E0E0] dark:border-[#333] shrink-0">
+                  上传
+                  <input type="file" accept="image/*" id="work-edit-cover-file" class="hidden" />
+                </label>
+              </div>
+              <span id="work-edit-cover-status" class="text-[11px] text-[#999] mt-1 block"></span>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-medium text-[#999] mb-1.5">正文（富文本）</label>
+              <div id="work-edit-tiptap-container" class="rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] overflow-hidden">
+                <div id="work-edit-tiptap">
+                  <TiptapEditor client:idle placeholder="开始写作..." />
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-medium text-[#999] mb-1.5">标签（逗号分隔）</label>
+              <input type="text" id="work-edit-f-tags" placeholder="Grasshopper, Parametric, Rhino" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" />
+            </div>
+
+            <!-- 图片画廊 -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-medium text-[#999]">图片画廊</label>
+                <label class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors cursor-pointer">
+                  + 添加图片
+                  <input type="file" accept="image/*" id="work-edit-gallery-file" class="hidden" />
+                </label>
+              </div>
+              <div id="work-edit-gallery" class="flex flex-wrap gap-2"></div>
+              <span id="work-edit-gallery-status" class="text-[11px] text-[#999] mt-1 block"></span>
+            </div>
+
+            <!-- 外部链接 -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-medium text-[#999]">外部链接</label>
+                <button type="button" id="work-edit-add-link" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加</button>
+              </div>
+              <div id="work-edit-links" class="space-y-2"></div>
+            </div>
+
+            <!-- 精选 -->
+            <div class="mb-5">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="work-edit-f-featured" class="accent-[#8B7CB3] w-4 h-4" />
+                <span class="text-xs font-medium text-[#999]">精选作品</span>
+              </label>
+            </div>
+
+            <div class="flex items-center gap-3 pt-4 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+              <button type="button" id="work-edit-save" class="px-6 py-2.5 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存作品</button>
+              <button type="button" id="work-edit-cancel" class="px-6 py-2.5 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium hover:bg-[#E0E0E0] dark:hover:bg-[#333] transition-colors cursor-pointer border-none">取消</button>
+              <span id="work-edit-status" class="text-xs text-[#999]"></span>
+            </div>
+          </div>
         </div>
 
         <!-- ===== CTA 链接 ===== -->
@@ -794,19 +881,202 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         return;
       }
       container.innerHTML = works.map(w => `
-        <div class="p-4 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-work-id="${w.id}">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-            <input type="text" value="${escapeAttr(w.title)}" placeholder="标题" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="title" />
-            <input type="text" value="${escapeAttr(w.image)}" placeholder="图片 URL" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="image" />
+        <div class="flex items-center justify-between p-3 rounded-xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A] hover:border-[#8B7CB3]/30 transition-colors" data-work-id="${w.id}">
+          <div class="flex items-center gap-3 min-w-0">
+            ${w.image ? `<img src="${escapeAttr(w.image)}" class="w-10 h-10 rounded-lg object-cover shrink-0" />` : '<div class="w-10 h-10 rounded-lg bg-[#8B7CB3]/10 flex items-center justify-center text-[#8B7CB3] text-xs font-bold shrink-0">' + (w.title || '?')[0] + '</div>'}
+            <div class="min-w-0">
+              <div class="text-sm font-medium truncate">${escapeHtml(w.title)}</div>
+              <div class="text-[11px] text-[#999] truncate">${w.slug ? '/' + escapeHtml(w.slug) : '未设置 slug'}${w.featured ? ' · ⭐ 精选' : ''}</div>
+            </div>
           </div>
-          <input type="text" value="${escapeAttr(w.description)}" placeholder="描述" class="w-full px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all mb-3" data-field="desc" />
-          <div class="flex gap-2 items-center">
-            <input type="text" value="${escapeAttr((w.tags || []).join(', '))}" placeholder="标签（逗号分隔）" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="tags" />
-            <button onclick="deleteAboutWork(${w.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="openWorkEditor(${w.id})" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer px-2 py-1">编辑</button>
+            <button onclick="deleteAboutWork(${w.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1">删除</button>
           </div>
         </div>
       `).join('');
     }
+
+    // —— 作品编辑器状态 ——
+    let workEditGallery = [];
+    let workEditLinks = [];
+    let workEditTiptapReady = false;
+
+    window.openWorkEditor = (workId) => {
+      const work = aboutData.works.find(w => w.id === workId);
+      if (!work) return;
+      document.getElementById('work-edit-id').value = work.id;
+      document.getElementById('work-edit-title').textContent = '编辑作品 — ' + work.title;
+      document.getElementById('work-edit-f-title').value = work.title || '';
+      document.getElementById('work-edit-f-slug').value = work.slug || '';
+      document.getElementById('work-edit-f-desc').value = work.description || '';
+      document.getElementById('work-edit-f-image').value = work.image || '';
+      document.getElementById('work-edit-f-tags').value = (work.tags || []).join(', ');
+      document.getElementById('work-edit-f-featured').checked = !!work.featured;
+      workEditGallery = [...(work.gallery || [])];
+      workEditLinks = JSON.parse(JSON.stringify(work.links || []));
+      renderWorkEditGallery();
+      renderWorkEditLinks();
+      document.getElementById('work-edit-panel').classList.remove('hidden');
+      document.getElementById('work-edit-status').textContent = '';
+
+      // 设置 Tiptap 内容
+      if (window._tiptapSetContent) {
+        window._tiptapSetContent(work.content || '');
+      } else {
+        // Tiptap 还没 hydrate，等 client:idle 后设置
+        setTimeout(() => {
+          if (window._tiptapSetContent) window._tiptapSetContent(work.content || '');
+        }, 500);
+      }
+    };
+
+    document.getElementById('work-edit-close').addEventListener('click', () => {
+      document.getElementById('work-edit-panel').classList.add('hidden');
+    });
+    document.getElementById('work-edit-cancel').addEventListener('click', () => {
+      document.getElementById('work-edit-panel').classList.add('hidden');
+    });
+
+    // 自动 slug 生成
+    document.getElementById('work-edit-f-title').addEventListener('input', (e) => {
+      const slugInput = document.getElementById('work-edit-f-slug');
+      if (!slugInput.value || slugInput.dataset.auto === 'true') {
+        const slug = e.target.value
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+        slugInput.value = slug;
+        slugInput.dataset.auto = 'true';
+      }
+    });
+    document.getElementById('work-edit-f-slug').addEventListener('input', () => {
+      document.getElementById('work-edit-f-slug').dataset.auto = 'false';
+    });
+
+    // 封面上传
+    document.getElementById('work-edit-cover-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('work-edit-cover-status');
+      statusEl.textContent = '上传中...';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) { statusEl.textContent = result.error; statusEl.className = 'text-[11px] text-red-500 mt-1 block'; }
+        else {
+          document.getElementById('work-edit-f-image').value = result.url;
+          statusEl.textContent = '✓ 上传成功'; statusEl.className = 'text-[11px] text-[#7CB38B] mt-1 block';
+          e.target.value = '';
+          setTimeout(() => { statusEl.textContent = ''; }, 3000);
+        }
+      } catch { statusEl.textContent = '网络错误'; statusEl.className = 'text-[11px] text-red-500 mt-1 block'; }
+    });
+
+    // 画廊管理
+    function renderWorkEditGallery() {
+      const container = document.getElementById('work-edit-gallery');
+      container.innerHTML = workEditGallery.map((url, i) => `
+        <div class="relative w-20 h-20 rounded-lg overflow-hidden group cursor-pointer" onclick="removeWorkEditGallery(${i})">
+          <img src="${escapeAttr(url)}" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center">
+            <span class="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">删除</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.removeWorkEditGallery = (idx) => {
+      workEditGallery.splice(idx, 1);
+      renderWorkEditGallery();
+    };
+
+    document.getElementById('work-edit-gallery-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('work-edit-gallery-status');
+      statusEl.textContent = '上传中...';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        const result = await res.json();
+        if (result.error) { statusEl.textContent = result.error; }
+        else {
+          workEditGallery.push(result.url);
+          renderWorkEditGallery();
+          statusEl.textContent = '✓ 已添加'; statusEl.className = 'text-[11px] text-[#7CB38B] mt-1 block';
+          e.target.value = '';
+          setTimeout(() => { statusEl.textContent = ''; }, 3000);
+        }
+      } catch { statusEl.textContent = '网络错误'; }
+    });
+
+    // 链接管理
+    function renderWorkEditLinks() {
+      const container = document.getElementById('work-edit-links');
+      if (workEditLinks.length === 0) {
+        container.innerHTML = '<p class="text-xs text-[#999]">暂无链接</p>';
+        return;
+      }
+      container.innerHTML = workEditLinks.map((l, i) => `
+        <div class="flex gap-2 items-center">
+          <input type="text" value="${escapeAttr(l.title)}" placeholder="标题" class="w-32 px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-xs outline-none focus:border-[#8B7CB3] transition-all" onchange="workEditLinks[${i}].title=this.value" />
+          <input type="text" value="${escapeAttr(l.url)}" placeholder="URL" class="flex-1 px-3 py-2 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-xs font-mono outline-none focus:border-[#8B7CB3] transition-all" onchange="workEditLinks[${i}].url=this.value" />
+          <button onclick="removeWorkEditLink(${i})" class="text-xs text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-1">✕</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeWorkEditLink = (idx) => {
+      workEditLinks.splice(idx, 1);
+      renderWorkEditLinks();
+    };
+
+    document.getElementById('work-edit-add-link').addEventListener('click', () => {
+      workEditLinks.push({ title: '', url: '' });
+      renderWorkEditLinks();
+    });
+
+    // 保存作品
+    document.getElementById('work-edit-save').addEventListener('click', async () => {
+      const id = Number(document.getElementById('work-edit-id').value);
+      const statusEl = document.getElementById('work-edit-status');
+      statusEl.textContent = '保存中...';
+      const tagsRaw = document.getElementById('work-edit-f-tags').value;
+      const tags = tagsRaw ? tagsRaw.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
+      const content = window._tiptapGetContent ? window._tiptapGetContent() : '';
+      const payload = {
+        id,
+        title: document.getElementById('work-edit-f-title').value.trim(),
+        slug: document.getElementById('work-edit-f-slug').value.trim(),
+        description: document.getElementById('work-edit-f-desc').value.trim(),
+        image: document.getElementById('work-edit-f-image').value.trim(),
+        content,
+        tags,
+        gallery: workEditGallery,
+        links: workEditLinks.filter(l => l.title || l.url),
+        featured: document.getElementById('work-edit-f-featured').checked,
+      };
+      try {
+        const res = await fetch('/api/about/works', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.status === 401) { window.location.href = '/admin/login'; return; }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+        statusEl.textContent = '✓ 已保存'; statusEl.className = 'text-xs text-[#7CB38B]';
+        await loadAboutData();
+        setTimeout(() => { document.getElementById('work-edit-panel').classList.add('hidden'); }, 800);
+      } catch (e) { statusEl.textContent = '失败: ' + e.message; statusEl.className = 'text-xs text-red-500'; }
+    });
 
     async function addAboutWork() {
       try {
@@ -817,6 +1087,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         });
         if (res.status === 401) { window.location.href = '/admin/login'; return; }
         await loadAboutData();
+        // 自动打开新作品的编辑器
+        const data = await res.json();
+        if (data.id) window.openWorkEditor(data.id);
       } catch (e) { alert('添加失败'); }
     }
 
@@ -916,16 +1189,12 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       const workRows = document.querySelectorAll('[data-work-id]');
       for (const row of workRows) {
         const id = Number(row.dataset.workId);
-        const title = row.querySelector('[data-field="title"]').value.trim();
-        const image = row.querySelector('[data-field="image"]').value.trim();
-        const description = row.querySelector('[data-field="desc"]').value.trim();
-        const tagsRaw = row.querySelector('[data-field="tags"]').value;
-        const tags = tagsRaw ? tagsRaw.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
+        const title = row.querySelector('.text-sm.font-medium')?.textContent?.trim() || '';
         if (!title) continue;
         await fetch('/api/about/works', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, title, description, image, tags }),
+          body: JSON.stringify({ id, title }),
         });
       }
 

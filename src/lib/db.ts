@@ -145,7 +145,12 @@ function ensureDb(): any {
       description TEXT DEFAULT '',
       tags       TEXT DEFAULT '[]',
       image      TEXT DEFAULT '',
-      sort_order INTEGER DEFAULT 0
+      sort_order INTEGER DEFAULT 0,
+      slug       TEXT DEFAULT '',
+      content    TEXT DEFAULT '',
+      gallery    TEXT DEFAULT '[]',
+      links      TEXT DEFAULT '[]',
+      featured   INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS about_links (
@@ -156,6 +161,13 @@ function ensureDb(): any {
       action_text TEXT DEFAULT '',
       sort_order  INTEGER DEFAULT 0
     );
+
+    -- about_works 渐进式迁移
+    ALTER TABLE about_works ADD COLUMN slug TEXT DEFAULT '';
+    ALTER TABLE about_works ADD COLUMN content TEXT DEFAULT '';
+    ALTER TABLE about_works ADD COLUMN gallery TEXT DEFAULT '[]';
+    ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT '[]';
+    ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0;
 
     CREATE TABLE IF NOT EXISTS comments (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,

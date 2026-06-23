@@ -51,3 +51,9 @@ CREATE TABLE IF NOT EXISTS about_links (
   action_text TEXT DEFAULT 'Visit →',
   sort_order  INTEGER DEFAULT 0
 );
+
+ALTER TABLE about_works ADD COLUMN slug TEXT DEFAULT '';
+ALTER TABLE about_works ADD COLUMN content TEXT DEFAULT '';
+ALTER TABLE about_works ADD COLUMN gallery TEXT DEFAULT '[]';
+ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT '[]';
+ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0;

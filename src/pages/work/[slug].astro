@@ -1,0 +1,225 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getDb } from '../../lib/db';
+import type { AboutWork } from '../../lib/about';
+
+const { slug } = Astro.params;
+const db = await getDb();
+
+let work: AboutWork | null = null;
+if (db && slug) {
+  try {
+    const row = await db.prepare('SELECT * FROM about_works WHERE slug = ?').bind(slug).first();
+    if (row) {
+      work = {
+        id: row.id,
+        title: row.title,
+        description: row.description || '',
+        tags: typeof row.tags === 'string' ? JSON.parse(row.tags || '[]') : (row.tags || []),
+        image: row.image || '',
+        sortOrder: row.sort_order ?? 0,
+        slug: row.slug || '',
+        content: row.content || '',
+        gallery: typeof row.gallery === 'string' ? JSON.parse(row.gallery || '[]') : (row.gallery || []),
+        links: typeof row.links === 'string' ? JSON.parse(row.links || '[]') : (row.links || []),
+        featured: !!row.featured,
+      };
+    }
+  } catch (e: any) {
+    console.error('[work] 查询失败:', e?.message || e);
+  }
+}
+
+if (!work) {
+  return Astro.redirect('/404');
+}
+
+const heroImage = work.image || (work.gallery.length > 0 ? work.gallery[0] : '');
+const title = work.title || '作品详情';
+---
+
+<BaseLayout title={title}>
+  <main class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
+
+    <!-- ================= HERO ================= -->
+    <section class="relative h-[50vh] md:h-[60vh] overflow-hidden">
+      {heroImage ? (
+        <img
+          src={heroImage}
+          class="absolute inset-0 w-full h-full object-cover"
+          alt={work.title}
+        />
+      ) : (
+        <div class="absolute inset-0 bg-gradient-to-br from-[#8B7CB3] to-[#B26A8B]"></div>
+      )}
+      <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/60"></div>
+
+      <div class="relative z-10 flex flex-col items-center justify-end h-full pb-16 px-6 text-center">
+        <h1 class="text-3xl md:text-5xl font-semibold tracking-tight text-white drop-shadow-lg">
+          {work.title}
+        </h1>
+        {work.description && (
+          <p class="mt-3 text-sm md:text-base text-white/80 max-w-2xl drop-shadow">
+            {work.description}
+          </p>
+        )}
+
+        {work.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4 justify-center">
+            {work.tags.map((tag: string) => (
+              <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-medium text-white border border-white/20">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {work.links.length > 0 && (
+          <div class="flex gap-3 mt-5">
+            {work.links.map((link: { title: string; url: string }) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-sm text-sm font-bold text-white border border-white/30 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all no-underline"
+              >
+                {link.title} →
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- ================= BREADCRUMB ================= -->
+    <section class="max-w-4xl mx-auto px-6 -mt-8" data-animate>
+      <div class="rounded-2xl bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm">
+        <div class="text-sm text-[#666] dark:text-[#999]">
+          Home / About / <span class="text-[#8B7CB3]">{work.title}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 正文区 ================= -->
+    {work.content && (
+      <section class="max-w-4xl mx-auto px-6 mt-12" data-animate>
+        <div class="prose prose-lg dark:prose-invert max-w-none
+          prose-headings:text-[#1A1A1A] dark:prose-headings:text-[#EAEAEA]
+          prose-p:text-[#666] dark:prose-p:text-[#999]
+          prose-a:text-[#8B7CB3] hover:prose-a:text-[#7A6BA2]
+          prose-img:rounded-2xl">
+          <Fragment set:html={work.content} />
+        </div>
+      </section>
+    )}
+
+    <!-- ================= 图片画廊 ================= -->
+    {work.gallery.length > 0 && (
+      <section class="max-w-5xl mx-auto px-6 mt-14 mb-10" data-animate>
+        <h2 class="text-lg font-bold text-[#8B7CB3] mb-6 tracking-wide">Gallery</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="work-gallery">
+          {work.gallery.map((img: string, i: number) => (
+            <div
+              class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group"
+              data-gallery-index={i}
+            >
+              <img
+                src={img}
+                alt={`${work.title} - ${i + 1}`}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- ================= 返回链接 ================= -->
+    <section class="max-w-4xl mx-auto px-6 mt-10 mb-20" data-animate>
+      <a
+        href="/about"
+        class="inline-flex items-center gap-2 text-sm font-medium text-[#999] hover:text-[#8B7CB3] transition-colors no-underline"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回关于页
+      </a>
+    </section>
+
+  </main>
+
+  <!-- ================= LIGHTBOX ================= -->
+  <div id="lightbox" class="fixed inset-0 z-[9999] hidden bg-black/90 backdrop-blur-sm">
+    <button id="lightbox-close" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer border-none z-10">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer border-none z-10">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer border-none z-10">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="" class="absolute inset-0 m-auto max-w-[90vw] max-h-[85vh] object-contain rounded-lg select-none" />
+    <div id="lightbox-counter" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/60"></div>
+  </div>
+
+  <script is:inline>
+    (function() {
+      const gallery = document.getElementById('work-gallery');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxCounter = document.getElementById('lightbox-counter');
+      const images = gallery ? Array.from(gallery.querySelectorAll('img')) : [];
+      let currentIndex = 0;
+
+      function openLightbox(idx) {
+        currentIndex = idx;
+        lightboxImg.src = images[idx].src;
+        lightboxImg.alt = images[idx].alt;
+        lightboxCounter.textContent = (idx + 1) + ' / ' + images.length;
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      function navigate(dir) {
+        currentIndex = (currentIndex + dir + images.length) % images.length;
+        lightboxImg.src = images[currentIndex].src;
+        lightboxImg.alt = images[currentIndex].alt;
+        lightboxCounter.textContent = (currentIndex + 1) + ' / ' + images.length;
+      }
+
+      images.forEach((img, i) => {
+        img.closest('[data-gallery-index]').addEventListener('click', () => openLightbox(i));
+      });
+
+      document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+      document.getElementById('lightbox-prev').addEventListener('click', () => navigate(-1));
+      document.getElementById('lightbox-next').addEventListener('click', () => navigate(1));
+
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigate(-1);
+        if (e.key === 'ArrowRight') navigate(1);
+      });
+    })();
+  </script>
+</BaseLayout>

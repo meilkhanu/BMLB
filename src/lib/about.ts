@@ -77,6 +77,11 @@ export interface AboutWork {
   tags: string[];
   image: string;
   sortOrder: number;
+  slug: string;
+  content: string;
+  gallery: string[];
+  links: { title: string; url: string }[];
+  featured: boolean;
 }
 
 export interface AboutLink {
@@ -135,6 +140,11 @@ const DEFAULT_WORKS: AboutWork[] = [
     tags: ['Grasshopper', 'Parametric', 'Rhino'],
     image: '/works/work1.jpg',
     sortOrder: 0,
+    slug: '',
+    content: '',
+    gallery: [],
+    links: [],
+    featured: false,
   },
   {
     id: 2,
@@ -143,6 +153,11 @@ const DEFAULT_WORKS: AboutWork[] = [
     tags: ['SolidWorks', 'CAD', 'Assembly'],
     image: '/works/work2.jpg',
     sortOrder: 1,
+    slug: '',
+    content: '',
+    gallery: [],
+    links: [],
+    featured: false,
   },
   {
     id: 3,
@@ -151,6 +166,11 @@ const DEFAULT_WORKS: AboutWork[] = [
     tags: ['Blender', 'Wireframe', 'Visualization'],
     image: '/works/work3.jpg',
     sortOrder: 2,
+    slug: '',
+    content: '',
+    gallery: [],
+    links: [],
+    featured: false,
   },
 ];
 
@@ -203,7 +223,7 @@ function rowToSkill(row: any): AboutSkill {
 }
 
 function rowToWork(row: any): AboutWork {
-  if (!row) return { id: 0, title: '', description: '', tags: [], image: '', sortOrder: 0 };
+  if (!row) return { id: 0, title: '', description: '', tags: [], image: '', sortOrder: 0, slug: '', content: '', gallery: [], links: [], featured: false };
   return {
     id: row.id,
     title: row.title,
@@ -211,6 +231,11 @@ function rowToWork(row: any): AboutWork {
     tags: safeJson(row.tags, []),
     image: row.image || '',
     sortOrder: row.sort_order ?? 0,
+    slug: row.slug || '',
+    content: row.content || '',
+    gallery: safeJson(row.gallery, []),
+    links: safeJson(row.links, []),
+    featured: !!row.featured,
   };
 }
 
@@ -498,13 +523,13 @@ async function handlePostWork(ctx: APIContext): Promise<Response> {
   let body: any;
   try { body = await ctx.request.json(); } catch { return json({ error: "无效的请求体" }, 400); }
 
-  const { title, description, tags, image, sortOrder } = body;
+  const { title, description, tags, image, sortOrder, slug, content, gallery, links, featured } = body;
   if (!title) return json({ error: "缺少必填字段: title" }, 400);
 
   try {
     const result = await db.prepare(
-      "INSERT INTO about_works (title, description, tags, image, sort_order) VALUES (?, ?, ?, ?, ?)"
-    ).bind(title, description ?? "", JSON.stringify(tags ?? []), image ?? "", sortOrder ?? 0).run();
+      "INSERT INTO about_works (title, description, tags, image, sort_order, slug, content, gallery, links, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).bind(title, description ?? "", JSON.stringify(tags ?? []), image ?? "", sortOrder ?? 0, slug ?? "", content ?? "", JSON.stringify(gallery ?? []), JSON.stringify(links ?? []), featured ? 1 : 0).run();
 
     const row = await db.prepare("SELECT * FROM about_works WHERE id = ?").bind(result.meta.last_row_id).first();
     return json(rowToWork(row));
@@ -525,7 +550,7 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
   let body: any;
   try { body = await ctx.request.json(); } catch { return json({ error: "无效的请求体" }, 400); }
 
-  const { id, title, description, tags, image, sortOrder } = body;
+  const { id, title, description, tags, image, sortOrder, slug, content, gallery, links, featured } = body;
   if (!id) return json({ error: "缺少必填字段: id" }, 400);
 
   try {
@@ -537,6 +562,11 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
     if (tags !== undefined) { sets.push("tags = ?"); vals.push(JSON.stringify(tags)); }
     if (image !== undefined) { sets.push("image = ?"); vals.push(image); }
     if (sortOrder !== undefined) { sets.push("sort_order = ?"); vals.push(sortOrder); }
+    if (slug !== undefined) { sets.push("slug = ?"); vals.push(slug); }
+    if (content !== undefined) { sets.push("content = ?"); vals.push(content); }
+    if (gallery !== undefined) { sets.push("gallery = ?"); vals.push(JSON.stringify(gallery)); }
+    if (links !== undefined) { sets.push("links = ?"); vals.push(JSON.stringify(links)); }
+    if (featured !== undefined) { sets.push("featured = ?"); vals.push(featured ? 1 : 0); }
 
     if (sets.length === 0) return json({ error: "没有要更新的字段" }, 400);
 
