@@ -608,6 +608,8 @@ try {
 			// 第二层：每次页面加载重新绑定 DOM
 			// ============================================================
 			function bindPlayerDom() {
+				if (bindPlayerDom._bound) return;
+				bindPlayerDom._bound = true;
 				const audio = document.getElementById('global-audio');
 				const player = document.getElementById('draggable-player');
 				if (!audio || !player) return;
@@ -863,8 +865,8 @@ try {
 
 			bindAudioListeners();
 			bindPlayerDom();
-			document.addEventListener('astro:page-load', bindPlayerDom);
-			document.addEventListener('DOMContentLoaded', bindPlayerDom);
+			document.addEventListener('astro:page-load', () => { bindPlayerDom._bound = false; bindPlayerDom(); });
+			document.addEventListener('DOMContentLoaded', () => { bindPlayerDom._bound = false; bindPlayerDom(); });
 		})();
 
 					// ============================================================

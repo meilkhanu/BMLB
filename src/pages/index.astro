@@ -778,42 +778,42 @@ function formatDate(dateStr: string): string {
 					const rect = progressBar.getBoundingClientRect();
 					const pct = (e.clientX - rect.left) / rect.width;
 					if (audio.duration) audio.currentTime = pct * audio.duration;
-				});
+				}, { signal });
 			}
 
-			if (playBtn) playBtn.addEventListener('click', () => window.playerToggle && window.playerToggle());
+			if (playBtn) playBtn.addEventListener('click', () => window.playerToggle && window.playerToggle(), { signal });
 			if (prevBtn) prevBtn.addEventListener('click', () => {
 				const s = window.playerState;
 				if (!s || !s.songs.length) return;
 				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
 				else s.currentIndex = (s.currentIndex - 1 + s.songs.length) % s.songs.length;
 				loadCurrentSong(s, audio);
-			});
+			}, { signal });
 			if (nextBtn) nextBtn.addEventListener('click', () => {
 				const s = window.playerState;
 				if (!s || !s.songs.length) return;
 				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
 				else s.currentIndex = (s.currentIndex + 1) % s.songs.length;
 				loadCurrentSong(s, audio);
-			});
+			}, { signal });
 			if (modeBtn) modeBtn.addEventListener('click', () => {
 				const modes = ['loop', 'single', 'shuffle'];
 				const idx = modes.indexOf(state.playMode);
 				state.playMode = modes[(idx + 1) % 3];
 				updateModeUI();
 				window.dispatchEvent(new CustomEvent('player-mode-change', { detail: state.playMode }));
-			});
+			}, { signal });
 
 			if (listBtn) listBtn.addEventListener('click', () => {
 				playerMain.classList.add('hidden');
 				playlistPanel.classList.remove('hidden');
 				updatePlaylistUI();
-			});
+			}, { signal });
 			const playlistBack = document.getElementById('playlist-back');
 			if (playlistBack) playlistBack.addEventListener('click', () => {
 				playlistPanel.classList.add('hidden');
 				playerMain.classList.remove('hidden');
-			});
+			}, { signal });
 
 			window.playerPlayIndex = (index) => {
 				state.currentIndex = index;
