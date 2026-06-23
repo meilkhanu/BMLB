@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "dev:ecs": "cross-env DEPLOY_TARGET=ecs astro dev",
     "build": "astro build",
+    "prebuild:ecs": "cross-env node scripts/backup-uploads.mjs",
     "build:ecs": "cross-env DEPLOY_TARGET=ecs astro build",
+    "postbuild:ecs": "cross-env node scripts/restore-uploads.mjs",
     "preview": "wrangler pages dev ./dist",
     "start:ecs": "node ./dist/server/entry.mjs",
     "deploy": "wrangler pages deploy ./dist"

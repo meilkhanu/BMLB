@@ -93,11 +93,11 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   const key = generateKey(file.name);
   const buffer = await file.arrayBuffer();
 
-  // —— ECS 环境：写入本地 public/uploads/ ——
+  // —— ECS 环境：写入 dist/client/uploads/（@astrojs/node standalone 静态文件目录）——
   if (isNode()) {
     const fs = await import('fs/promises');
     const path = await import('path');
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadDir = path.join(process.cwd(), 'dist', 'client', 'uploads');
     await fs.mkdir(uploadDir, { recursive: true });
     await fs.writeFile(path.join(uploadDir, key), Buffer.from(buffer));
     return json({ success: true, url: `/uploads/${key}`, key, size: file.size, type: file.type });
