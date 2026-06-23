@@ -15,7 +15,7 @@ const R2_PUBLIC_BASE =
   "https://pub-5eb99be06b64411bbfd2b80c94822c5f.r2.dev";
 
 // —— 限制 ——
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024; // 20 MB
 const MAX_AUDIO_SIZE = 50 * 1024 * 1024; // 50 MB
 
 const ALLOWED_IMAGE_TYPES = [
