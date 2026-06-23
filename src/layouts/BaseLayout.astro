@@ -118,10 +118,10 @@ try {
 	</main>
 
 	<!-- 全局音频 + 歌曲数据 + 悬浮播放器（跨页面持久化） -->
-	<audio id="global-audio" transition:persist="global-audio" preload="none"></audio>
-	<div id="global-songs-data" data-songs={JSON.stringify(songs)} class="hidden"></div>
+		<audio id="global-audio" data-astro-transition-persist="global-audio" preload="none"></audio>
+		<div id="global-songs-data" data-songs={JSON.stringify(songs)} class="hidden"></div>
 
-	<aside id="draggable-player" transition:persist="draggable-player" data-expanded="false"
+		<aside id="draggable-player" data-astro-transition-persist="draggable-player" data-expanded="false"
 		class="fixed z-[9999] cursor-grab active:cursor-grabbing rounded-full shadow-lg select-none transition-all duration-300 ease-out"
 		style="width:48px;height:48px;bottom:24px;right:24px;background:linear-gradient(135deg,#8B7CB3,#B26A8B);">
 		<!-- 收缩态：音乐图标 -->

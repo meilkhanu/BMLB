@@ -13,6 +13,7 @@ export default defineConfig({
     ? node({ mode: 'standalone' })
     : cloudflare(),
   integrations: [react(), tailwind()],
+  viewTransitions: true,
   vite: {
     build: {
       rollupOptions: isNode ? {
