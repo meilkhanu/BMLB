@@ -28,7 +28,7 @@ jobs:
             npm install --legacy-peer-deps
 
             echo "=== 构建 ==="
-            DEPLOY_TARGET=ecs npx astro build
+            npm run build:ecs
 
             echo "=== 重启服务 ==="
             pm2 start ecosystem.config.cjs || pm2 restart bmlb
