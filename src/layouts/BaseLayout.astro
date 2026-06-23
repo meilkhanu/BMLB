@@ -605,11 +605,9 @@ try {
 			}
 
 			// ============================================================
-			// 第二层：每次页面加载重新绑定 DOM
+			// 第二层：每次页面加载重新同步 DOM
 			// ============================================================
 			function bindPlayerDom() {
-				if (bindPlayerDom._bound) return;
-				bindPlayerDom._bound = true;
 				const audio = document.getElementById('global-audio');
 				const player = document.getElementById('draggable-player');
 				if (!audio || !player) return;
@@ -626,6 +624,7 @@ try {
 				const floatPlaylistItems = document.getElementById('float-playlist-items');
 				const floatPlaylistClose = document.getElementById('float-playlist-close');
 
+				// ---- UI 函数（每次调用都重建，引用当前 DOM 节点） ----
 				function setExpanded(exp) {
 					player.dataset.expanded = exp ? 'true' : 'false';
 				}
@@ -737,82 +736,86 @@ try {
 					}
 				};
 
-				// ---- 按钮事件 ----
-				floatPlayBtn.addEventListener('click', () => window.playerToggle());
-				document.getElementById('float-prev').addEventListener('click', playPrev);
-				document.getElementById('float-next').addEventListener('click', playNext);
-				if (floatModeBtn) floatModeBtn.addEventListener('click', switchMode);
-				if (floatListBtn) {
-					floatListBtn.addEventListener('click', (e) => {
-						e.stopPropagation();
-						floatPlaylist.classList.toggle('hidden');
-						if (!floatPlaylist.classList.contains('hidden')) updateFloatPlaylistUI();
-					});
-				}
-				if (floatPlaylistClose) {
-					floatPlaylistClose.addEventListener('click', (e) => {
-						e.stopPropagation();
-						floatPlaylist.classList.add('hidden');
-					});
-				}
-				if (collapsed) {
-					collapsed.addEventListener('click', (e) => {
+				// ── 事件绑定只做一次（audio/player 通过 transition:persist 保留） ──
+				if (!bindPlayerDom._eventsBound) {
+					bindPlayerDom._eventsBound = true;
+
+					floatPlayBtn.addEventListener('click', () => window.playerToggle());
+					document.getElementById('float-prev').addEventListener('click', playPrev);
+					document.getElementById('float-next').addEventListener('click', playNext);
+					if (floatModeBtn) floatModeBtn.addEventListener('click', switchMode);
+					if (floatListBtn) {
+						floatListBtn.addEventListener('click', (e) => {
+							e.stopPropagation();
+							floatPlaylist.classList.toggle('hidden');
+							if (!floatPlaylist.classList.contains('hidden')) updateFloatPlaylistUI();
+						});
+					}
+					if (floatPlaylistClose) {
+						floatPlaylistClose.addEventListener('click', (e) => {
+							e.stopPropagation();
+							floatPlaylist.classList.add('hidden');
+						});
+					}
+					if (collapsed) {
+						collapsed.addEventListener('click', (e) => {
+							if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+							setExpanded(true);
+						});
+					}
+					if (expanded) {
+						expanded.addEventListener('click', (e) => {
+							if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
+							if (e.target === expanded) setExpanded(false);
+						});
+					}
+
+					// 拖拽
+					let dragging = false;
+					let dragStartX, dragStartY, playerStartX, playerStartY;
+					function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+					function getSavedPos() {
+						try {
+							const p = JSON.parse(localStorage.getItem('player-pos') || 'null');
+							if (p && typeof p.x === 'number' && typeof p.y === 'number') return p;
+						} catch {}
+						return null;
+					}
+					const saved = getSavedPos();
+					if (saved) {
+						player.style.left = saved.x + 'px';
+						player.style.top = saved.y + 'px';
+						player.style.bottom = 'auto';
+						player.style.right = 'auto';
+					}
+					player.addEventListener('pointerdown', (e) => {
 						if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
-						setExpanded(true);
+						dragging = true;
+						dragStartX = e.clientX; dragStartY = e.clientY;
+						const r = player.getBoundingClientRect();
+						playerStartX = r.left; playerStartY = r.top;
+						player.setPointerCapture(e.pointerId);
+						player.style.transition = 'none';
 					});
-				}
-				if (expanded) {
-					expanded.addEventListener('click', (e) => {
-						if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
-						if (e.target === expanded) setExpanded(false);
+					player.addEventListener('pointermove', (e) => {
+						if (!dragging) return;
+						const x = clamp(playerStartX + e.clientX - dragStartX, 0, window.innerWidth - player.offsetWidth);
+						const y = clamp(playerStartY + e.clientY - dragStartY, 0, window.innerHeight - player.offsetHeight);
+						player.style.left = x + 'px';
+						player.style.top = y + 'px';
+						player.style.bottom = 'auto';
+						player.style.right = 'auto';
+					});
+					player.addEventListener('pointerup', () => {
+						if (!dragging) return;
+						dragging = false;
+						player.style.transition = '';
+						const r = player.getBoundingClientRect();
+						localStorage.setItem('player-pos', JSON.stringify({ x: r.left, y: r.top }));
 					});
 				}
 
-				// ---- 拖拽 ----
-				let dragging = false;
-				let dragStartX, dragStartY, playerStartX, playerStartY;
-				function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-				function getSavedPos() {
-					try {
-						const p = JSON.parse(localStorage.getItem('player-pos') || 'null');
-						if (p && typeof p.x === 'number' && typeof p.y === 'number') return p;
-					} catch {}
-					return null;
-				}
-				const saved = getSavedPos();
-				if (saved) {
-					player.style.left = saved.x + 'px';
-					player.style.top = saved.y + 'px';
-					player.style.bottom = 'auto';
-					player.style.right = 'auto';
-				}
-				player.addEventListener('pointerdown', (e) => {
-					if (e.target.hasAttribute('data-no-drag') || e.target.closest('[data-no-drag]')) return;
-					dragging = true;
-					dragStartX = e.clientX; dragStartY = e.clientY;
-					const r = player.getBoundingClientRect();
-					playerStartX = r.left; playerStartY = r.top;
-					player.setPointerCapture(e.pointerId);
-					player.style.transition = 'none';
-				});
-				player.addEventListener('pointermove', (e) => {
-					if (!dragging) return;
-					const x = clamp(playerStartX + e.clientX - dragStartX, 0, window.innerWidth - player.offsetWidth);
-					const y = clamp(playerStartY + e.clientY - dragStartY, 0, window.innerHeight - player.offsetHeight);
-					player.style.left = x + 'px';
-					player.style.top = y + 'px';
-					player.style.bottom = 'auto';
-					player.style.right = 'auto';
-				});
-				player.addEventListener('pointerup', () => {
-					if (!dragging) return;
-					dragging = false;
-					player.style.transition = '';
-					const r = player.getBoundingClientRect();
-					localStorage.setItem('player-pos', JSON.stringify({ x: r.left, y: r.top }));
-				});
-
-				// ---- 同步 UI ----
+				// ── UI 同步每次都跑（状态可能变了） ──
 				updateFloatUI();
 				if (state.isPlaying) setExpanded(true);
 				window.dispatchEvent(new CustomEvent('player-state-sync', {
@@ -865,8 +868,8 @@ try {
 
 			bindAudioListeners();
 			bindPlayerDom();
-			document.addEventListener('astro:page-load', () => { bindPlayerDom._bound = false; bindPlayerDom(); });
-			document.addEventListener('DOMContentLoaded', () => { bindPlayerDom._bound = false; bindPlayerDom(); });
+			document.addEventListener('astro:page-load', bindPlayerDom);
+			document.addEventListener('DOMContentLoaded', bindPlayerDom);
 		})();
 
 					// ============================================================
