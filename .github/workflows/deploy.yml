@@ -19,6 +19,8 @@ jobs:
             cd /var/www/bmlb
 
             echo "=== Pull 最新代码 ==="
+            git reset --hard HEAD
+            git clean -fd
             git fetch origin isNode
             git checkout -B isNode origin/isNode
 
