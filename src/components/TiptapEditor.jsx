@@ -145,11 +145,26 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
 
   useEffect(() => {
     if (!editor) return;
-    if (!window._tiptapGetContent) {
-      window._tiptapGetContent = () => editor.getHTML() || '';
-      window._tiptapSetContent = html => { if (html !== undefined) editor.commands.setContent(html); };
-    }
-    return () => { /* 不要 delete，由第一个实例持有 */ };
+
+    // 支持同页面多个 TiptapEditor：按最近祖先的 data-tiptap-key 做命名注册，
+    // 没有则落到无 key 的兜底槽（单实例 / 未声明 key 的旧用法仍可用）。
+    const keyEl = editorContainerRef.current?.closest('[data-tiptap-key]');
+    const key = keyEl?.getAttribute('data-tiptap-key') || null;
+    const store = (window._tiptapEditors ||= {});
+    const slot = {
+      getContent: () => editor.getHTML() || '',
+      setContent: html => { if (html !== undefined) editor.commands.setContent(html); },
+    };
+    if (key) store[key] = slot;
+    // 兜底槽：后注册者覆盖，避免「先 hydrate 的空实例」永久霸占全局槽。
+    store.default = slot;
+    window._tiptapGetContent = store.default.getContent;
+    window._tiptapSetContent = store.default.setContent;
+
+    return () => {
+      // 仅清理本实例占用的命名槽；兜底槽交给仍在的实例/下一次注册处理。
+      if (key && store[key] === slot) delete store[key];
+    };
   }, [editor]);
 
   useEffect(() => {

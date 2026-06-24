@@ -19,14 +19,14 @@ export const GET: APIRoute = async ({ url }) => {
     }
   }
 
-  const siteUrl = url.origin;
+  const siteUrl = Astro.url.origin;
 
   const items = posts
     .map((p) => {
       const title = escapeXml(p.title || '');
       const link = `${siteUrl}/blog/${p.slug}`;
       const description = escapeXml(p.excerpt || '');
-      const pubDate = p.published_at ? new Date(p.published_at).toUTCString() : '';
+      const pubDate = p.published_at ? new Date(p.published_at + (p.published_at.includes('T') ? '' : 'T00:00:00Z')).toUTCString() : '';
       return `    <item>
       <title>${title}</title>
       <link>${link}</link>

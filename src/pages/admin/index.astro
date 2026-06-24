@@ -148,7 +148,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
         <div class="mb-5">
           <label class="block text-xs font-medium text-[#999] mb-2">正文 *</label>
-          <div id="tiptap-editor-container">
+          <div id="tiptap-editor-container" data-tiptap-key="post">
             <TiptapEditor client:load placeholder="开始写作..." />
           </div>
         </div>
@@ -562,7 +562,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
             <div class="mb-4">
               <label class="block text-xs font-medium text-[#999] mb-1.5">正文（富文本）</label>
-              <div id="work-edit-tiptap-container" class="rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] overflow-hidden">
+              <div id="work-edit-tiptap-container" data-tiptap-key="work" class="rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] overflow-hidden">
                 <div id="work-edit-tiptap">
                   <TiptapEditor client:idle placeholder="开始写作..." />
                 </div>
@@ -752,6 +752,21 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     let nowStatusData = null;
     let currentMusicId = null;
 
+    // 按命名取/设 Tiptap 内容（同页面存在多个 TiptapEditor，避免互相覆盖）。
+    // 槽位由组件实例注册到 window._tiptapEditors[key]，key 取自容器的 data-tiptap-key。
+    function tipGet(key) {
+      const slot = window._tiptapEditors?.[key];
+      return slot ? (slot.getContent() || '') : '';
+    }
+    function tipSet(key, html) {
+      const doSet = () => {
+        const slot = window._tiptapEditors?.[key];
+        if (slot) { slot.setContent(html); return true; }
+        return false;
+      };
+      if (!doSet()) setTimeout(doSet, 100);   // 组件尚未 hydrate，稍后重试一次
+    }
+
     // ============================================================
     // 关于页编辑器
     // ============================================================
@@ -920,15 +935,8 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('work-edit-panel').classList.remove('hidden');
       document.getElementById('work-edit-status').textContent = '';
 
-      // 设置 Tiptap 内容
-      if (window._tiptapSetContent) {
-        window._tiptapSetContent(work.content || '');
-      } else {
-        // Tiptap 还没 hydrate，等 client:idle 后设置
-        setTimeout(() => {
-          if (window._tiptapSetContent) window._tiptapSetContent(work.content || '');
-        }, 500);
-      }
+      // 设置 Tiptap 内容（作品编辑器 = work 槽位）
+      tipSet('work', work.content || '');
     };
 
     document.getElementById('work-edit-close').addEventListener('click', () => {
@@ -1051,7 +1059,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       statusEl.textContent = '保存中...';
       const tagsRaw = document.getElementById('work-edit-f-tags').value;
       const tags = tagsRaw ? tagsRaw.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
-      const content = window._tiptapGetContent ? window._tiptapGetContent() : '';
+      const content = tipGet('work');   // 作品编辑器 = work 槽位
       const payload = {
         id,
         title: document.getElementById('work-edit-f-title').value.trim(),
@@ -2028,23 +2036,13 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         .then(res => res.json())
         .then(post => {
           if (!post.content) return;
-          // 等 Tiptap React 组件挂载完成
-          const trySet = (retries = 0) => {
-            if (window._tiptapSetContent) {
-              window._tiptapSetContent(post.content);
-            } else if (retries < 20) {
-              setTimeout(() => trySet(retries + 1), 100);
-            }
-          };
-          trySet();
+          // 文章编辑器 = post 槽位；tipSet 内部已处理组件未 hydrate 的重试
+          tipSet('post', post.content);
         });
     }
 
     function getContent() {
-      if (window._tiptapGetContent) {
-        return window._tiptapGetContent() || '';
-      }
-      return '';
+      return tipGet('post');   // 文章编辑器 = post 槽位
     }
 
     function collectFormData() {
