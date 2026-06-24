@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getDb } from '../lib/db';
+import { getAboutConfig } from '../lib/about';
+
+interface Post {
+  slug: string;
+  title: string;
+  published_at: string;
+}
+
+let posts: Post[] = [];
+let siteName = '贝谟拉比';
+
+try {
+  const db = await getDb();
+  if (db) {
+    const { results } = await db
+      .prepare(
+        "SELECT slug, title, published_at FROM posts WHERE status = 'published' ORDER BY published_at DESC"
+      )
+      .all();
+    posts = (results || []).map((r: any) => ({
+      slug: r.slug,
+      title: r.title,
+      published_at: r.published_at || '',
+    }));
+
+    const config = await getAboutConfig(db);
+    if (config?.breadcrumbSub) siteName = config.breadcrumbSub;
+  }
+} catch (e: any) {
+  console.error('[sitemap] query failed:', e?.message || e);
+}
+
+const staticPages = [
+  { label: '首页', path: '/' },
+  { label: '归档', path: '/archive' },
+  { label: '关于', path: '/about' },
+  { label: 'Now', path: '/now' },
+  { label: 'Colophon', path: '/colophon' },
+];
+
+function formatDate(d: string): string {
+  if (!d) return '';
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+---
+
+<BaseLayout title="站点地图">
+  <main class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA] min-h-screen pt-32 pb-20">
+    <div class="max-w-3xl mx-auto px-6">
+
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Sitemap</h1>
+      <p class="text-sm text-[#666] dark:text-[#999] mb-10">所有公开页面与已发布文章一览</p>
+
+      <!-- 静态页面 -->
+      <section class="mb-12">
+        <h2 class="text-xs font-bold text-[#8B7CB3] uppercase tracking-widest mb-4">Pages</h2>
+        <div class="rounded-2xl bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 divide-y divide-white/10 dark:divide-white/5 shadow-sm">
+          {staticPages.map((p) => (
+            <a href={p.path} class="flex items-center justify-between px-5 py-4 hover:bg-[#8B7CB3]/5 transition-colors group">
+              <span class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{p.label}</span>
+              <span class="text-xs text-[#999]">{p.path}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- 文章列表 -->
+      <section>
+        <h2 class="text-xs font-bold text-[#8B7CB3] uppercase tracking-widest mb-4">Posts ({posts.length})</h2>
+        {posts.length > 0 ? (
+          <div class="rounded-2xl bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 divide-y divide-white/10 dark:divide-white/5 shadow-sm">
+            {posts.map((p) => (
+              <a href={`/blog/${p.slug}`} class="flex items-center justify-between px-5 py-4 hover:bg-[#8B7CB3]/5 transition-colors group">
+                <span class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors truncate mr-4">{p.title}</span>
+                <span class="text-xs text-[#999] whitespace-nowrap">{formatDate(p.published_at)}</span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="rounded-2xl bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-8 text-center">
+            <p class="text-sm text-[#999]">暂无已发布文章</p>
+          </div>
+        )}
+      </section>
+
+    </div>
+  </main>
+</BaseLayout>
