@@ -145,9 +145,11 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
 
   useEffect(() => {
     if (!editor) return;
-    window._tiptapGetContent = () => editor.getHTML() || '';
-    window._tiptapSetContent = html => { if (html !== undefined) editor.commands.setContent(html); };
-    return () => { delete window._tiptapGetContent; delete window._tiptapSetContent; };
+    if (!window._tiptapGetContent) {
+      window._tiptapGetContent = () => editor.getHTML() || '';
+      window._tiptapSetContent = html => { if (html !== undefined) editor.commands.setContent(html); };
+    }
+    return () => { /* 不要 delete，由第一个实例持有 */ };
   }, [editor]);
 
   useEffect(() => {
