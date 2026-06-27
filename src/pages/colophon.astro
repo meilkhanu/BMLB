@@ -216,7 +216,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						
 						<!-- 左侧：Site Information (紫色系微光) -->
 						<!-- 移除了 colophon-card，注入玻璃态与悬浮交互 -->
-						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30" data-animate transition-all duration-500 relative overflow-hidden">
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/30 transition-all duration-500 relative overflow-hidden" data-animate>
 							<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-6 tracking-tight group-hover:text-[#8B7CB3] transition-colors duration-500">Site Information</h3>
 							<ul class="space-y-2 text-sm text-[#666] dark:text-[#999]">
 								<!-- 列表项增加了 -mx-2 px-2 的内边距，实现 Hover 时整行背景微微高亮的交互 -->
@@ -295,18 +295,18 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
 							<div class="flex items-center gap-2 mb-1.5">
 								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare</div>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Alibaba ECS</div>
 							</div>
-							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Edge-first deploy</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Ubuntu + PM2</div>
 						</div>
 
 						<!-- D1 -->
 						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
 							<div class="flex items-center gap-2 mb-1.5">
 								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1</div>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">SQLite</div>
 							</div>
-							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">SQLite on edge</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">better-sqlite3 本地持久化</div>
 						</div>
 
 						<!-- KV -->
@@ -315,7 +315,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
 								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">KV</div>
 							</div>
-							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Key-value cache</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Session & 站点配置缓存</div>
 						</div>
 
 						<!-- R2 -->
@@ -324,7 +324,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
 								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">R2</div>
 							</div>
-							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">Object storage</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300">图片/音频对象存储</div>
 						</div>
 
 						<!-- VS Code -->
@@ -343,9 +343,9 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 							
 							<div class="flex items-center gap-2 mb-1.5 relative z-10">
 								<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">AI Tools</div>
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">AI Stack</div>
 							</div>
-							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300 relative z-10">Kimi + Gemini + GPT</div>
+							<div class="text-xs text-[#999] dark:text-[#666] pl-3.5 group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-300 relative z-10">Hermes · MiMo · Codex · GLM5.2 · DeepSeek</div>
 						</div>
 						
 					</div>
@@ -355,126 +355,74 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 				<div id="architecture" class="py-12">
 					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Architecture</h3>
 
-					<!-- 采用非对称双栏布局：左侧 200px 流程脊椎，右侧自适应网格 -->
-					<div class="grid md:grid-cols-[200px_1fr] gap-12 lg:gap-20 items-start">
-						
-						<!-- 左侧：数据流向图 (Data Flow) -->
-						<div class="flex flex-col items-center w-full">
-							<!-- Node: Browser -->
-							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
-								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Browser</span>
-							</div>
-							
-							<!-- Arrow (带有轻微呼吸脉冲，模拟数据流动) -->
-							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-							</svg>
+					<div class="grid md:grid-cols-2 gap-8">
 
-							<!-- Node: Cloudflare CDN -->
-							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
-								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare CDN</span>
-							</div>
+						<!-- Workers 路径（main 分支） -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300 mb-5">Workers 路径 <span class="text-xs font-normal text-[#999] ml-1">(main 分支)</span></h4>
 
-							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-							</svg>
-
-							<!-- Node: Pages -->
-							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
-								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages <span class="text-xs font-normal text-[#999] ml-1">(前端)</span></span>
-							</div>
-
-							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-							</svg>
-
-							<!-- Node: Workers -->
-							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
-								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers <span class="text-xs font-normal text-[#999] ml-1">(API)</span></span>
+							<div class="flex flex-col items-center">
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Browser</span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare CDN</span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages <span class="text-xs font-normal text-[#999] ml-1">(前端)</span></span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers <span class="text-xs font-normal text-[#999] ml-1">(API)</span></span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1 / KV / R2</span>
+								</div>
 							</div>
 
-							<svg class="w-5 h-5 my-2.5 text-[#CCC] dark:text-[#444] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-							</svg>
-
-							<!-- Node: Database Layer -->
-							<div class="group w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl py-3 px-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
-								<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1 / KV / R2</span>
+							<div class="mt-5 pt-4 border-t border-white/10 dark:border-white/5 space-y-1 text-[10px] text-[#999] dark:text-[#666]">
+								<div>适配器：@astrojs/cloudflare</div>
+								<div>数据库：Cloudflare D1</div>
+								<div>部署：Cloudflare Workers Build</div>
 							</div>
 						</div>
 
-						<!-- 右侧：职责卡片 (Responsibility Cards) -->
-						<div class="grid sm:grid-cols-2 gap-4">
-							
-							<!-- Pages Card -->
-							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
-								<div class="flex items-center gap-2 mb-4">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages</h4>
+						<!-- ECS 路径（isNode 分支） -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300 mb-5">ECS 路径 <span class="text-xs font-normal text-[#999] ml-1">(isNode 分支)</span></h4>
+
+							<div class="flex flex-col items-center">
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Browser</span>
 								</div>
-								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">前端页面托管</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全球 CDN 分发</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">自动 HTTPS 配置</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">GitHub 自动部署</li>
-								</ul>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Nginx <span class="text-xs font-normal text-[#999] ml-1">（反向代理）</span></span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Astro Node.js <span class="text-xs font-normal text-[#999] ml-1">（SSR 服务）</span></span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">SQLite <span class="text-xs font-normal text-[#999] ml-1">(data/app.db)</span></span>
+								</div>
+								<div class="text-[#CCC] dark:text-[#555] my-2">↓</div>
+								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 cursor-default">
+									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">data/uploads/ <span class="text-xs font-normal text-[#999] ml-1">(本地存储)</span></span>
+								</div>
 							</div>
 
-							<!-- Workers Card -->
-							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
-								<div class="flex items-center gap-2 mb-4">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers</h4>
-								</div>
-								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全站 API 接口</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">表单与留言板处理</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">数据读写中间层</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">大文件上传代理</li>
-								</ul>
+							<div class="mt-5 pt-4 border-t border-white/10 dark:border-white/5 space-y-1 text-[10px] text-[#999] dark:text-[#666]">
+								<div>适配器：@astrojs/node</div>
+								<div>数据库：better-sqlite3</div>
+								<div>部署：GitHub Actions → PM2</div>
 							</div>
-
-							<!-- D1 Card -->
-							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
-								<div class="flex items-center gap-2 mb-4">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1</h4>
-								</div>
-								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">文章与分类数据</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">留言板结构化存储</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">关系型数据查询</li>
-								</ul>
-							</div>
-
-							<!-- KV Card -->
-							<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
-								<div class="flex items-center gap-2 mb-4">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">KV</h4>
-								</div>
-								<ul class="space-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">站点基础配置缓存</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">全局访问计数器</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">接口防刷限流状态</li>
-								</ul>
-							</div>
-
-							<!-- R2 Card (让它横跨两列，或者自然排列。这里采用自然排列，并填补微小留白) -->
-							<div class="group sm:col-span-2 md:col-span-1 xl:col-span-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/30 transition-all duration-300">
-								<div class="flex items-center gap-2 mb-4">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors duration-300"></span>
-									<h4 class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">R2</h4>
-								</div>
-								<!-- 宽卡片采用 flex 布局，让列表横向舒展 -->
-								<ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#666] dark:text-[#999] leading-relaxed">
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">图片与附件存储</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">CDN 全球边缘分发</li>
-									<li class="hover:text-[#444] dark:hover:text-[#AAA] transition-colors duration-300">大体积静态资源隔离</li>
-								</ul>
-							</div>
-
 						</div>
+
 					</div>
 				</div>
 
@@ -576,40 +524,39 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 								</div>
 							</div>
 							
-							<!-- Kimi Card (紫色系) -->
+							<!-- Hermes Agent Card (紫色系) -->
 							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#8B7CB3]/10 transition-all duration-500 overflow-hidden">
-								<!-- 顶部能量线 -->
 								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#8B7CB3] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
 								<div class="relative z-10">
 									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#8B7CB3] transition-colors duration-500 flex items-center gap-2">
 										<span class="w-2 h-2 rounded-full bg-[#8B7CB3] shadow-[0_0_8px_#8B7CB3] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
-										Kimi Code
+										Hermes Agent
 									</div>
-									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">结构与执行</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">架构设计与任务协调</div>
 								</div>
 							</div>
 
-							<!-- Gemini Card (橙色系) -->
-							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#E8913A]/10 transition-all duration-500 overflow-hidden">
-								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#E8913A] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
+							<!-- MiMo Code Card (青色系) -->
+							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#3AB8C4]/10 transition-all duration-500 overflow-hidden">
+								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#3AB8C4] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
 								<div class="relative z-10">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#E8913A] transition-colors duration-500 flex items-center gap-2">
-										<span class="w-2 h-2 rounded-full bg-[#E8913A] shadow-[0_0_8px_#E8913A] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
-										Gemini
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#3AB8C4] transition-colors duration-500 flex items-center gap-2">
+										<span class="w-2 h-2 rounded-full bg-[#3AB8C4] shadow-[0_0_8px_#3AB8C4] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
+										MiMo Code
 									</div>
-									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">视觉与细节</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">代码执行与批量施工</div>
 								</div>
 							</div>
 
-							<!-- GPT Card (蓝色系) -->
+							<!-- Codex + GLM5.2 + DeepSeek Card (蓝色系) -->
 							<div class="group/module relative bg-white/60 dark:bg-[#2A2A2A]/40 backdrop-blur-md rounded-2xl p-6 border border-white/40 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl hover:shadow-[#4A5D8A]/10 transition-all duration-500 overflow-hidden">
 								<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#4A5D8A] to-transparent opacity-30 group-hover/module:opacity-100 transition-opacity duration-500"></div>
 								<div class="relative z-10">
 									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover/module:text-[#4A5D8A] transition-colors duration-500 flex items-center gap-2">
 										<span class="w-2 h-2 rounded-full bg-[#4A5D8A] shadow-[0_0_8px_#4A5D8A] opacity-50 group-hover/module:opacity-100 group-hover/module:animate-pulse transition-all duration-500"></span>
-										GPT
+										Codex + GLM5.2 + DeepSeek
 									</div>
-									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">信息架构与表达</div>
+									<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover/module:text-[#444] dark:group-hover/module:text-[#AAA] transition-colors duration-500">复杂推理、排错与内容生成</div>
 								</div>
 							</div>
 
@@ -657,7 +604,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
             				     <div class="w-4 h-4 border-2 border-purple-400/60 rounded-sm group-hover:rotate-90 group-hover:scale-110 transition-all duration-700 ease-in-out"></div>
             				 </div>
             				<div>
-            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-purple-500/70 transition-colors duration-500">Cloudflare</p>
+            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-purple-500/70 transition-colors duration-500">GitHub Actions</p>
             				    <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Build</h4>
             				</div>
         				</div>
@@ -672,7 +619,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
             				    </span>
             				</div>
             				<div>
-            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-emerald-500/70 transition-colors duration-500">Edge</p>
+            				    <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-1.5 group-hover:text-emerald-500/70 transition-colors duration-500">ECS</p>
             				    <h4 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">Live</h4>
             				</div>
         				</div>
@@ -732,7 +679,7 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 				<!-- 4.8 Data Layer -->
 				<div id="data-layer" class="py-12">
 					<h3 class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-10 tracking-tight">Data Layer</h3>
-					<div class="grid md:grid-cols-3 gap-4">
+					<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 						
 						<!-- D1 -->
 						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
@@ -760,6 +707,15 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 								<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-300"></div>
 							</div>
 							<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300">原创 / 转载 / AI 生成</div>
+						</div>
+
+						<!-- R2 / 本地存储 -->
+						<div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+							<div class="flex items-center justify-between mb-3">
+								<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">R2 / 本地</div>
+								<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-300"></div>
+							</div>
+							<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-300">Workers: R2 对象存储<br>ECS: data/uploads/ 本地文件</div>
 						</div>
 
 					</div>
@@ -866,7 +822,19 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA]">
 							<strong class="font-medium text-[#8B7CB3] tracking-wide pr-1">Claude</strong>一切疑难杂症BUG都交给Claude处理。
 						</p>
-						
+
+						<p>
+							<strong>Hermes Agent</strong>是施工现场的项目经理。问题分析、任务拆分、
+							提示词撰写、双分支策略、跨平台协调——从建站第一天就一直在这。
+							大多数决策都经过它，大多数任务由它分配给其它 AI。
+						</p>
+
+						<p>
+							<strong>MiMo Code</strong>是工地上干最多活的人。创建文件、修改代码、
+							批量替换、查 Bug——这些繁重的执行工作都是它做的。
+							虽然偶尔内存泄漏需要重启，但它是这里最能打的砌匠师傅。
+						</p>
+
 						<!-- 后记部分的间距稍微拉大，形成情绪的停顿 -->
 						<p class="transition-colors duration-500 hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] pt-6">
 							我是拍板的，审美是我的，决策是我的，BUG也是我的。AI们提供生产力，我提供创意，选择做什么、不做什么、做到什么程度。
