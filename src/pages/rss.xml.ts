@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ url }) => {
     }
   }
 
-  const siteUrl = Astro.url.origin;
+  const siteUrl = url.origin;
 
   const items = posts
     .map((p) => {
