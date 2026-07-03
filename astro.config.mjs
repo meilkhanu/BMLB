@@ -14,6 +14,7 @@ export default defineConfig({
     : cloudflare(),
   integrations: [react(), tailwind()],
   viewTransitions: true,
+  security: { checkOrigin: false },
   vite: {
     build: {
       rollupOptions: isNode ? {
