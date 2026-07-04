@@ -14,9 +14,14 @@ import { handleNowMessages } from "../../lib/now-messages";
 import { handleComments } from "../../lib/comments";
 import { handleSongs } from "../../lib/songs";
 import { handleAbout } from "../../lib/about";
+import { handleSearch } from "../../lib/search";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
+
+  if (url.pathname.startsWith("/api/search")) {
+    return handleSearch(ctx);
+  }
 
   if (url.pathname.startsWith("/api/auth")) {
     return handleAuth(ctx);

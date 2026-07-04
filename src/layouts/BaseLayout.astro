@@ -579,6 +579,22 @@ try {
 			const el = document.getElementById('site-runtime');
 			if (el) el.textContent = '本站已运行 ' + parts.join('');
 		}
+	// —— 导航栏搜索框：Enter 跳转到 /search?q= ——
+	(function () {
+		const navSearch = document.getElementById('search-input');
+		if (navSearch) {
+			navSearch.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') {
+					e.preventDefault();
+					const q = navSearch.value.trim();
+					if (q) {
+						window.location.href = '/search?q=' + encodeURIComponent(q);
+					}
+				}
+			});
+		}
+	})();
+
 	updateRuntime();
 	setInterval(updateRuntime, 1000);
 	</script>
