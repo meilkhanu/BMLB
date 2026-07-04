@@ -25,3 +25,10 @@ pnpm-debug.log*
 
 # wrangler local state
 .wrangler/
+
+# SQLite database files
+data/app.db
+data/app.db-shm
+data/app.db-wal
+*.db
+*.db-*
