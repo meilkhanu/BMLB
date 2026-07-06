@@ -103,7 +103,7 @@ const dateFormatted = isValidDate
   ? `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`
   : dateStr;
 
-// —— 服务端获取评论（极简版，头像交客户端增强） ——
+// —— 服务端获取留言（极简版，头像交客户端增强） ——
 let comments: any[] = [];
 
 try {
@@ -224,11 +224,11 @@ try {
       )
     }
 
-    <!-- ========== 评论 ========== -->
+    <!-- ========== 留言 ========== -->
     <section class="mt-16" id="comments-section">
       <div class="flex items-center gap-3 mb-8">
         <div class="h-px flex-1 bg-[#E8E8E8] dark:bg-[#2A2A2A]"></div>
-        <span class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest shrink-0">Comments</span>
+        <span class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest shrink-0">Messages</span>
         <span class="text-[10px] font-medium text-[#999] flex items-center gap-1.5 shrink-0">
           <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span></span>
           Open
@@ -236,7 +236,7 @@ try {
         <div class="h-px flex-1 bg-[#E8E8E8] dark:bg-[#2A2A2A]"></div>
       </div>
 
-      <!-- 评论输入区 -->
+      <!-- 留言输入区 -->
       <div class="mb-8" id="comments-input-area">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
           <input type="text" id="cmt-author" placeholder="昵称（选填）" maxlength="20"
@@ -267,7 +267,7 @@ try {
         </div>
       </div>
 
-      <!-- 评论列表 -->
+      <!-- 留言列表 -->
       <div class="space-y-4" id="comments-list">
         {comments.map((cmt, idx) => {
           const name = (cmt.author || '').trim() || '访客';
@@ -303,10 +303,10 @@ try {
         })}
       </div>
 
-      <!-- 无评论时的空状态 -->
+      <!-- 无留言时的空状态 -->
       {comments.length === 0 && (
         <div id="comments-empty" class="text-center py-8">
-          <p class="text-sm text-[#999]">暂无评论，来说点什么吧</p>
+          <p class="text-sm text-[#999]">暂无留言，来说点什么吧</p>
         </div>
       )}
     </section>
@@ -367,7 +367,7 @@ try {
   </article>
 
   <script is:inline>
-    // —— 文章评论交互 ——
+    // —— 文章留言交互 ——
     (function () {
       var slug = window.location.pathname.replace(/^\/blog\//, '').replace(/\/$/, '');
       var authorEl = document.getElementById('cmt-author');
@@ -424,7 +424,7 @@ try {
 
       var cmtCount = listEl ? listEl.children.length : 0;
 
-      // 增强现有评论：有邮箱的替换为 Gravatar 头像
+      // 增强现有留言：有邮箱的替换为 Gravatar 头像
       function enhanceExistingAvatars() {
         var items = listEl ? listEl.querySelectorAll('[data-comment-email]') : [];
         for (var i = 0; i < items.length; i++) {
@@ -477,7 +477,7 @@ try {
         var content = contentEl.value.trim();
 
         if (!content) {
-          statusEl.textContent = '请输入评论内容';
+          statusEl.textContent = '请输入留言内容';
           statusEl.className = 'text-[11px] text-red-500';
           return;
         }
@@ -498,13 +498,13 @@ try {
             statusEl.className = 'text-[11px] text-red-500';
           } else {
             contentEl.value = '';
-            statusEl.textContent = '✓ 评论成功';
+            statusEl.textContent = '✓ 留言成功';
             statusEl.className = 'text-[11px] text-[#7CB38B]';
 
             // 隐藏空状态
             if (emptyEl) emptyEl.remove();
 
-            // 追加评论到列表
+            // 追加留言到列表
             if (listEl) {
               var html = renderComment(result, 0);
               listEl.insertAdjacentHTML('beforeend', html);

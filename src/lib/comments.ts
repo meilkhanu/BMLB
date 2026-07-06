@@ -1,10 +1,10 @@
 // ============================================================
 // src/lib/comments.ts
-// 文章评论系统 — 由 [...all].ts 调用
+// 文章留言系统 — 由 [...all].ts 调用
 //
-// GET    /api/comments?slug=xxx    → 获取某文章的评论（公开）
-// POST   /api/comments             → 提交评论（公开）
-// DELETE /api/comments?id=X        → 删除评论（需登录）
+// GET    /api/comments?slug=xxx    → 获取某文章的留言（公开）
+// POST   /api/comments             → 提交留言（公开）
+// DELETE /api/comments?id=X        → 删除留言（需登录）
 // ============================================================
 
 import type { APIContext } from "astro";
@@ -47,7 +47,7 @@ interface Comment {
 }
 
 // ============================================================
-// GET /api/comments?slug=xxx — 获取某文章的评论（公开）
+// GET /api/comments?slug=xxx — 获取某文章的留言（公开）
 // ============================================================
 
 async function handleGetComments(ctx: APIContext): Promise<Response> {
@@ -57,7 +57,7 @@ async function handleGetComments(ctx: APIContext): Promise<Response> {
   const url = new URL(ctx.request.url);
   const slug = url.searchParams.get("slug");
 
-  // 不加 slug：返回全站最新评论（供首页等使用）
+  // 不加 slug：返回全站最新留言（供首页等使用）
   if (!slug) {
     try {
       const rows = await db.prepare(
@@ -84,7 +84,7 @@ async function handleGetComments(ctx: APIContext): Promise<Response> {
     }
   }
 
-  // 有 slug：返回指定文章的评论
+  // 有 slug：返回指定文章的留言
   try {
     const rows = await db.prepare(
       "SELECT * FROM comments WHERE target_slug = ? ORDER BY created_at ASC"
@@ -111,7 +111,7 @@ async function handleGetComments(ctx: APIContext): Promise<Response> {
 }
 
 // ============================================================
-// POST /api/comments — 提交评论（公开）
+// POST /api/comments — 提交留言（公开）
 // ============================================================
 
 async function handlePostComment(ctx: APIContext): Promise<Response> {
@@ -135,11 +135,11 @@ async function handlePostComment(ctx: APIContext): Promise<Response> {
   }
 
   if (!content) {
-    return json({ error: "评论内容不能为空" }, 400);
+    return json({ error: "留言内容不能为空" }, 400);
   }
 
   if (content.length > 500) {
-    return json({ error: "评论内容不能超过 500 字" }, 400);
+    return json({ error: "留言内容不能超过 500 字" }, 400);
   }
 
   if (author.length > 20) {
@@ -170,7 +170,7 @@ async function handlePostComment(ctx: APIContext): Promise<Response> {
 }
 
 // ============================================================
-// DELETE /api/comments?id=X — 删除评论（需登录）
+// DELETE /api/comments?id=X — 删除留言（需登录）
 // ============================================================
 
 async function handleDeleteComment(ctx: APIContext): Promise<Response> {
