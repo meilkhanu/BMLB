@@ -16,10 +16,13 @@ export default defineConfig({
   viewTransitions: true,
   security: { checkOrigin: false },
   vite: {
+    resolve: isNode ? {
+      alias: {
+        'cloudflare:workers': '/src/lib/cloudflare-workers-stub.ts'
+      }
+    } : {},
     build: {
-      rollupOptions: isNode ? {
-        external: ['cloudflare:workers']
-      } : {}
+      rollupOptions: {}
     }
   }
 });
