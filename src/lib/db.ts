@@ -89,6 +89,7 @@ function ensureDb(): any {
       listening_title    TEXT DEFAULT '',
       listening_subtitle TEXT DEFAULT '',
       badge_text         TEXT DEFAULT '',
+      project_title      TEXT DEFAULT '',
       project_description TEXT DEFAULT '',
       project_screenshot TEXT DEFAULT '',
       updated_at         TEXT DEFAULT (datetime('now'))
@@ -139,6 +140,7 @@ function ensureDb(): any {
     'ALTER TABLE about_works ADD COLUMN gallery TEXT DEFAULT \'[]\'',
     'ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT \'[]\'',
     'ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0',
+    'ALTER TABLE now_status ADD COLUMN project_title TEXT DEFAULT \'\'',
   ];
   for (const sql of MIGRATIONS) {
     try { _db.exec(sql); } catch (e: any) {

@@ -66,6 +66,7 @@ try {
         description: row.description,
         progress: row.progress ?? 0,
         badgeText: row.badge_text || '',
+        projectTitle: row.project_title || '',
         projectDescription: row.project_description || '',
         readingTitle: row.reading_title,
         readingSubtitle: row.reading_subtitle,
@@ -261,7 +262,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <!-- 左侧 55% -->
         <div class="md:w-[55%]">
           <p class="text-xs text-[#999] uppercase tracking-widest mb-2">Current Project</p>
-          <h2 class="text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectDescription || '个人网站第二阶段开发'}</h2>
+          <h2 class="text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectTitle || status.projectDescription || '个人网站第二阶段开发'}</h2>
           <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div>
               <span class="text-[#999] block">Started</span>
