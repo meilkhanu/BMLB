@@ -929,6 +929,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     // —— 作品编辑器状态 ——
     let workEditGallery = [];
     let workEditLinks = [];
+    let workEditFiles = [];
     let workEditTiptapReady = false;
 
     window.openWorkEditor = (workId) => {
@@ -944,8 +945,10 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('work-edit-f-featured').checked = !!work.featured;
       workEditGallery = [...(work.gallery || [])];
       workEditLinks = JSON.parse(JSON.stringify(work.links || []));
+      workEditFiles = JSON.parse(JSON.stringify(work.files || []));
       renderWorkEditGallery();
       renderWorkEditLinks();
+      renderWorkEditFiles();
       document.getElementById('work-edit-panel').classList.remove('hidden');
       document.getElementById('work-edit-status').textContent = '';
 
@@ -1066,6 +1069,43 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       renderWorkEditLinks();
     });
 
+    // 附件管理
+    function renderWorkEditFiles() {
+      const container = document.getElementById('work-edit-files');
+      if (!container) return;
+      container.innerHTML = workEditFiles.map((f, i) =>
+        '<div class="flex items-center gap-2 p-2 rounded-lg bg-[#F5F5F5] dark:bg-[#252525]">' +
+          '<span class="text-xs text-[#8B7CB3] truncate flex-1">' + escapeHtml(f.name) + '</span>' +
+          '<span class="text-[10px] text-[#999]">' + (f.size ? Math.round(f.size / 1024) + 'KB' : '') + '</span>' +
+          '<button onclick="removeWorkEditFile(' + i + ')" class="text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer text-xs">×</button>' +
+        '</div>'
+      ).join('');
+    }
+
+    window.removeWorkEditFile = function(idx) {
+      workEditFiles.splice(idx, 1);
+      renderWorkEditFiles();
+    };
+
+    document.getElementById('work-edit-add-file').addEventListener('click', () => {
+      document.getElementById('work-edit-file-upload').click();
+    });
+
+    document.getElementById('work-edit-file-upload').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!data.success) { alert('上传失败'); return; }
+        workEditFiles.push({ name: file.name, url: data.url, size: file.size });
+        renderWorkEditFiles();
+      } catch { alert('上传失败'); }
+      e.target.value = '';
+    });
+
     // 保存作品
     document.getElementById('work-edit-save').addEventListener('click', async () => {
       const id = Number(document.getElementById('work-edit-id').value);
@@ -1084,6 +1124,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         tags,
         gallery: workEditGallery,
         links: workEditLinks.filter(l => l.title || l.url),
+        files: workEditFiles,
         featured: document.getElementById('work-edit-f-featured').checked,
       };
       try {
