@@ -27,6 +27,15 @@ const ALLOWED_IMAGE_TYPES = [
   "image/avif",
 ];
 
+const ALLOWED_DOC_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "text/plain",
+];
+
 const ALLOWED_AUDIO_TYPES = [
   "audio/mpeg",
   "audio/mp3",
@@ -76,18 +85,18 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   // 类型校验
   const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
   const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type);
+  const isDoc = ALLOWED_DOC_TYPES.includes(file.type);
 
-  if (!isImage && !isAudio) {
+  if (!isImage && !isAudio && !isDoc) {
     return json(
-      { error: `不支持的文件类型: ${file.type}，仅支持图片(PNG/JPEG/WebP/GIF/SVG/AVIF)或音频(MP3/WAV/OGG/FLAC/M4A)` },
+      { error: `不支持的文件类型: ${file.type}，仅支持图片、音频或文档(PDF/Word/PPT/TXT)` },
       400
     );
   }
 
-  // 大小校验
-  const maxSize = isAudio ? MAX_AUDIO_SIZE : MAX_IMAGE_SIZE;
+  const maxSize = isDoc ? 50 * 1024 * 1024 : isAudio ? MAX_AUDIO_SIZE : MAX_IMAGE_SIZE;
   if (file.size > maxSize) {
-    return json({ error: `文件过大（${isAudio ? '音频最大 50MB' : '图片最大 5MB'}）` }, 400);
+    return json({ error: `文件过大（${isDoc ? '文档最大 50MB' : isAudio ? '音频最大 50MB' : '图片最大 20MB'}）` }, 400);
   }
 
   const key = generateKey(file.name);

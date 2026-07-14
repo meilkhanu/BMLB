@@ -82,6 +82,7 @@ export interface AboutWork {
   gallery: string[];
   links: { title: string; url: string }[];
   featured: boolean;
+  files: { name: string; url: string; size: number }[];
 }
 
 export interface AboutLink {
@@ -144,6 +145,7 @@ const DEFAULT_WORKS: AboutWork[] = [
     content: '',
     gallery: [],
     links: [],
+    files: [],
     featured: false,
   },
   {
@@ -157,6 +159,7 @@ const DEFAULT_WORKS: AboutWork[] = [
     content: '',
     gallery: [],
     links: [],
+    files: [],
     featured: false,
   },
   {
@@ -170,6 +173,7 @@ const DEFAULT_WORKS: AboutWork[] = [
     content: '',
     gallery: [],
     links: [],
+    files: [],
     featured: false,
   },
 ];
@@ -223,7 +227,7 @@ function rowToSkill(row: any): AboutSkill {
 }
 
 function rowToWork(row: any): AboutWork {
-  if (!row) return { id: 0, title: '', description: '', tags: [], image: '', sortOrder: 0, slug: '', content: '', gallery: [], links: [], featured: false };
+  if (!row) return { id: 0, title: '', description: '', tags: [], image: '', sortOrder: 0, slug: '', content: '', gallery: [], links: [], files: [], featured: false };
   return {
     id: row.id,
     title: row.title,
@@ -235,6 +239,7 @@ function rowToWork(row: any): AboutWork {
     content: row.content || '',
     gallery: safeJson(row.gallery, []),
     links: safeJson(row.links, []),
+    files: safeJson(row.files, []),
     featured: !!row.featured,
   };
 }
@@ -523,13 +528,13 @@ async function handlePostWork(ctx: APIContext): Promise<Response> {
   let body: any;
   try { body = await ctx.request.json(); } catch { return json({ error: "无效的请求体" }, 400); }
 
-  const { title, description, tags, image, sortOrder, slug, content, gallery, links, featured } = body;
+  const { title, description, tags, image, sortOrder, slug, content, gallery, links, files, featured } = body;
   if (!title) return json({ error: "缺少必填字段: title" }, 400);
 
   try {
     const result = await db.prepare(
-      "INSERT INTO about_works (title, description, tags, image, sort_order, slug, content, gallery, links, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    ).bind(title, description ?? "", JSON.stringify(tags ?? []), image ?? "", sortOrder ?? 0, slug ?? "", content ?? "", JSON.stringify(gallery ?? []), JSON.stringify(links ?? []), featured ? 1 : 0).run();
+      "INSERT INTO about_works (title, description, tags, image, sort_order, slug, content, gallery, links, files, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).bind(title, description ?? "", JSON.stringify(tags ?? []), image ?? "", sortOrder ?? 0, slug ?? "", content ?? "", JSON.stringify(gallery ?? []), JSON.stringify(links ?? []), JSON.stringify(files ?? []), featured ? 1 : 0).run();
 
     const row = await db.prepare("SELECT * FROM about_works WHERE id = ?").bind(result.meta.last_row_id).first();
     return json(rowToWork(row));
@@ -550,7 +555,7 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
   let body: any;
   try { body = await ctx.request.json(); } catch { return json({ error: "无效的请求体" }, 400); }
 
-  const { id, title, description, tags, image, sortOrder, slug, content, gallery, links, featured } = body;
+  const { id, title, description, tags, image, sortOrder, slug, content, gallery, links, files, featured } = body;
   if (!id) return json({ error: "缺少必填字段: id" }, 400);
 
   try {
@@ -566,6 +571,7 @@ async function handlePutWork(ctx: APIContext): Promise<Response> {
     if (content !== undefined) { sets.push("content = ?"); vals.push(content); }
     if (gallery !== undefined) { sets.push("gallery = ?"); vals.push(JSON.stringify(gallery)); }
     if (links !== undefined) { sets.push("links = ?"); vals.push(JSON.stringify(links)); }
+    if (files !== undefined) { sets.push("files = ?"); vals.push(JSON.stringify(files)); }
     if (featured !== undefined) { sets.push("featured = ?"); vals.push(featured ? 1 : 0); }
 
     if (sets.length === 0) return json({ error: "没有要更新的字段" }, 400);

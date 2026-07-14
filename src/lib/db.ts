@@ -141,6 +141,7 @@ function ensureDb(): any {
     'ALTER TABLE about_works ADD COLUMN links TEXT DEFAULT \'[]\'',
     'ALTER TABLE about_works ADD COLUMN featured INTEGER DEFAULT 0',
     'ALTER TABLE now_status ADD COLUMN project_title TEXT DEFAULT \'\'',
+    'ALTER TABLE about_works ADD COLUMN files TEXT DEFAULT \'[]\'',
   ];
   for (const sql of MIGRATIONS) {
     try { _db.exec(sql); } catch (e: any) {
@@ -167,6 +168,7 @@ function ensureDb(): any {
       content    TEXT DEFAULT '',
       gallery    TEXT DEFAULT '[]',
       links      TEXT DEFAULT '[]',
+      files      TEXT DEFAULT '[]',
       featured   INTEGER DEFAULT 0
     );
 

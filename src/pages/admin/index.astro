@@ -600,6 +600,16 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
               <div id="work-edit-links" class="space-y-2"></div>
             </div>
 
+            <!-- 附件文件 -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-medium text-[#999]">附件文件 (PDF/Word/PPT/TXT)</label>
+                <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" id="work-edit-file-upload" class="hidden" />
+                <button type="button" id="work-edit-add-file" class="text-xs font-bold text-[#8B7CB3] hover:text-[#7A6BA2] transition-colors bg-transparent border-none cursor-pointer">+ 添加文件</button>
+              </div>
+              <div id="work-edit-files" class="space-y-2"></div>
+            </div>
+
             <!-- 精选 -->
             <div class="mb-5">
               <label class="flex items-center gap-2 cursor-pointer">
