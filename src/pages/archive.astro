@@ -144,7 +144,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		<!-- 标题区 -->
 		<div class="mb-12" data-animate>
 			<div class="mb-16 ml-2 md:ml-0">
-				<h1 class="text-4xl md:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 tracking-tight">Archive</h1>
+				<h1 class="font-xiaolai text-4xl md:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 tracking-tight">Archive</h1>
 				<p class="text-base md:text-lg text-[#666] dark:text-[#999] tracking-wide">过往，现在，未来。因果能否超脱视界？</p>
 		</div>
 
@@ -157,7 +157,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 					<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-4">年份</h3>
 					<nav class="flex flex-col gap-2">
 						{yearGroups.length > 0 ? yearGroups.map(yg => (
-							<a href={`#year-${yg.year}`} class="text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] transition-colors">{yg.year}</a>
+							<a href={`#year-${yg.year}`} class="font-xiaolai text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] hover:translate-x-1 transition-all duration-300">{yg.year}</a>
 						)) : (
 							<span class="text-sm text-[#999]">暂无</span>
 						)}
@@ -167,16 +167,16 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 
 			<!-- 中间：主时间轴 -->
 			<main class="relative">
-				<!-- 时间轴纵向竖线 -->
-				<div class="absolute left-[12px] top-0 bottom-0 w-0 border-l-2 border-dashed border-[#E5E5E5] dark:border-[#222]"></div>
+					<!-- 时间轴纵向竖线 -->
+				<div class="absolute left-[12px] top-0 bottom-0 w-0 border-l-2 border-dashed border-[#D8D0E8] dark:border-[#2A2540]"></div>
 
 				{yearGroups.length > 0 ? yearGroups.map((yg, yi) => (
 					<section id={`year-${yg.year}`} class="relative mb-12" data-animate>
 						<!-- 年份大节点 -->
 						<div class="sticky top-16 z-20 flex items-center gap-4 py-4 -ml-2 px-2 bg-[#FAFAFA] dark:bg-[#0F0F0F] mb-4 relative transition-colors duration-300">
-							<div class="w-6 h-6 rounded-full border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10" style={`background-color: ${yearColors[yi % yearColors.length]}`}></div>
-							<h2 class="text-2xl font-bold">{yg.year}</h2>
-							<div class="flex-1 h-[1px] bg-[#E0E0E0] dark:bg-[#2A2A2A]"></div>
+							<div class="w-6 h-6 rounded-full border-4 border-[#FAFAFA] dark:border-[#0F0F0F] z-10 shadow-[0_0_10px_-2px_rgba(139,124,179,.5)]" style={`background: linear-gradient(135deg, ${yearColors[yi % yearColors.length]}, #FF6B9D)`}></div>
+							<h2 class="font-xiaolai text-2xl font-bold">{yg.year}</h2>
+							<div class="flex-1 h-[1px] bg-gradient-to-r from-[#8B7CB3]/30 to-transparent"></div>
 						</div>
 
 						{yg.months.map(mg => (
@@ -193,13 +193,13 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 										const d = new Date(dateStr);
 										const mmdd = isNaN(d.getTime()) ? '' : `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 										return (
-											<a href={`/blog/${p.slug}`} class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
-												<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0D0D0] dark:bg-[#3A3A3A] group-hover:bg-[#8B7CB3] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
+											<a href={`/blog/${p.slug}`} class="group relative block bg-white dark:bg-[#252525] rounded-2xl p-4 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(139,124,179,.3)] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300">
+												<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0C8E0] dark:bg-[#3A3550] group-hover:bg-[#FF6B9D] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
 												<div class="flex items-center gap-2 mb-2">
-													<span class="px-2 py-0.5 rounded-md text-xs font-medium" style={`background-color:${cat.color}18;color:${cat.color}`}>{cat.name}</span>
+													<span class="font-xiaolai px-2.5 py-0.5 rounded-full text-xs font-bold" style={`background-color:${cat.color}18;color:${cat.color}`}>{cat.name}</span>
 													<span class="text-xs text-[#999]">{mmdd}</span>
 												</div>
-												<h4 class="text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{p.title}</h4>
+												<h4 class="font-xiaolai text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{p.title}</h4>
 											</a>
 										);
 									})}
@@ -243,7 +243,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 							<h3 class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-4">Top Tags</h3>
 							<div class="flex flex-wrap gap-2.5">
 								{topTags.map(([tag, count]) => (
-									<span class="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FAFAFA] dark:bg-[#252525] text-[#666] dark:text-[#999] hover:bg-[#8B7CB3] hover:text-white dark:hover:bg-[#8B7CB3] dark:hover:text-white transition-all duration-300 cursor-default active:scale-95 shadow-sm border border-transparent hover:shadow-md">
+									<span class="font-xiaolai px-3 py-1.5 rounded-full text-xs font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-[#8B7CB3] dark:text-[#B39DDB] border border-[#8B7CB3]/15 dark:border-[#8B7CB3]/25 hover:bg-[#8B7CB3] hover:text-white hover:scale-105 transition-all duration-300 cursor-default active:scale-95 shadow-sm hover:shadow-md">
 										{tag} <span class="text-[10px] opacity-50 ml-0.5">{count}</span>
 									</span>
 								))}

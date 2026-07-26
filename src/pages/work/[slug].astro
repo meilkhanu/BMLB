@@ -55,7 +55,7 @@ const title = work.title || '作品详情';
       <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/60"></div>
 
       <div class="relative z-10 flex flex-col items-center justify-end h-full pb-16 px-6 text-center">
-        <h1 class="text-3xl md:text-5xl font-semibold tracking-tight text-white drop-shadow-lg">
+        <h1 class="font-xiaolai text-3xl md:text-5xl font-semibold tracking-tight text-white drop-shadow-lg">
           {work.title}
         </h1>
         {work.description && (
@@ -106,8 +106,13 @@ const title = work.title || '作品详情';
         <div class="prose prose-lg dark:prose-invert max-w-none
           prose-headings:text-[#1A1A1A] dark:prose-headings:text-[#EAEAEA]
           prose-p:text-[#666] dark:prose-p:text-[#999]
-          prose-a:text-[#8B7CB3] hover:prose-a:text-[#7A6BA2]
-          prose-img:rounded-2xl">
+          prose-a:text-[#8B7CB3] dark:prose-a:text-[#B39DDB] hover:prose-a:text-[#FF6B9D]
+          prose-blockquote:border-l-[#8B7CB3] prose-blockquote:bg-[#8B7CB3]/5 dark:prose-blockquote:bg-[#8B7CB3]/10
+          prose-blockquote:rounded-r-xl prose-blockquote:not-italic
+          prose-code:text-[#8B7CB3] dark:prose-code:text-[#C9BAE5] prose-code:bg-[#8B7CB3]/10 dark:prose-code:bg-[#8B7CB3]/15
+          prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none
+          prose-img:rounded-2xl prose-img:shadow-md
+          prose-hr:border-[#E8E8E8] dark:prose-hr:border-[#2A2A2A]">
           <Fragment set:html={work.content} />
         </div>
       </section>
@@ -116,11 +121,11 @@ const title = work.title || '作品详情';
     <!-- ================= 图片画廊 ================= -->
     {work.gallery.length > 0 && (
       <section class="max-w-5xl mx-auto px-6 mt-14 mb-10" data-animate>
-        <h2 class="text-lg font-bold text-[#8B7CB3] mb-6 tracking-wide">Gallery</h2>
+        <h2 class="font-xiaolai text-lg font-bold text-[#8B7CB3] mb-6 tracking-wide">Gallery</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="work-gallery">
           {work.gallery.map((img: string, i: number) => (
             <div
-              class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group"
+              class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(139,124,179,.4)] hover:-translate-y-1 transition-all duration-300"
               data-gallery-index={i}
             >
               <img

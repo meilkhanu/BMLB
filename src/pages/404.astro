@@ -14,18 +14,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 		<div class="relative z-10 flex flex-col items-center max-w-[600px] w-full">
 			<!-- 大号 404 装饰数字 -->
 			<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0">
-				<span class="font-black text-[#8B7CB3] opacity-20 tracking-[0.15em] leading-none"
-					  style="font-size: clamp(80px, 15vw, 800px);">
+				<span class="font-black opacity-15 tracking-[0.15em] leading-none animate-pulse"
+					  style="font-size: clamp(80px, 15vw, 800px); background: linear-gradient(135deg, #8B7CB3, #FF6B9D); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
 					404
 				</span>
 			</div>
 
 			<!-- 文案区域 -->
 			<div class="relative z-10 text-center mb-10">
-				<h1 class="text-3xl md:text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4 tracking-tight">
+				<h1 class="font-xiaolai text-3xl md:text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4 tracking-tight">
 					页面还在施工中...
 				</h1>
-				<p class="text-lg md:text-xl text-[#666] dark:text-[#999] leading-relaxed mb-3">
+				<p class="text-lg md:text-xl text-[#FF6B9D] leading-relaxed mb-3">
 					( *^-^)ρ(^0^* )
 				</p>
 				<p class="text-base md:text-lg text-[#666] dark:text-[#999] leading-relaxed">
@@ -63,7 +63,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 			<div id="nav-links" class="relative z-10 flex flex-wrap justify-center gap-3 md:gap-4 w-full mt-4">
 				<a 
 					href="/" 
-					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+					class="px-5 py-2 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#B26A8B] text-xs md:text-sm font-bold text-white hover:-translate-y-0.5 hover:shadow-[0_4px_14px_-2px_rgba(139,124,179,.6)] active:scale-95 transition-all duration-300 no-underline whitespace-nowrap"
 				>
 					返回首页
 				</a>

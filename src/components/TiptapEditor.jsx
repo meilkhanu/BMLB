@@ -300,15 +300,24 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
       </div>
       <div ref={editorContainerRef}><EditorContent editor={editor} /></div>
       <style>{`
-        .tiptap{min-height:400px}.tiptap:focus{outline:none}.tiptap p.is-editor-empty:first-child::before{color:#999;content:attr(data-placeholder);float:left;height:0;pointer-events:none}
+        .tiptap{min-height:400px;color:#1A1A1A}.dark .tiptap{color:#EAEAEA}
+        .tiptap:focus{outline:none}.tiptap p.is-editor-empty:first-child::before{color:#999;content:attr(data-placeholder);float:left;height:0;pointer-events:none}
         .tiptap h2{font-size:1.25rem;font-weight:700;margin:1rem 0 .5rem}.tiptap h3{font-size:1.125rem;font-weight:600;margin:.75rem 0 .5rem}.tiptap p{margin:.25rem 0;line-height:1.75}
         .tiptap ul,.tiptap ol{padding-left:1.5rem;margin:.5rem 0}.tiptap ul{list-style-type:disc}.tiptap ol{list-style-type:decimal}.tiptap li{margin:.125rem 0;line-height:1.6}
-        .tiptap blockquote{border-left:3px solid #8B7CB3;padding-left:1rem;margin:.75rem 0;color:#666;font-style:italic}
+        .tiptap blockquote{border-left:3px solid #8B7CB3;padding-left:1rem;margin:.75rem 0;color:#666;font-style:italic}.dark .tiptap blockquote{color:#999}
         .tiptap img{max-width:100%;height:auto;border-radius:.75rem;margin:.75rem 0}.tiptap a{color:#8B7CB3;text-decoration:underline}
         .tiptap pre{background:#1a1a1a;color:#eaeaea;padding:1rem;border-radius:.75rem;overflow-x:auto;margin:.75rem 0;font-size:.875rem;font-family:'SF Mono','Fira Code',monospace}
-        .tiptap code{background:#f0f0f0;padding:.125rem .375rem;border-radius:.25rem;font-size:.875em;font-family:'SF Mono','Fira Code',monospace}.tiptap pre code{background:none;padding:0;border-radius:0}
-        .tiptap table{border-collapse:collapse;margin:.75rem 0;width:100%}.tiptap table td,.tiptap table th{border:1px solid #e0e0e0;padding:.5rem .75rem;position:relative;min-width:80px}.tiptap table th{background:#f5f5f5;font-weight:600}
+        .tiptap code{background:#f0f0f0;padding:.125rem .375rem;border-radius:.25rem;font-size:.875em;font-family:'SF Mono','Fira Code',monospace;color:#8B7CB3}
+        .dark .tiptap code{background:#2A2A2A;color:#C9BAE5}
+        .tiptap pre code{background:none;padding:0;border-radius:0;color:inherit}
+        .tiptap table{border-collapse:collapse;margin:.75rem 0;width:100%}
+        .tiptap table td,.tiptap table th{border:1px solid #e0e0e0;padding:.5rem .75rem;position:relative;min-width:80px}
+        .dark .tiptap table td,.dark .tiptap table th{border-color:#333}
+        .tiptap table th{background:#f5f5f5;font-weight:600}.dark .tiptap table th{background:#252525}
         .tiptap mark{border-radius:.125rem;padding:0 .125rem}.tiptap hr{border:none;border-top:1px solid #e0e0e0;margin:1.5rem 0}
+        .dark .tiptap hr{border-color:#333}
+        .tiptap .selectedCell::after{background:rgba(139,124,179,.15)}
+        .dark .tiptap ::selection{background:rgba(139,124,179,.4)}
       `}</style>
     </div>
   );

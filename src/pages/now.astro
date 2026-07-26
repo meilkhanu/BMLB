@@ -160,11 +160,11 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <!-- 左侧 35% 视觉文案 -->
         <div class="md:w-[35%] flex flex-col justify-center">
           <p class="text-xs font-medium text-[#999] uppercase tracking-widest mb-1">Now</p>
-          <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
+          <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
           <p class="text-sm text-[#999] mt-2">Current Focus</p>
-				  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
+				  <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
           <p class="text-sm text-[#999]">Building</p>
-				  <h1 class="text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
+				  <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
         </div>
         <!-- 中部 30% 时间河流 -->
         <div class="md:w-[30%]">
@@ -213,7 +213,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <!-- 前景内容区 -->
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">📖</div>
-          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在阅读</h3>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在阅读</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.readingTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.readingSubtitle}</p>
         </div>
@@ -224,7 +224,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">💻</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">💻</div>
-          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在学习</h3>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在学习</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.learningTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.learningSubtitle}</p>
         </div>
@@ -235,7 +235,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🔬</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🔬</div>
-          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在研究</h3>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在研究</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.researchingTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.researchingSubtitle}</p>
         </div>
@@ -246,7 +246,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🎵</div>
         <div class="relative z-10">
           <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🎵</div>
-          <h3 class="text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在听</h3>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在听</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.listeningTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.listeningSubtitle}</p>
         </div>
@@ -262,7 +262,7 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         <!-- 左侧 55% -->
         <div class="md:w-[55%]">
           <p class="text-xs text-[#999] uppercase tracking-widest mb-2">Current Project</p>
-          <h2 class="text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectTitle || status.projectDescription || '个人网站第二阶段开发'}</h2>
+          <h2 class="font-xiaolai text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectTitle || status.projectDescription || '个人网站第二阶段开发'}</h2>
           <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div>
               <span class="text-[#999] block">Started</span>

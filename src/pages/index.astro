@@ -132,15 +132,15 @@ try {
 			</div>
 
 			<!-- 3.2 PC Tab 长条栏 -->
-			<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-full bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
-				<span class="text-sm font-medium text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
+				<div class="hidden md:flex flex-1 h-14 items-center px-6 rounded-full bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300 font-xiaolai">
+				<span class="text-sm font-bold text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
 				<div class="relative flex gap-1 z-0">
 					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-white/80 dark:bg-[#2A2A2A]/80 backdrop-blur-md shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white/50 dark:border-white/5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
 							data-active={idx === 0 ? 'true' : 'false'}
-							class="relative z-10 px-5 py-1.5 text-sm font-medium transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
+							class="relative z-10 px-5 py-1.5 text-[15px] font-bold transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
 						>
 							{cat.name}
 						</button>
@@ -160,7 +160,7 @@ try {
 						<button
 							data-tab={cat.id}
 							data-active={idx === 0 ? 'true' : 'false'}
-							class="relative z-10 px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors duration-300 outline-none select-none active:scale-95 text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] data-[active=true]:text-white"
+							class="relative z-10 px-4 py-1.5 text-sm font-bold whitespace-nowrap transition-colors duration-300 outline-none select-none active:scale-95 text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] data-[active=true]:text-white font-xiaolai"
 						>
 							{cat.name}
 						</button>
@@ -173,169 +173,197 @@ try {
 		<div class="mt-6 grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-6">
 			<!-- 3.4 左侧盒子区（PC only） -->
 			<div class="hidden md:flex flex-col gap-4">
-				<div id="sidebar-box-1" class="w-full min-h-[160px] rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 flex flex-col" data-animate>
-					<div class="flex justify-between items-center mb-4">
-						<span id="calendar-title" class="text-xs font-bold text-[#8B7CB3] tracking-widest"></span>
-						<div class="flex gap-1">
-							<button id="cal-prev" class="text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer transition-colors p-1 flex items-center justify-center rounded-lg hover:bg-[#8B7CB3]/10 active:scale-90">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-							</button>
-							<button id="cal-next" class="text-[#999] hover:text-[#8B7CB3] bg-transparent border-none cursor-pointer transition-colors p-1 flex items-center justify-center rounded-lg hover:bg-[#8B7CB3]/10 active:scale-90">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-							</button>
-						</div>
-					</div>
-
-					<div class="flex justify-between mb-2 px-1">
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">一</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">二</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">三</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">四</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">五</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">六</span>
-						<span class="text-[10px] font-medium text-[#999] w-full text-center">日</span>
-					</div>
-
-					<div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1 px-1"></div>
-
-					<div class="border-t border-[#E0E0E0] dark:border-[#2A2A2A] mt-3 pt-3 flex justify-between items-center px-1">
-						<div class="flex items-center gap-1.5 text-[#1A1A1A] dark:text-[#EAEAEA]">
-							<svg class="w-3.5 h-3.5 text-[#8B7CB3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							<span class="text-[10px] font-bold">Today</span>
-						</div>
-						<span id="calendar-footer-date" class="text-[10px] font-mono font-medium text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-0.5 rounded-md">--/--</span>
-						<span id="calendar-footer-relative" class="hidden text-[10px] font-medium text-[#999]"></span>
-					</div>
-				</div>
-				<div id="sidebar-box-2" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 relative delay-1" data-animate>
-					<!-- 主播放器视图 -->
-					<div id="player-main">
-						<div class="flex items-center justify-between mb-4">
-							<div class="flex items-center gap-2">
-								<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
+				<div id="sidebar-box-1" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 flex flex-col justify-center" data-animate>
+						<!-- 撕页台历：装订环 -->
+						<div class="cal-rings"><span class="cal-ring"></span><span class="cal-ring"></span></div>
+						<div class="cal-body">
+							<!-- 纸页 -->
+							<div class="cal-paper">
+								<div class="cal-holes"><span class="cal-hole"></span><span class="cal-hole"></span></div>
+								<div class="flex justify-between items-center mb-2.5">
+									<span id="calendar-title" class="font-xiaolai text-sm font-bold text-[#8B7CB3] tracking-wide"></span>
+									<div class="flex gap-1.5">
+										<button id="cal-prev" class="cal-nav-btn" aria-label="上个月">
+											<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+										</button>
+										<button id="cal-next" class="cal-nav-btn" aria-label="下个月">
+											<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+										</button>
+									</div>
+								</div>
+								<!-- 今日撕页 -->
+								<div class="cal-hero">
+									<span id="cal-hero-num" class="cal-hero-num">--</span>
+									<div class="cal-hero-meta">
+										<span id="cal-hero-weekday" class="font-xiaolai text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">--</span>
+										<span id="cal-hero-motto" class="text-[10px] text-[#999] dark:text-[#777] leading-tight">--</span>
+									</div>
+								</div>
+								<div class="flex justify-between mb-1.5 px-1">
+									<span class="cal-weekday">一</span>
+									<span class="cal-weekday">二</span>
+									<span class="cal-weekday">三</span>
+									<span class="cal-weekday">四</span>
+									<span class="cal-weekday">五</span>
+									<span class="cal-weekday cal-weekend">六</span>
+									<span class="cal-weekday cal-weekend">日</span>
+								</div>
+								<div id="calendar-grid" class="grid grid-cols-7 gap-1 px-1"></div>
 							</div>
-							<div id="player-visualizer" class="flex items-end gap-[2px] h-3 opacity-30 transition-opacity duration-300">
-								<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[60%]"></div>
-								<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[100%]"></div>
-								<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[40%]"></div>
-								<div class="w-[3px] bg-[#8B7CB3] rounded-full h-[80%]"></div>
-							</div>
-						</div>
-
-						<div class="flex gap-3 items-center">
-							<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] shadow-inner">
-								<img id="player-cover" src="" alt="cover" class="w-full h-full object-cover hidden" />
-								<div id="player-cover-fallback" class="absolute inset-0 flex items-center justify-center text-white/60">
-									<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
+							<!-- 撕页锯齿边 -->
+							<div class="cal-tear-edge"></div>
+							<!-- 底板 -->
+							<div class="cal-board">
+								<div class="flex justify-between items-center">
+									<div class="flex items-center gap-1.5">
+										<span class="cal-today-dot"></span>
+										<span class="font-xiaolai text-[10px] font-bold text-[#8B7CB3]">Today</span>
+									</div>
+									<div class="flex items-center gap-1.5">
+										<span id="calendar-footer-relative" class="hidden text-[10px] font-medium text-[#999] dark:text-[#777]"></span>
+										<span id="calendar-footer-date" class="font-xiaolai text-[10px] font-bold text-white bg-gradient-to-r from-[#8B7CB3] to-[#B39DDB] px-2 py-0.5 rounded-full shadow-sm">--/--</span>
+									</div>
 								</div>
 							</div>
-							
-							<div class="flex-1 min-w-0 flex flex-col justify-center">
-								<h4 id="player-title" class="text-[15px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate tracking-tight">暂无音乐</h4>
-								<p id="player-artist" class="text-xs text-[#666] dark:text-[#999] mt-0.5 truncate">-</p>
-							</div>
 						</div>
-
-						<div class="mt-4 flex flex-col gap-1.5">
-							<div class="relative w-full h-1.5 bg-[#E0E0E0] dark:bg-[#2A2A2A] rounded-full overflow-hidden cursor-pointer group/progress" id="player-progress-bar">
-								<div id="player-progress" class="absolute top-0 left-0 h-full bg-[#8B7CB3] w-0 rounded-full group-hover/progress:bg-[#7A6BA2] transition-colors relative">
-									<div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow opacity-0 group-hover/progress:opacity-100 transition-opacity"></div>
+					</div>
+				<div id="sidebar-box-2" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl transition-all duration-500 relative delay-1" data-animate>
+						<!-- 主播放器视图 -->
+						<div id="player-main">
+							<div class="flex items-center justify-between mb-4">
+								<div class="flex items-center gap-2">
+									<span class="font-xiaolai text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Now Playing</span>
+								</div>
+								<div id="player-visualizer" class="flex items-end gap-[3px] h-3.5 opacity-30 transition-opacity duration-300">
+									<div class="w-[3px] bg-gradient-to-t from-[#8B7CB3] to-[#FF6B9D] rounded-full h-[60%]"></div>
+									<div class="w-[3px] bg-gradient-to-t from-[#8B7CB3] to-[#FF6B9D] rounded-full h-[100%]"></div>
+									<div class="w-[3px] bg-gradient-to-t from-[#8B7CB3] to-[#FF6B9D] rounded-full h-[40%]"></div>
+									<div class="w-[3px] bg-gradient-to-t from-[#8B7CB3] to-[#FF6B9D] rounded-full h-[80%]"></div>
 								</div>
 							</div>
-							<div class="flex justify-between items-center text-[10px] font-medium text-[#999] font-mono">
-								<span id="player-current">0:00</span>
-								<span id="player-duration">0:00</span>
+
+							<div class="flex gap-3 items-center">
+								<!-- 圆形唱片 -->
+									<div id="player-disc-wrap" class="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 shadow-[0_4px_14px_-4px_rgba(139,124,179,.5)]">
+									<div id="player-disc" class="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,#2A2438,#3D3454,#2A2438,#3D3454,#2A2438)]">
+										<div class="absolute inset-[6px] rounded-full border border-white/[0.06]"></div>
+										<div class="absolute inset-[11px] rounded-full border border-white/[0.05]"></div>
+										<div class="absolute inset-[16px] rounded-full border border-white/[0.04]"></div>
+									</div>
+									<img id="player-cover" src="" alt="cover" class="absolute inset-0 w-full h-full object-cover hidden" />
+									<div id="player-cover-fallback" class="absolute inset-0 flex items-center justify-center">
+										<div class="w-6 h-6 rounded-full bg-gradient-to-tr from-[#8B7CB3] to-[#FF6B9D] flex items-center justify-center shadow-md">
+											<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
+										</div>
+									</div>
+								</div>
+
+								<div class="flex-1 min-w-0 flex flex-col justify-center">
+									<h4 id="player-title" class="font-xiaolai text-[15px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate tracking-tight">暂无音乐</h4>
+									<p id="player-artist" class="text-xs text-[#666] dark:text-[#999] mt-0.5 truncate">-</p>
+								</div>
+							</div>
+
+							<div class="mt-4 flex flex-col gap-1.5">
+								<div class="relative w-full h-2 bg-[#E8E2F3] dark:bg-[#2A2A2A] rounded-full cursor-pointer group/progress" id="player-progress-bar">
+									<div id="player-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-[#8B7CB3] to-[#FF6B9D] w-0 rounded-full">
+										<div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-[0_1px_6px_rgba(139,124,179,.6)] border-2 border-[#B39DDB] scale-75 group-hover/progress:scale-110 transition-transform duration-300"></div>
+									</div>
+								</div>
+								<div class="flex justify-between items-center text-[10px] font-medium text-[#999] font-mono">
+									<span id="player-current">0:00</span>
+									<span id="player-duration">0:00</span>
+								</div>
+							</div>
+
+							<div class="mt-1 flex justify-between items-center px-1">
+								<button id="player-mode-btn" class="player-soft-btn" title="列表循环">
+									<svg id="mode-icon-loop" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+									<svg id="mode-icon-single" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7z"/><circle cx="12" cy="15" r="2"/></svg>
+									<svg id="mode-icon-shuffle" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+								</button>
+
+								<div class="flex items-center gap-3">
+									<button id="player-prev" class="player-soft-btn">
+										<svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+									</button>
+
+									<button id="player-play" class="w-11 h-11 flex items-center justify-center rounded-full bg-gradient-to-br from-[#8B7CB3] to-[#B26A8B] text-white hover:scale-110 active:scale-90 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_4px_14px_-2px_rgba(139,124,179,.6)] border-none cursor-pointer">
+										<svg id="icon-play" class="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+										<svg id="icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+									</button>
+
+									<button id="player-next" class="player-soft-btn">
+										<svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+									</button>
+								</div>
+
+								<button id="player-list-btn" class="player-soft-btn relative">
+									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+								</button>
 							</div>
 						</div>
 
-						<div class="mt-1 flex justify-between items-center px-1">
-							<button id="player-mode-btn" class="text-[#999] hover:text-[#8B7CB3] transition-colors" title="列表循环">
-								<svg id="mode-icon-loop" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-								<svg id="mode-icon-single" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7z"/><circle cx="12" cy="15" r="2"/></svg>
-								<svg id="mode-icon-shuffle" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-							</button>
-							
-							<div class="flex items-center gap-4">
-								<button id="player-prev" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
-									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+						<!-- 播放列表视图 -->
+						<div id="player-playlist-panel" class="hidden">
+							<div class="flex items-center justify-between mb-4">
+								<button id="playlist-back" class="text-[#999] hover:text-[#8B7CB3] transition-colors cursor-pointer border-none bg-transparent flex items-center gap-1.5 active:scale-90">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+									<span class="font-xiaolai text-[10px] font-bold tracking-widest uppercase">返回</span>
 								</button>
-								
-								<button id="player-play" class="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A1A] dark:bg-[#EAEAEA] text-white dark:text-[#1A1A1A] hover:bg-[#8B7CB3] dark:hover:bg-[#8B7CB3] hover:scale-105 active:scale-95 transition-all shadow-md">
-									<svg id="icon-play" class="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-									<svg id="icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-								</button>
-								
-								<button id="player-next" class="text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] transition-colors">
-									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-								</button>
+								<span class="font-xiaolai text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Playlist</span>
 							</div>
-
-							<button id="player-list-btn" class="text-[#999] hover:text-[#8B7CB3] transition-colors relative">
-								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
-							</button>
+							<div id="playlist-items" class="space-y-1 max-h-[300px] overflow-y-auto hide-scrollbar"></div>
 						</div>
+
+
 					</div>
-
-					<!-- 播放列表视图 -->
-					<div id="player-playlist-panel" class="hidden">
+				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl transition-all duration-500 delay-2" data-animate>
 						<div class="flex items-center justify-between mb-4">
-							<button id="playlist-back" class="text-[#999] hover:text-[#8B7CB3] transition-colors cursor-pointer border-none bg-transparent flex items-center gap-1.5">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-								<span class="text-[10px] font-bold tracking-widest uppercase">返回</span>
-							</button>
-							<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">Playlist</span>
-						</div>
-						<div id="playlist-items" class="space-y-1 max-h-[300px] overflow-y-auto hide-scrollbar"></div>
-					</div>
-
-
-				</div>
-				<div id="sidebar-box-3" class="w-full rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 delay-2" data-animate>
-					<div class="flex items-center justify-between mb-4">
-						<span class="text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">System Status</span>
-						<div class="flex items-center gap-1.5">
-							<span class="relative flex h-2 w-2">
-								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
-								<span class="relative inline-flex rounded-full h-2 w-2 bg-[#7CB38B]"></span>
-							</span>
-							<span class="text-[10px] font-bold text-[#7CB38B] tracking-wide">运行中</span>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-2 gap-3">
-						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
-							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							<span class="font-xiaolai text-[10px] font-bold text-[#8B7CB3] tracking-widest uppercase">System Status</span>
+							<div class="status-pill">
+								<span class="relative flex h-2 w-2">
+									<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
+									<span class="relative inline-flex rounded-full h-2 w-2 bg-[#7CB38B]"></span>
+								</span>
+								<span class="font-xiaolai text-[10px] font-bold text-[#7CB38B] tracking-wide">运行中</span>
 							</div>
-							<div id="stat-runtime" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">--</div>
-							<div class="text-[10px] text-[#999] mt-0.5">运行时间</div>
 						</div>
 
-						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
-							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+						<div class="grid grid-cols-2 gap-3">
+							<div class="status-tile" style="--tile-color:#8B7CB3; --tile-bg:rgba(139,124,179,.13); animation-delay:0s">
+								<div class="status-icon">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+								</div>
+								<div id="stat-runtime" class="status-value">--</div>
+								<div class="status-label">运行时间</div>
 							</div>
-							<div id="stat-last-active" data-last-active={lastActiveTime} class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">--</div>
-							<div class="text-[10px] text-[#999] mt-0.5">最后活动</div>
-						</div>
 
-						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
-							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+							<div class="status-tile" style="--tile-color:#FF6B9D; --tile-bg:rgba(255,107,157,.12); animation-delay:.06s">
+								<div class="status-icon">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+								</div>
+								<div id="stat-last-active" data-last-active={lastActiveTime} class="status-value">--</div>
+								<div class="status-label">最后活动</div>
 							</div>
-							<div id="stat-categories" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">{SITE_CONFIG.categories.length}个</div>
-							<div class="text-[10px] text-[#999] mt-0.5">站点分类</div>
-						</div>
 
-						<div class="flex flex-col bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-sm p-3 rounded-2xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-white/20 dark:border-white/5 hover:border-[#8B7CB3]/30 transition-all duration-300 group">
-							<div class="text-[#999] group-hover:text-[#8B7CB3] transition-colors mb-2">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+							<div class="status-tile" style="--tile-color:#7CB38B; --tile-bg:rgba(124,179,139,.13); animation-delay:.12s">
+								<div class="status-icon">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+								</div>
+								<div id="stat-categories" class="status-value">{SITE_CONFIG.categories.length}个</div>
+								<div class="status-label">站点分类</div>
 							</div>
-							<div id="stat-posts" class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight">{allPosts.length}篇</div>
-							<div class="text-[10px] text-[#999] mt-0.5">已发文章</div>
+
+							<div class="status-tile" style="--tile-color:#7BA3D9; --tile-bg:rgba(123,163,217,.13); animation-delay:.18s">
+								<div class="status-icon">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+								</div>
+								<div id="stat-posts" class="status-value">{allPosts.length}篇</div>
+								<div class="status-label">已发文章</div>
+							</div>
 						</div>
 					</div>
-				</div>
 			</div>
 
 			<!-- 3.5 右侧主容器区 —— 服务端渲染文章卡片 -->
@@ -358,18 +386,18 @@ try {
 											<article class={`group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden delay-${idx % 5}`} data-animate>
 												<div class="flex-1 flex flex-col justify-center">
 													<div class="flex items-center gap-3 mb-3">
-														<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style={`background-color:${cat.color}18;color:${cat.color}`}>
-															{cat.name}
-														</span>
+														<span class="font-xiaolai px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style={`background-color:${cat.color}18;color:${cat.color}`}>
+																	{cat.name}
+																</span>
 														<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
 															<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
 															{date}
 														</span>
 													</div>
 
-													<h3 class="text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">
-														{p.title}
-													</h3>
+													<h3 class="font-xiaolai text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">
+																{p.title}
+															</h3>
 													{excerpt && (
 														<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">
 															{excerpt}
@@ -517,12 +545,15 @@ try {
 			updateDateTime();
 			setInterval(updateDateTime, 60000);
 
-			// 日历：状态管理 + 交互
+			// 日历：状态管理 + 交互（撕页台历版）
 			let calYear = new Date().getFullYear();
 			let calMonth = new Date().getMonth();
 			const calToday = new Date();
+			const CAL_WEEKDAYS = ['周日','周一','周二','周三','周四','周五','周六'];
+			const CAL_MOTTOS = ['周日，充电中，勿扰','周一，新的开始，慢慢来～','周二，渐入佳境中','周三，一周过半啦','周四，黎明前的黑暗','周五啦，再撑一下下～','周六，睡到自然醒！'];
+			const CAL_BOUNCE = 'cubic-bezier(0.34,1.56,0.64,1)';
 
-			function renderCalendar(year, month) {
+			function renderCalendar(year, month, direction) {
 				const titleEl = document.getElementById('calendar-title');
 				const gridEl = document.getElementById('calendar-grid');
 				const footerDate = document.getElementById('calendar-footer-date');
@@ -530,6 +561,22 @@ try {
 
 				titleEl.textContent = `${year}年 ${month + 1}月`;
 				if (footerDate) footerDate.textContent = `${month + 1}-${new Date(year, month, calToday.getDate()).getDate()}`;
+
+				// 今日撕页
+				const heroNum = document.getElementById('cal-hero-num');
+				const heroWeekday = document.getElementById('cal-hero-weekday');
+				const heroMotto = document.getElementById('cal-hero-motto');
+				if (heroNum && heroWeekday && heroMotto) {
+					if (year === calToday.getFullYear() && month === calToday.getMonth()) {
+						heroNum.textContent = calToday.getDate();
+						heroWeekday.textContent = CAL_WEEKDAYS[calToday.getDay()];
+						heroMotto.textContent = CAL_MOTTOS[calToday.getDay()];
+					} else {
+						heroNum.textContent = '·';
+						heroWeekday.textContent = '非本月';
+						heroMotto.textContent = '回到今天看看吧';
+					}
+				}
 
 				const daysInMonth = new Date(year, month + 1, 0).getDate();
 				const firstDay = new Date(year, month, 1).getDay();
@@ -540,14 +587,16 @@ try {
 
 				for (let i = startOffset - 1; i >= 0; i--) {
 					const d = prevMonthDays - i;
-					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555] cursor-default">${d}</div>`;
+					html += `<div class="cal-cell cal-cell-dim">${d}</div>`;
 				}
 
 				for (let d = 1; d <= daysInMonth; d++) {
 					const isToday = year === calToday.getFullYear() && month === calToday.getMonth() && d === calToday.getDate();
+					const dow = (startOffset + d - 1) % 7;
+					const isWeekend = dow >= 5;
 					const classes = isToday
-						? 'text-xs w-full aspect-square flex items-center justify-center rounded-full border border-[#8B7CB3] text-[#8B7CB3] font-medium cursor-pointer hover:bg-[#8B7CB3]/10 transition-colors'
-						: 'text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#666] dark:text-[#999] cursor-pointer hover:bg-[#8B7CB3]/10 hover:text-[#8B7CB3] transition-colors';
+						? 'cal-cell cal-cell-today'
+						: 'cal-cell' + (isWeekend ? ' cal-cell-weekend' : '');
 					html += `<div class="${classes}" data-date="${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}">${d}</div>`;
 				}
 
@@ -555,10 +604,26 @@ try {
 				const rows = totalCells <= 35 ? 35 : 42;
 				const remaining = rows - totalCells;
 				for (let d = 1; d <= remaining; d++) {
-					html += `<div class="text-xs w-full aspect-square flex items-center justify-center rounded-full text-[#CCC] dark:text-[#555] cursor-default">${d}</div>`;
+					html += `<div class="cal-cell cal-cell-dim">${d}</div>`;
+				}
+
+				// 切月：方向感滑动
+				if (direction) {
+					gridEl.animate([
+						{ opacity: 0, transform: direction === 'next' ? 'translateX(18px)' : 'translateX(-18px)' },
+						{ opacity: 1, transform: 'translateX(0)' }
+					], { duration: 350, easing: CAL_BOUNCE });
 				}
 
 				gridEl.innerHTML = html;
+
+				// 格子逐个弹入
+				gridEl.querySelectorAll('.cal-cell').forEach((el, i) => {
+					el.animate([
+						{ opacity: 0, transform: 'scale(0.3) translateY(4px)' },
+						{ opacity: 1, transform: 'scale(1) translateY(0)' }
+					], { duration: 350, delay: i * 12, easing: CAL_BOUNCE, fill: 'backwards' });
+				});
 
 				// 日期点击事件
 				const relativeEl = document.getElementById('calendar-footer-relative');
@@ -566,8 +631,16 @@ try {
 					el.addEventListener('click', () => {
 						const dateStr = el.dataset.date;
 						if (footerDate) footerDate.textContent = dateStr.replace(/-/g, '/');
-						gridEl.querySelectorAll('[data-date]').forEach(e => e.classList.remove('bg-[#8B7CB3]', 'text-white', 'font-bold'));
-						el.classList.add('bg-[#8B7CB3]', 'text-white', 'font-bold');
+						gridEl.querySelectorAll('.cal-cell-selected').forEach(e => e.classList.remove('cal-cell-selected'));
+						if (!el.classList.contains('cal-cell-today')) el.classList.add('cal-cell-selected');
+
+						// Squish Q弹
+						el.animate([
+							{ transform: 'scale(1)' },
+							{ transform: 'scale(0.72, 1.18)', offset: 0.35 },
+							{ transform: 'scale(1.15, 0.85)', offset: 0.65 },
+							{ transform: 'scale(1)' }
+						], { duration: 400, easing: CAL_BOUNCE });
 
 						// 计算相对天数
 						if (relativeEl) {
@@ -585,8 +658,8 @@ try {
 				});
 			}
 
-			function updateCalendar() {
-				renderCalendar(calYear, calMonth);
+			function updateCalendar(direction) {
+				renderCalendar(calYear, calMonth, direction);
 			}
 
 			updateCalendar();
@@ -597,12 +670,12 @@ try {
 			if (calPrev) calPrev.addEventListener('click', () => {
 				calMonth--;
 				if (calMonth < 0) { calMonth = 11; calYear--; }
-				updateCalendar();
+				updateCalendar('prev');
 			});
 			if (calNext) calNext.addEventListener('click', () => {
 				calMonth++;
 				if (calMonth > 11) { calMonth = 0; calYear++; }
-				updateCalendar();
+				updateCalendar('next');
 			});
 
 			const siteStart = new Date('2026-04-26');
@@ -707,22 +780,28 @@ try {
 			}
 
 			function updateSidebarPlayUI() {
-				const bars = visualizer ? visualizer.querySelectorAll('div') : [];
-				if (state.isPlaying) {
-					iconPlay.classList.add('hidden');
-					iconPause.classList.remove('hidden');
-					visualizer.classList.remove('opacity-30');
-					bars.forEach((bar, i) => {
-						bar.classList.add('animate-pulse');
-						bar.style.animationDelay = (i * 0.12) + 's';
-					});
-				} else {
-					iconPlay.classList.remove('hidden');
-					iconPause.classList.add('hidden');
-					visualizer.classList.add('opacity-30');
-					bars.forEach(bar => bar.classList.remove('animate-pulse'));
+					const bars = visualizer ? visualizer.querySelectorAll('div') : [];
+					const discWrap = document.getElementById('player-disc-wrap');
+					const playBtnEl = document.getElementById('player-play');
+					if (state.isPlaying) {
+						iconPlay.classList.add('hidden');
+						iconPause.classList.remove('hidden');
+						visualizer.classList.remove('opacity-30');
+						bars.forEach((bar, i) => {
+							bar.classList.add('player-eq-bar');
+							bar.style.animationDelay = (i * 0.15) + 's';
+						});
+						if (discWrap) discWrap.classList.add('disc-spinning');
+						if (playBtnEl) playBtnEl.classList.add('is-playing-glow');
+					} else {
+						iconPlay.classList.remove('hidden');
+						iconPause.classList.add('hidden');
+						visualizer.classList.add('opacity-30');
+						bars.forEach(bar => bar.classList.remove('player-eq-bar'));
+						if (discWrap) discWrap.classList.remove('disc-spinning');
+						if (playBtnEl) playBtnEl.classList.remove('is-playing-glow');
+					}
 				}
-			}
 
 			function updateModeUI() {
 				modeIconLoop.classList.add('hidden');
@@ -789,28 +868,26 @@ try {
 			}, { signal });
 
 			if (progressBar) {
-				progressBar.addEventListener('click', (e) => {
-					const rect = progressBar.getBoundingClientRect();
-					const pct = (e.clientX - rect.left) / rect.width;
-					if (audio.duration) audio.currentTime = pct * audio.duration;
-				}, { signal });
-			}
+					function seekFromEvent(e) {
+						const rect = progressBar.getBoundingClientRect();
+						const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+						if (audio.duration) audio.currentTime = pct * audio.duration;
+					}
+					let progressDragging = false;
+					progressBar.addEventListener('pointerdown', (e) => {
+						progressDragging = true;
+						progressBar.setPointerCapture(e.pointerId);
+						seekFromEvent(e);
+					}, { signal });
+					progressBar.addEventListener('pointermove', (e) => {
+						if (progressDragging) seekFromEvent(e);
+					}, { signal });
+					progressBar.addEventListener('pointerup', () => { progressDragging = false; }, { signal });
+				}
 
 			if (playBtn) playBtn.addEventListener('click', () => window.playerToggle && window.playerToggle(), { signal });
-			if (prevBtn) prevBtn.addEventListener('click', () => {
-				const s = window.playerState;
-				if (!s || !s.songs.length) return;
-				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
-				else s.currentIndex = (s.currentIndex - 1 + s.songs.length) % s.songs.length;
-				loadCurrentSong(s, audio);
-			}, { signal });
-			if (nextBtn) nextBtn.addEventListener('click', () => {
-				const s = window.playerState;
-				if (!s || !s.songs.length) return;
-				if (s.playMode === 'shuffle') s.currentIndex = Math.floor(Math.random() * s.songs.length);
-				else s.currentIndex = (s.currentIndex + 1) % s.songs.length;
-				loadCurrentSong(s, audio);
-			}, { signal });
+				if (prevBtn) prevBtn.addEventListener('click', () => window.playerPrev && window.playerPrev(), { signal });
+				if (nextBtn) nextBtn.addEventListener('click', () => window.playerNext && window.playerNext(), { signal });
 			if (modeBtn) modeBtn.addEventListener('click', () => {
 				const modes = ['loop', 'single', 'shuffle'];
 				const idx = modes.indexOf(state.playMode);
@@ -829,19 +906,6 @@ try {
 				playlistPanel.classList.add('hidden');
 				playerMain.classList.remove('hidden');
 			}, { signal });
-
-			window.playerPlayIndex = (index) => {
-				state.currentIndex = index;
-				const song = state.songs[index];
-				if (song) {
-					audio.src = song.audio_url;
-					audio.play().catch(() => {});
-					window.dispatchEvent(new CustomEvent('player-song-change', { detail: song }));
-					window.dispatchEvent(new CustomEvent('player-state-sync', {
-						detail: { currentIndex: state.currentIndex, isPlaying: true, playMode: state.playMode, songs: state.songs }
-					}));
-				}
-			};
 
 			window.addEventListener('player-song-change', () => {
 				updateSidebarSongUI();

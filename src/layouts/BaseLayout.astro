@@ -11,7 +11,7 @@ import HamburgerIcon from '../components/icons/HamburgerIcon.astro';
 const { title = '贝谟拉比', description } = Astro.props;
 const currentPath = Astro.url.pathname;
 const navLinkClass = (path: string) => {
-	const base = 'text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1';
+	const base = 'font-xiaolai text-[15px] font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1';
 	return currentPath === path ? `${base} border-b-2 border-[#8B7CB3]` : base;
 };
 
@@ -33,6 +33,7 @@ try {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{title}</title>
 	{description && <meta name="description" content={description} />}
+	<link rel="stylesheet" href="/fonts/xiaolai/xiaolai.css" />
 	<script is:inline>
 		(function() {
 			const stored = localStorage.getItem('theme');
@@ -51,7 +52,7 @@ try {
 	<nav id="site-nav" class="fixed top-0 left-0 w-full h-16 z-50 bg-white/70 dark:bg-[#0F0F0F]/70 backdrop-blur-2xl backdrop-saturate-150 border-b border-black/[0.06] dark:border-white/[0.06] transition-[background-color,box-shadow,border-color] duration-500">
 		<div class="flex justify-between items-center px-6 h-full">
 			<!-- 左侧站点名 -->
-			<a href="/" class="text-xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]">
+			<a href="/" class="font-xiaolai text-xl font-bold tracking-tight text-[#1A1A1A] dark:text-[#EAEAEA]">
 				{SITE_CONFIG.siteName}
 			</a>
 
@@ -62,7 +63,7 @@ try {
 				<a href="/about" class={navLinkClass('/about')}>关于</a>
 				<a href="/now" class={navLinkClass('/now')}>/now</a>
 				<a href="/colophon" class={navLinkClass('/colophon')}>/colophon</a>
-				<a href="https://travel.moe/go.html?travel=on" target="_blank" class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1 transition-colors no-underline">异次元之旅</a>
+				<a href="https://travel.moe/go.html?travel=on" target="_blank" class="font-xiaolai text-[15px] font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#666] dark:hover:text-[#999] pb-1 transition-colors no-underline">异次元之旅</a>
 			</div>
 
 			<!-- 右侧图标区 -->
@@ -89,12 +90,12 @@ try {
 	<!-- 移动端Hamburger菜单 -->
 	<div id="mobile-menu" class="fixed inset-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col pt-24 pb-12 px-8">
   		<div class="flex flex-col gap-6 mt-8">
-    		<a href="/" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]">主页</a>
-    		<a href="/archive" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 50ms;">归档</a>
-    		<a href="/about" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 100ms;">关于</a>
-    		<a href="/now" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 150ms;">/now</a>
-    		<a href="/colophon" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 200ms;">/colophon</a>
-    		<a href="https://travel.moe/go.html?travel=on" target="_blank" class="mobile-nav-link text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 250ms;">异次元之旅</a>
+    		<a href="/" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]">主页</a>
+    		<a href="/archive" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 50ms;">归档</a>
+    		<a href="/about" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 100ms;">关于</a>
+    		<a href="/now" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 150ms;">/now</a>
+    		<a href="/colophon" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 200ms;">/colophon</a>
+    		<a href="https://travel.moe/go.html?travel=on" target="_blank" class="mobile-nav-link font-xiaolai text-4xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] no-underline translate-x-12 opacity-0 transition-all duration-500 hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3]" style="transition-delay: 250ms;">异次元之旅</a>
   		</div>
   	<div class="mt-auto border-t border-[#1A1A1A]/10 dark:border-white/10 pt-6 flex justify-between items-center opacity-0 translate-x-12 transition-all duration-500 delay-300" id="mobile-menu-footer">
     	<span class="text-xs font-bold text-[#8B7CB3] tracking-widest uppercase">贝谟拉比 BMLB</span>
@@ -134,25 +135,35 @@ try {
 		</div>
 
 		<!-- 展开态：控制栏 -->
-		<div id="player-expanded" class="absolute inset-0 flex items-center justify-between px-4 opacity-0 pointer-events-none">
-			<div class="flex items-center gap-2">
-				<button data-no-drag type="button" id="float-prev" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
+		<div id="player-expanded" class="absolute inset-0 flex items-center justify-between px-3 opacity-0 pointer-events-none">
+			<div class="flex items-center gap-1.5">
+				<button data-no-drag type="button" id="float-prev" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 active:scale-90 transition-all cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-play" class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#8B7CB3] hover:scale-105 active:scale-95 transition-all cursor-pointer border-none shadow-md">
+				<button data-no-drag type="button" id="float-play" class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#8B7CB3] hover:scale-110 active:scale-90 transition-all cursor-pointer border-none shadow-md">
 					<svg id="float-icon-play" class="w-4 h-4 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
 					<svg id="float-icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-next" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
+				<button data-no-drag type="button" id="float-next" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 active:scale-90 transition-all cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
 				</button>
-				<button data-no-drag type="button" id="float-mode" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white text-[10px] font-bold" title="列表循环">🔁</button>
-				<button data-no-drag type="button" id="float-list" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer border-none bg-transparent text-white">
+				<button data-no-drag type="button" id="float-mode" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 active:scale-90 transition-all cursor-pointer border-none bg-transparent text-white" title="列表循环">
+					<svg id="float-mode-loop" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+					<svg id="float-mode-single" class="w-3.5 h-3.5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7z"/><circle cx="12" cy="15" r="2"/></svg>
+					<svg id="float-mode-shuffle" class="w-3.5 h-3.5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+				</button>
+				<button data-no-drag type="button" id="float-list" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 active:scale-90 transition-all cursor-pointer border-none bg-transparent text-white">
 					<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
 				</button>
 			</div>
-			<span id="float-title" class="text-sm font-bold text-white truncate max-w-[120px] ml-2">暂无音乐</span>
+			<span id="float-title" class="font-xiaolai text-sm font-bold text-white truncate max-w-[90px] mx-1.5">暂无音乐</span>
+			<button data-no-drag type="button" id="float-collapse" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 active:scale-90 transition-all cursor-pointer border-none bg-transparent text-white/60 hover:text-white shrink-0" title="收起">
+				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+			</button>
 		</div>
+
+		<!-- 展开态实时进度线 -->
+		<div id="float-progress-wrap"><div id="float-progress"></div></div>
 
 		<!-- 迷你播放列表面板 -->
 		<div id="float-playlist" class="hidden absolute left-0 right-0 bottom-full mb-3 bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-xl p-3 max-h-[240px] overflow-y-auto z-50">
@@ -173,22 +184,27 @@ try {
 
 		<div class="absolute top-0 left-0 w-full h-16 z-[1] pointer-events-none bg-gradient-to-b from-[#111111] to-transparent opacity-90"></div>
 
-		<div class="relative z-10 flex flex-col items-center gap-1 text-xs text-[#888] leading-relaxed">
+		<div class="relative z-10 flex flex-col items-center gap-1.5 text-sm text-[#888] leading-relaxed font-mamelon">
 			<div>
-				<span>© 2026 {SITE_CONFIG.siteName}</span>
-				<span class="mx-2">/</span>
-				<a href="/rss.xml" class="hover:text-[#CCC] transition-colors no-underline">RSS</a>
-				<span class="mx-2">/</span>
-				<a href="/sitemap" class="hover:text-[#CCC] transition-colors no-underline">Sitemap</a>
-				<span class="mx-2">/</span>
-				<a href="/colophon" class="hover:text-[#CCC] transition-colors no-underline">/colophon</a>
+				<span>© 2026 <span class="text-[#FF6B9D] font-bold">{SITE_CONFIG.siteName}</span></span>
+				<span class="mx-2 text-[#555]">/</span>
+				<a href="/rss.xml" class="hover:text-[#FF6B9D] transition-colors no-underline">RSS</a>
+				<span class="mx-2 text-[#555]">/</span>
+				<a href="/sitemap" class="hover:text-[#FF6B9D] transition-colors no-underline">Sitemap</a>
+				<span class="mx-2 text-[#555]">/</span>
+				<a href="/colophon" class="hover:text-[#FF6B9D] transition-colors no-underline">/colophon</a>
+				<span class="mx-2 text-[#555]">/</span>
+				<a href="https://travel.moe/go.html?travel=on" target="_blank" rel="noopener" class="hover:text-[#FF6B9D] transition-colors no-underline">异次元之旅🚀</a>
 			</div>
-			<div><span id="site-runtime">--</span></div>
-			<div class="text-xs text-[#888]">
-				<!-- 萌ICP备20269732号 -->
+			<div>
+				<span id="site-runtime">--</span>
+				<span class="mx-2 text-[#555]">/</span>
+				<a href="https://icp.gov.moe/" target="_blank" rel="noopener" class="text-[#FF6B9D] hover:text-[#f90275] transition-colors no-underline">萌ICP备20269732号</a>
+			</div>
+			<div class="text-xs text-[#666]">
 				<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="hover:text-[#CCC] transition-colors no-underline" id="icp-beian">湘ICP备2026026562号</a>
 			</div>
-			<div class="text-xs text-[#888]">
+			<div class="text-xs text-[#666]">
 				<a href="https://beian.mps.gov.cn/#/query/webSearch?code=43052102000240" target="_blank" rel="noreferrer" class="hover:text-[#CCC] transition-colors no-underline" id="gongan-beian">
 					<img src="/images/ghs.png" alt="公安备案" class="inline-block w-[18px] h-[18px] mr-1 align-middle" />
 					湘公网安备43052102000240号
@@ -690,8 +706,19 @@ try {
 						floatIconPause.classList.add('hidden');
 						player.classList.remove('is-playing');
 					}
-					const modeMap = { loop: '🔁', single: '🔂', shuffle: '🔀' };
-					if (floatModeBtn) floatModeBtn.textContent = modeMap[state.playMode] || '🔁';
+					// 模式图标（SVG）
+					const mLoop = document.getElementById('float-mode-loop');
+					const mSingle = document.getElementById('float-mode-single');
+					const mShuffle = document.getElementById('float-mode-shuffle');
+					if (mLoop && mSingle && mShuffle) {
+						mLoop.classList.add('hidden');
+						mSingle.classList.add('hidden');
+						mShuffle.classList.add('hidden');
+						const titleMap = { loop: '列表循环', single: '单曲循环', shuffle: '随机播放' };
+						if (state.playMode === 'single') { mSingle.classList.remove('hidden'); floatModeBtn.title = titleMap.single; }
+						else if (state.playMode === 'shuffle') { mShuffle.classList.remove('hidden'); floatModeBtn.title = titleMap.shuffle; }
+						else { mLoop.classList.remove('hidden'); floatModeBtn.title = titleMap.loop; }
+					}
 				}
 
 				window.__floatUpdateUI = updateFloatUI;
@@ -760,7 +787,28 @@ try {
 						audio.play().catch(() => {});
 						updateFloatUI();
 						updateFloatPlaylistUI();
+						window.dispatchEvent(new CustomEvent('player-song-change', { detail: song }));
+						window.dispatchEvent(new CustomEvent('player-state-sync', {
+							detail: { currentIndex: state.currentIndex, isPlaying: true, playMode: state.playMode, songs: state.songs }
+						}));
 					}
+				};
+
+				window.playerNext = function () {
+					playNext();
+					updateFloatUI();
+					updateFloatPlaylistUI();
+					window.dispatchEvent(new CustomEvent('player-state-sync', {
+						detail: { currentIndex: state.currentIndex, isPlaying: !audio.paused, playMode: state.playMode, songs: state.songs }
+					}));
+				};
+				window.playerPrev = function () {
+					playPrev();
+					updateFloatUI();
+					updateFloatPlaylistUI();
+					window.dispatchEvent(new CustomEvent('player-state-sync', {
+						detail: { currentIndex: state.currentIndex, isPlaying: !audio.paused, playMode: state.playMode, songs: state.songs }
+					}));
 				};
 
 				// ── 事件绑定只做一次（audio/player 通过 transition:persist 保留） ──
@@ -784,6 +832,18 @@ try {
 							floatPlaylist.classList.add('hidden');
 						});
 					}
+					const floatCollapseBtn = document.getElementById('float-collapse');
+					if (floatCollapseBtn) {
+						floatCollapseBtn.addEventListener('click', (e) => {
+							e.stopPropagation();
+							setExpanded(false);
+						});
+					}
+					// 胶囊进度线实时同步
+					audio.addEventListener('timeupdate', () => {
+						const fp = document.getElementById('float-progress');
+						if (fp && audio.duration) fp.style.width = (audio.currentTime / audio.duration * 100) + '%';
+					});
 					if (collapsed) {
 						collapsed.addEventListener('pointerdown', (e) => {
 							e.stopPropagation();
@@ -956,6 +1016,328 @@ try {
 </html>
 
 <style is:global>
+	/* 甜瓜体（マメロン）子集 — 仅页脚+Tab用字，28KB */
+	@font-face {
+		font-family: 'Mamelon';
+		src: url('/fonts/mamelon-subset.woff2') format('woff2');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+	.font-mamelon {
+		font-family: 'Mamelon', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+	}
+	.font-xiaolai {
+		font-family: 'Xiaolai', 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+	}
+
+	/* ===== 撕页台历 ===== */
+	.cal-rings {
+		display: flex;
+		justify-content: center;
+		gap: 40px;
+		margin-bottom: -12px;
+		position: relative;
+		z-index: 2;
+	}
+	.cal-ring {
+		width: 10px;
+		height: 22px;
+		border-radius: 6px;
+		background: linear-gradient(180deg, #B39DDB, #8B7CB3);
+		box-shadow: inset 0 1px 2px rgba(255,255,255,.5), 0 2px 4px rgba(139,124,179,.4);
+	}
+	.dark .cal-ring { background: linear-gradient(180deg, #6B5CA5, #4A3B73); }
+	.cal-body { position: relative; }
+	.cal-paper {
+		position: relative;
+		z-index: 1;
+		background: #FFFEFB;
+		border-radius: 14px 14px 0 0;
+		padding: 22px 12px 10px;
+		box-shadow: 0 2px 8px rgba(139,124,179,.12);
+	}
+	.dark .cal-paper { background: #232323; }
+	.cal-holes {
+		display: flex;
+		justify-content: center;
+		gap: 40px;
+		position: absolute;
+		top: 5px;
+		left: 0;
+		right: 0;
+	}
+	.cal-hole {
+		width: 14px;
+		height: 12px;
+		border-radius: 50%;
+		background: #EDE8F5;
+		box-shadow: inset 0 1px 3px rgba(0,0,0,.15);
+	}
+	.dark .cal-hole { background: #1A1A1A; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
+	.cal-nav-btn {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		border: none;
+		background: #F3EFFA;
+		color: #8B7CB3;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		transition: all .3s cubic-bezier(0.34,1.56,0.64,1);
+		box-shadow: 0 1px 3px rgba(139,124,179,.2);
+	}
+	.cal-nav-btn:hover {
+		background: #8B7CB3;
+		color: #fff;
+		transform: scale(1.15);
+		box-shadow: 0 3px 8px rgba(139,124,179,.4);
+	}
+	.cal-nav-btn:active { transform: scale(0.85); }
+	.dark .cal-nav-btn { background: #2E2B3A; color: #B39DDB; }
+	.dark .cal-nav-btn:hover { background: #8B7CB3; color: #fff; }
+	.cal-hero {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 2px 0 10px;
+		padding: 8px 10px;
+		border-radius: 12px;
+		background: linear-gradient(135deg, rgba(139,124,179,.1), rgba(255,107,157,.08));
+		border: 1px dashed rgba(139,124,179,.3);
+	}
+	.dark .cal-hero { background: linear-gradient(135deg, rgba(139,124,179,.15), rgba(255,107,157,.1)); }
+	.cal-hero-num {
+		font-family: 'Xiaolai', sans-serif;
+		font-size: 34px;
+		font-weight: 700;
+		line-height: 1;
+		background: linear-gradient(135deg, #8B7CB3, #FF6B9D);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+	.cal-hero-meta { display: flex; flex-direction: column; gap: 2px; }
+	.cal-weekday {
+		font-size: 10px;
+		font-weight: 500;
+		color: #999;
+		width: 100%;
+		text-align: center;
+	}
+	.cal-weekend { color: #FF6B9D; }
+	.dark .cal-weekend { color: #FF8FB3; }
+	.cal-cell {
+		font-size: 11px;
+		width: 100%;
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		color: #666;
+		cursor: pointer;
+		user-select: none;
+		transition: all .25s cubic-bezier(0.34,1.56,0.64,1);
+	}
+	.dark .cal-cell { color: #999; }
+	.cal-cell:hover {
+		transform: scale(1.2);
+		background: rgba(139,124,179,.12);
+		color: #8B7CB3;
+		box-shadow: 0 2px 8px rgba(255,107,157,.25);
+	}
+	.cal-cell-dim { color: #D5D0E0; cursor: default; }
+	.dark .cal-cell-dim { color: #444; }
+	.cal-cell-dim:hover { transform: none; background: transparent; color: #D5D0E0; box-shadow: none; }
+	.cal-cell-weekend { color: #FF6B9D; }
+	.dark .cal-cell-weekend { color: #FF8FB3; }
+	.cal-cell-today {
+		background: linear-gradient(135deg, #8B7CB3, #B39DDB);
+		color: #fff !important;
+		font-weight: 700;
+		box-shadow: 0 2px 10px rgba(139,124,179,.45);
+		animation: cal-breathe 2.5s ease-in-out infinite;
+	}
+	.cal-cell-today:hover { transform: scale(1.2); color: #fff; box-shadow: 0 3px 14px rgba(139,124,179,.6); }
+	@keyframes cal-breathe {
+		0%, 100% { box-shadow: 0 2px 10px rgba(139,124,179,.45); }
+		50% { box-shadow: 0 2px 16px rgba(255,107,157,.5); }
+	}
+	.cal-cell-selected {
+		background: #F3EFFA;
+		color: #8B7CB3 !important;
+		font-weight: 700;
+		box-shadow: inset 0 2px 5px rgba(139,124,179,.25);
+	}
+	.dark .cal-cell-selected { background: #2E2B3A; color: #B39DDB !important; }
+	.cal-tear-edge {
+		position: relative;
+		z-index: 1;
+		height: 8px;
+		background: #FFFEFB;
+		-webkit-mask-image: radial-gradient(circle at 4px 8px, transparent 3px, #000 3.5px);
+		-webkit-mask-size: 8px 8px;
+		-webkit-mask-repeat: repeat-x;
+		mask-image: radial-gradient(circle at 4px 8px, transparent 3px, #000 3.5px);
+		mask-size: 8px 8px;
+		mask-repeat: repeat-x;
+	}
+	.dark .cal-tear-edge { background: #232323; }
+	.cal-board {
+		position: relative;
+		z-index: 0;
+		margin: -4px -3px 0;
+		background: linear-gradient(180deg, #F0EBF8, #E8E2F3);
+		border-radius: 0 0 16px 16px;
+		padding: 10px 14px 10px;
+		box-shadow: 0 3px 10px rgba(139,124,179,.15);
+	}
+	.dark .cal-board { background: linear-gradient(180deg, #1E1C28, #191722); }
+	.cal-today-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #FF6B9D;
+		animation: cal-dot-pulse 2s ease-in-out infinite;
+	}
+	@keyframes cal-dot-pulse {
+		0%, 100% { transform: scale(1); opacity: 1; }
+		50% { transform: scale(1.4); opacity: .6; }
+	}
+
+	/* ===== 播放器：软糖拟态 ===== */
+	.player-soft-btn {
+		width: 30px;
+		height: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		border: none;
+		background: #F3EFFA;
+		color: #8B7CB3;
+		cursor: pointer;
+		box-shadow: 0 2px 5px rgba(139,124,179,.18), inset 0 1px 1px rgba(255,255,255,.8);
+		transition: all .3s cubic-bezier(0.34,1.56,0.64,1);
+	}
+	.player-soft-btn:hover {
+		transform: scale(1.15);
+		background: #8B7CB3;
+		color: #fff;
+		box-shadow: 0 4px 12px rgba(139,124,179,.4);
+	}
+	.player-soft-btn:active {
+		transform: scale(0.85);
+		box-shadow: inset 0 2px 5px rgba(139,124,179,.3);
+	}
+	.dark .player-soft-btn { background: #2E2B3A; color: #B39DDB; box-shadow: 0 2px 5px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.06); }
+	.dark .player-soft-btn:hover { background: #8B7CB3; color: #fff; }
+	/* 唱片旋转 */
+	#player-disc-wrap { transition: box-shadow .5s; }
+	#player-disc-wrap.disc-spinning #player-disc,
+	#player-disc-wrap.disc-spinning #player-cover,
+	#player-disc-wrap.disc-spinning #player-cover-fallback {
+		animation: disc-spin 8s linear infinite;
+	}
+	@keyframes disc-spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+	/* 播放键呼吸光晕 */
+	#player-play.is-playing-glow {
+		animation: play-glow 2.5s ease-in-out infinite;
+	}
+	@keyframes play-glow {
+		0%, 100% { box-shadow: 0 4px 14px -2px rgba(139,124,179,.6); }
+		50% { box-shadow: 0 4px 22px 2px rgba(255,107,157,.55); }
+	}
+	/* EQ 弹跳条 */
+	.player-eq-bar {
+		animation: eq-bounce .7s ease-in-out infinite alternate;
+		transform-origin: bottom;
+	}
+	@keyframes eq-bounce {
+		0% { transform: scaleY(0.35); }
+		100% { transform: scaleY(1); }
+	}
+
+	/* ===== System Status 软糖仪表盘 ===== */
+	.status-pill {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: rgba(124,179,139,.12);
+		border: 1px solid rgba(124,179,139,.25);
+		border-radius: 99px;
+		padding: 3px 10px 3px 8px;
+	}
+	.status-tile {
+		display: flex;
+		flex-direction: column;
+		padding: 12px;
+		border-radius: 18px;
+		background: linear-gradient(145deg, rgba(255,255,255,.7), rgba(255,255,255,.35));
+		box-shadow: 4px 4px 10px rgba(139,124,179,.1), -3px -3px 8px rgba(255,255,255,.8), inset 0 1px 1px rgba(255,255,255,.6);
+		transition: all .35s cubic-bezier(0.34,1.56,0.64,1);
+		animation: tile-pop .45s cubic-bezier(0.34,1.56,0.64,1) backwards;
+	}
+	.dark .status-tile {
+		background: linear-gradient(145deg, rgba(46,43,58,.8), rgba(35,33,45,.6));
+		box-shadow: 4px 4px 10px rgba(0,0,0,.35), -3px -3px 8px rgba(255,255,255,.03), inset 0 1px 1px rgba(255,255,255,.04);
+	}
+	@keyframes tile-pop {
+		0% { opacity: 0; transform: scale(0.5) translateY(8px); }
+		100% { opacity: 1; transform: scale(1) translateY(0); }
+	}
+	.status-tile:hover {
+		transform: translateY(-3px) scale(1.03);
+		box-shadow: 6px 8px 16px rgba(139,124,179,.18), -3px -3px 8px rgba(255,255,255,.8), inset 0 1px 1px rgba(255,255,255,.6);
+	}
+	.dark .status-tile:hover {
+		box-shadow: 6px 8px 16px rgba(0,0,0,.45), -3px -3px 8px rgba(255,255,255,.04);
+	}
+	.status-tile:active {
+		transform: scale(0.96);
+		box-shadow: inset 3px 3px 7px rgba(139,124,179,.15), inset -2px -2px 5px rgba(255,255,255,.5);
+	}
+	.dark .status-tile:active {
+		box-shadow: inset 3px 3px 7px rgba(0,0,0,.4);
+	}
+	.status-icon {
+		width: 28px;
+		height: 28px;
+		border-radius: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--tile-bg);
+		color: var(--tile-color);
+		margin-bottom: 8px;
+		box-shadow: inset 0 1px 2px rgba(255,255,255,.5);
+		transition: transform .35s cubic-bezier(0.34,1.56,0.64,1);
+	}
+	.dark .status-icon { box-shadow: inset 0 1px 2px rgba(0,0,0,.2); }
+	.status-tile:hover .status-icon {
+		transform: scale(1.2) rotate(-8deg);
+	}
+	.status-value {
+		font-family: 'Xiaolai', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+		font-size: 15px;
+		font-weight: 700;
+		color: #1A1A1A;
+		letter-spacing: -0.02em;
+		line-height: 1.2;
+	}
+	.dark .status-value { color: #EAEAEA; }
+	.status-label {
+		font-size: 10px;
+		color: #999;
+		margin-top: 2px;
+	}
+	.dark .status-label { color: #777; }
 	/* 深色模式闪烁防护：
 	   - view-transition-name 让 html 不参与 View Transitions 的 morph 动画
 	   - color-scheme 确保浏览器原生元素（滚动条、表单等）使用正确配色 */
@@ -1067,7 +1449,7 @@ try {
 		.animate-fade-in-up.delay-4 { animation-delay: 0.32s; }
 	/* --- 悬浮播放器 --- */
 	#draggable-player[data-expanded="true"] {
-		width: 320px !important;
+		width: min(340px, calc(100vw - 32px)) !important;
 		border-radius: 9999px;
 	}
 	#draggable-player[data-expanded="true"] #player-collapsed {
@@ -1093,5 +1475,27 @@ try {
 	@keyframes float-pulse {
 		0%, 100% { transform: scale(1); opacity: 0.4; }
 		50% { transform: scale(1.15); opacity: 0.15; }
+	}
+	/* 悬浮胶囊进度线 */
+	#float-progress-wrap {
+		position: absolute;
+		bottom: 4px;
+		left: 18px;
+		right: 18px;
+		height: 3px;
+		border-radius: 99px;
+		background: rgba(255,255,255,.22);
+		opacity: 0;
+		transition: opacity .3s;
+		pointer-events: none;
+		overflow: hidden;
+	}
+	#draggable-player[data-expanded="true"] #float-progress-wrap { opacity: 1; }
+	#float-progress {
+		height: 100%;
+		width: 0%;
+		border-radius: 99px;
+		background: linear-gradient(90deg, #fff, #FFD6E4);
+		transition: width .3s linear;
 	}
 </style>
