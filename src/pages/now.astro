@@ -153,52 +153,60 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
   <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-[100px] pb-16 space-y-8">
     <!-- 第一行：状态面板 -->
     <div
-      class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-sm p-6 md:p-8 relative overflow-hidden mb-8">
-			<!-- 装饰性光晕（在左上角放置环境光，与下方超大卡片的右上角光晕形成对角呼应） -->
+      class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] border border-white/20 dark:border-white/10 shadow-[0_4px_20px_-6px_rgba(139,124,179,.15)] hover:shadow-[0_10px_36px_-8px_rgba(139,124,179,.3)] p-6 md:p-8 mb-8 transition-shadow duration-500" data-animate>
+			<!-- 装饰性光晕：左上紫 + 右下粉 对角呼应 -->
       <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0"></div>
+      <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-[#FF6B9D]/8 dark:bg-[#FF6B9D]/15 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0"></div>
 	  		<div class="flex flex-col md:flex-row gap-6 relative z-10">
         <!-- 左侧 35% 视觉文案 -->
-        <div class="md:w-[35%] flex flex-col justify-center">
-          <p class="text-xs font-medium text-[#999] uppercase tracking-widest mb-1">Now</p>
+        <div class="md:w-[35%] flex flex-col justify-center now-pop" style="animation-delay:.05s">
+          <span class="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#7CB38B]/10 dark:bg-[#7CB38B]/20 text-[#7CB38B] border border-[#7CB38B]/20 shadow-sm mb-3">
+            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7CB38B]"></span></span>
+            Now
+          </span>
           <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">目前把时间花在这里</h1>
-          <p class="text-sm text-[#999] mt-2">Current Focus</p>
-				  <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">建设</h1>
-          <p class="text-sm text-[#999]">Building</p>
-				  <h1 class="font-xiaolai text-2xl md:text-3xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">ing</h1>
+          <span class="block h-1 w-14 mt-2 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#FF6B9D]"></span>
+          <p class="text-[11px] text-[#999] mt-2 uppercase tracking-widest">Current Focus</p>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="font-xiaolai text-lg font-bold text-[#8B7CB3]">建设</span>
+            <span class="text-xs text-[#999]">Building</span>
+            <span class="font-xiaolai text-sm font-bold text-[#FF6B9D]">ing<span class="now-blink ml-0.5">▍</span></span>
+          </div>
         </div>
         <!-- 中部 30% 时间河流 -->
-        <div class="md:w-[30%]">
+        <div class="md:w-[30%] now-pop" style="animation-delay:.12s">
           <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">The Flowing of Becoming</p>
-          <div class="text-sm space-y-1">
-            <!-- 给每一行数据增加 -mx-2 和 px-2，实现鼠标悬浮时行内高亮的微反馈 -->
-            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+          <div class="text-sm space-y-0.5">
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-[#8B7CB3]/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">开始时间</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
             </div>
-            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-[#8B7CB3]/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">已持续</span>
-              <span id="now-running-time" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">计算中...</span>
+              <span id="now-running-time" class="font-xiaolai font-semibold text-[#8B7CB3] dark:text-[#B39DDB]">计算中...</span>
             </div>
-            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-[#8B7CB3]/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">预计结束</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
             </div>
-            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-[#8B7CB3]/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">已投入天数</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]"><span id="now-days">...</span> 天</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]"><span id="now-days" class="text-[#FF6B9D]">...</span> 天</span>
             </div>
-            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+            <div class="flex justify-between items-center px-2 py-1.5 -mx-2 rounded-lg hover:bg-[#8B7CB3]/5 dark:hover:bg-white/5 transition-colors duration-300">
               <span class="text-[#999]">当前阶段</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.phase}</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.phase}</span>
             </div>
           </div>
         </div>
         <!-- 右侧 35% 事项描述 -->
-        <div class="md:w-[35%]">
+        <div class="md:w-[35%] now-pop" style="animation-delay:.19s">
           <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest mb-3">事项描述</p>
-          <p class="text-sm text-[#666] dark:text-[#888] group-hover:text-[#444] dark:group-hover:text-[#AAA] leading-relaxed transition-colors duration-500">
-            {status.description}
-          </p>
+          <div class="border-l-2 border-[#8B7CB3]/25 pl-3">
+            <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">
+              {status.description}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -206,47 +214,45 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     <!-- 第二行：并行卡片矩阵 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       
-      <!-- 卡片 1：正在阅读 -->
-            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-0" data-animate>
-        <!-- 隐性交互：背景巨型模糊 Emoji -->
+      <!-- 卡片 1：正在阅读（紫） -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(139,124,179,.25)] hover:-translate-y-1 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer now-pop" style="animation-delay:.08s">
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">📖</div>
-        <!-- 前景内容区 -->
         <div class="relative z-10">
-          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">📖</div>
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left ease-[cubic-bezier(0.34,1.56,0.64,1)]">📖</div>
           <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在阅读</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.readingTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.readingSubtitle}</p>
         </div>
       </div>
 
-      <!-- 卡片 2：正在学习 -->
-            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-1" data-animate>
+      <!-- 卡片 2：正在学习（粉） -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(255,107,157,.25)] hover:-translate-y-1 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer now-pop" style="animation-delay:.16s">
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">💻</div>
         <div class="relative z-10">
-          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">💻</div>
-          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在学习</h3>
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left ease-[cubic-bezier(0.34,1.56,0.64,1)]">💻</div>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#FF6B9D] transition-colors">正在学习</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.learningTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.learningSubtitle}</p>
         </div>
       </div>
 
-      <!-- 卡片 3：正在研究 -->
-            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-2" data-animate>
+      <!-- 卡片 3：正在研究（薄荷） -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(124,179,139,.25)] hover:-translate-y-1 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer now-pop" style="animation-delay:.24s">
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🔬</div>
         <div class="relative z-10">
-          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🔬</div>
-          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在研究</h3>
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left ease-[cubic-bezier(0.34,1.56,0.64,1)]">🔬</div>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7CB38B] transition-colors">正在研究</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.researchingTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.researchingSubtitle}</p>
         </div>
       </div>
 
-      <!-- 卡片 4：正在听 -->
-            <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 cursor-pointer delay-3" data-animate>
+      <!-- 卡片 4：正在听（雾蓝） -->
+      <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(123,163,217,.25)] hover:-translate-y-1 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer now-pop" style="animation-delay:.32s">
         <div class="absolute -right-2 -bottom-2 text-7xl opacity-5 dark:opacity-10 blur-sm group-hover:blur-2xl group-hover:opacity-30 group-hover:scale-150 transition-all duration-700 ease-out pointer-events-none select-none z-0">🎵</div>
         <div class="relative z-10">
-          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left">🎵</div>
-          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">正在听</h3>
+          <div class="text-3xl mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-bottom-left ease-[cubic-bezier(0.34,1.56,0.64,1)]">🎵</div>
+          <h3 class="font-xiaolai text-base font-bold mb-1 text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors">正在听</h3>
           <p class="text-sm font-medium text-[#1A1A1A] dark:text-[#EAEAEA]">{status.listeningTitle}</p>
           <p class="text-[11px] text-[#999] mt-1.5 tracking-wide">{status.listeningSubtitle}</p>
         </div>
@@ -255,57 +261,60 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
     </div>
 
     <!-- 第三行：Current Project 超大卡片 -->
-        <div class="group bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 relative overflow-hidden" data-animate>
-			<!-- 装饰性光晕（在卡片右上角微微发光，增加空间感） -->
+    <div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[32px] p-8 md:p-10 border border-white/20 dark:border-white/10 shadow-[0_4px_20px_-6px_rgba(139,124,179,.15)] hover:shadow-[0_10px_36px_-8px_rgba(139,124,179,.3)] transition-shadow duration-500" data-animate>
+			<!-- 装饰性光晕：右上紫 + 左下粉 对角呼应 -->
 			<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-      		<div class="flex flex-col md:flex-row gap-8">
+			<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#FF6B9D]/8 dark:bg-[#FF6B9D]/15 rounded-full blur-3xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+      		<div class="flex flex-col md:flex-row gap-8 relative z-10">
         <!-- 左侧 55% -->
         <div class="md:w-[55%]">
-          <p class="text-xs text-[#999] uppercase tracking-widest mb-2">Current Project</p>
-          <h2 class="font-xiaolai text-2xl md:text-3xl font-bold mb-4 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectTitle || status.projectDescription || '个人网站第二阶段开发'}</h2>
-          <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
-            <div>
-              <span class="text-[#999] block">Started</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
+          <p class="text-xs text-[#999] uppercase tracking-widest mb-1">Current Project</p>
+          <h2 class="font-xiaolai text-2xl md:text-3xl font-bold mb-2 text-[#1A1A1A] dark:text-[#EAEAEA]">{status.projectTitle || status.projectDescription || '个人网站第二阶段开发'}</h2>
+          <span class="block h-1 w-16 mb-4 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#FF6B9D]"></span>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-3 mb-5 text-sm">
+            <div class="flex justify-between items-baseline border-b border-[#8B7CB3]/10 dark:border-white/5 pb-1.5">
+              <span class="text-[11px] text-[#999] uppercase tracking-wider">Started</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.startDate}</span>
             </div>
-            <div>
-              <span class="text-[#999] block">Running</span>
-              <span id="project-running" class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">...</span>
+            <div class="flex justify-between items-baseline border-b border-[#8B7CB3]/10 dark:border-white/5 pb-1.5">
+              <span class="text-[11px] text-[#999] uppercase tracking-wider">Running</span>
+              <span id="project-running" class="font-xiaolai font-semibold text-[#FF6B9D]">...</span>
             </div>
-            <div>
-              <span class="text-[#999] block">ETA</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
+            <div class="flex justify-between items-baseline border-b border-[#8B7CB3]/10 dark:border-white/5 pb-1.5">
+              <span class="text-[11px] text-[#999] uppercase tracking-wider">ETA</span>
+              <span class="font-xiaolai font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.endDate}</span>
             </div>
-            <div>
-              <span class="text-[#999] block">Progress</span>
-              <span class="font-mono font-semibold text-[#1A1A1A] dark:text-[#EAEAEA]">{status.progress}%</span>
+            <div class="flex justify-between items-baseline border-b border-[#8B7CB3]/10 dark:border-white/5 pb-1.5">
+              <span class="text-[11px] text-[#999] uppercase tracking-wider">Progress</span>
+              <span class="font-xiaolai font-semibold text-[#8B7CB3] dark:text-[#B39DDB]">{status.progress}%</span>
             </div>
           </div>
           <!-- 动态流光进度条（Animated Gradient + 头部发光点） -->
-          <div class="w-full h-2.5 bg-[#E0E0E0]/80 dark:bg-[#2A2A2A] rounded-full overflow-visible mb-5 relative shadow-inner">
+          <div class="w-full h-3 bg-[#E8E4F0]/80 dark:bg-[#2A2540] rounded-full overflow-visible mb-5 relative shadow-[inset_0_2px_4px_rgba(139,124,179,.15)]">
 					<div class="absolute top-0 left-0 h-full rounded-full" style={`width: ${progressPercent}%;`}>
-              <div class="h-full w-full bg-gradient-to-r from-[#8B7CB3] via-[#B26A8B] to-[#8B7CB3] bg-[length:200%_200%] animate-gradient-x shadow-[0_0_10px_rgba(139,124,179,0.5)] rounded-full">
+              <div class="h-full w-full bg-gradient-to-r from-[#8B7CB3] via-[#FF6B9D] to-[#8B7CB3] bg-[length:200%_200%] animate-gradient-x shadow-[0_0_12px_rgba(255,107,157,0.5)] rounded-full relative">
 							<!-- 进度条推进末端的发光点 -->
-							<div class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_8px_rgba(139,124,179,0.8)] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+							<div class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,107,157,0.9)] scale-0 group-hover:scale-100 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"></div>
 						</div>
             </div>
           </div>
           <!-- 状态标签 -->
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#8B7CB3]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default">
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-[#8B7CB3]/10 to-[#FF6B9D]/10 text-[#8B7CB3] inline-block mb-4 border border-[#8B7CB3]/20 shadow-sm relative overflow-hidden group/tag cursor-default hover:scale-105 active:scale-95 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
           <span class="relative z-10">{status.badgeText || '读取GG了'}</span>
 			  <!-- 标签内的一道扫光 -->
 			  <span class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent skew-x-[-20deg] group-hover/tag:animate-sweep"></span>
 			  </span>
-			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed">{status.projectDescription || `来到了没有数据的外太空`}</p>
+			  <p class="text-sm text-[#666] dark:text-[#888] leading-relaxed border-l-2 border-[#FF6B9D]/30 pl-3">{status.projectDescription || `来到了没有数据的外太空`}</p>
         </div>
         <!-- 右侧 45%：项目截图 -->
         <div class="md:w-[45%]">
-          <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F5F5F5] dark:bg-[#111111] border border-black/5 dark:border-white/5 shadow-inner overflow-hidden relative">
+          <div class="w-full h-full min-h-[200px] rounded-[24px] bg-[#F0EDF5] dark:bg-[#16141F] border border-[#8B7CB3]/10 dark:border-white/5 shadow-inner overflow-hidden relative group/shot hover:border-[#8B7CB3]/30 hover:shadow-[0_8px_28px_-8px_rgba(139,124,179,.4)] transition-all duration-500">
             {status.projectScreenshot ? (
-              <img src={status.projectScreenshot} alt="项目截图" class="w-full h-full object-cover" />
+              <img src={status.projectScreenshot} alt="项目截图" class="w-full h-full object-cover group-hover/shot:scale-105 transition-transform duration-700 ease-out" />
             ) : (
-              <div class="w-full h-full flex items-center justify-center">
-                <span class="text-sm text-[#999]">项目截图占位</span>
+              <div class="w-full h-full flex flex-col items-center justify-center gap-2">
+                <span class="text-3xl group-hover/shot:scale-125 group-hover/shot:-rotate-6 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">🖼️</span>
+                <span class="text-xs text-[#999]">项目截图占位</span>
               </div>
             )}
             <!-- 模拟屏幕玻璃反光 -->
@@ -317,93 +326,91 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
 
     <!-- 第四行：左右双栏 -->
     <div class="grid grid-cols-1 md:grid-cols-[30%_1fr] gap-6">
-    <!-- 左侧：微日志 (Dashboard Activity Feed 风格) -->
-            <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col justify-between" data-animate>
-          <div class="flex items-center justify-between mb-5">
-            <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Activity Feed</p>
-            <span class="text-[9px] font-bold text-[#999] uppercase tracking-wider bg-black/5 dark:bg-white/5 px-2 py-1 rounded-md">Recent</span>
-          </div>
-  
-          <div class="flex flex-col gap-2">
-            {activities.map((item, idx) => {
-              const isLatest = idx === 0;
-              return (
-                <div class={`group flex items-center justify-between p-3 rounded-2xl transition-all duration-300 hover:translate-x-1 cursor-default border ${
+    <!-- 左侧：微日志（时间轴风格） -->
+    <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(139,124,179,.2)] transition-shadow duration-500 flex flex-col" data-animate>
+      <div class="flex items-center justify-between mb-5">
+        <p class="font-xiaolai text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Activity Feed</p>
+        <span class="text-[9px] font-bold text-[#999] uppercase tracking-wider bg-[#8B7CB3]/8 dark:bg-white/5 px-2 py-1 rounded-full">{activities.length} 条</span>
+      </div>
+
+      <div class="relative pl-5 flex-1">
+        <!-- 时间轴竖线 -->
+        <div class="absolute left-[6px] top-2 bottom-2 w-0 border-l-2 border-dashed border-[#8B7CB3]/15 dark:border-white/10"></div>
+
+        {activities.map((item, idx) => {
+          const isLatest = idx === 0;
+          return (
+            <div class={`group relative ${idx < activities.length - 1 ? 'pb-4' : ''}`}>
+              <!-- 节点圆点 -->
+              {isLatest ? (
+                <span class="absolute -left-5 top-1.5 flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6B9D] opacity-60"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-gradient-to-br from-[#8B7CB3] to-[#FF6B9D] shadow-[0_0_6px_rgba(255,107,157,.5)]"></span>
+                </span>
+              ) : (
+                <span class="absolute -left-[17px] top-2 h-2 w-2 rounded-full bg-[#D8D0E8] dark:bg-[#3A3550] group-hover:bg-[#8B7CB3] group-hover:scale-125 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"></span>
+              )}
+              <!-- 内容 -->
+              <div class={`rounded-xl px-3 py-2 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:translate-x-1 cursor-default ${
+                isLatest
+                  ? 'bg-[#8B7CB3]/6 dark:bg-[#8B7CB3]/10 border border-[#8B7CB3]/10'
+                  : 'hover:bg-[#8B7CB3]/4 dark:hover:bg-white/5'
+              }`}>
+                <p class={`text-[13px] leading-snug transition-colors ${
                   isLatest
-                    ? 'bg-white/80 dark:bg-[#252525]/80 hover:bg-white dark:hover:bg-[#2A2A2A] shadow-sm hover:shadow-md border-white dark:border-white/5'
-                    : 'bg-transparent hover:bg-white/50 dark:hover:bg-[#252525]/50 border-transparent hover:border-white/50 dark:hover:border-white/5'
-                }`}>
-                  <div class="flex items-center gap-3">
-                    {isLatest ? (
-                      <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B7CB3] opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#8B7CB3]"></span>
-                      </span>
-                    ) : (
-                      <div class="w-1.5 h-1.5 rounded-full bg-[#D0D0D0] dark:bg-[#444] group-hover:bg-[#8B7CB3] transition-colors"></div>
-                    )}
-                    <span class={`text-sm transition-colors ${
-                      isLatest
-                        ? 'font-bold text-[#1A1A1A] dark:text-[#EAEAEA]'
-                        : 'font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA]'
-                    }`}>{item.content}</span>
-                  </div>
-                  <span class={`text-[10px] font-mono transition-colors px-2 py-1 rounded-lg ${
-                    isLatest
-                      ? 'font-bold text-[#8B7CB3] bg-[#8B7CB3]/10'
-                      : 'text-[#999] bg-black/5 dark:bg-white/5 group-hover:text-[#8B7CB3] group-hover:bg-[#8B7CB3]/10'
-                  }`}>{item.activityDate}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                    ? 'font-bold text-[#1A1A1A] dark:text-[#EAEAEA]'
+                    : 'font-medium text-[#666] dark:text-[#888] group-hover:text-[#1A1A1A] dark:group-hover:text-[#EAEAEA]'
+                }`}>{item.content}</p>
+                <p class={`text-[10px] mt-0.5 font-xiaolai ${isLatest ? 'text-[#8B7CB3] font-bold' : 'text-[#BBB] dark:text-[#555] group-hover:text-[#8B7CB3]'} transition-colors`}>{item.activityDate}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
       <!-- 右侧：留言板 -->
-            <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-xl hover:border-[#8B7CB3]/20 transition-all duration-500 flex flex-col h-full" data-animate>
+    <div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 dark:border-white/10 shadow-sm hover:shadow-[0_6px_20px_-6px_rgba(255,107,157,.2)] transition-shadow duration-500 flex flex-col h-full" data-animate>
         <!-- 头部栏 -->
         <div class="flex items-center justify-between mb-5">
-          <p class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Leave a Message</p>
+          <p class="font-xiaolai text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest">Leave a Message</p>
           <span class="text-[10px] font-medium text-[#999] flex items-center gap-1.5">
-            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span></span>
+            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7CB38B]"></span></span>
             Online
           </span>
         </div>
 
         <!-- 留言输入区 -->
-        <div class="mb-6" id="messages-input-area">
+        <div class="mb-5" id="messages-input-area">
           <!-- 昵称 + 邮箱行 -->
           <div class="grid grid-cols-2 gap-2 mb-2">
             <input type="text" id="msg-author" placeholder="昵称（选填）" maxlength="20"
-              class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
+              class="px-4 py-2 rounded-full border border-[#E8E4F0] dark:border-[#2B2840] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/50 focus:shadow-[0_0_0_3px_rgba(139,124,179,.1)] transition-all duration-300" />
             <input type="text" id="msg-email" placeholder="邮箱（选填，用于头像）"
-              class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
+              class="px-4 py-2 rounded-full border border-[#E8E4F0] dark:border-[#2B2840] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/50 focus:shadow-[0_0_0_3px_rgba(139,124,179,.1)] transition-all duration-300" />
           </div>
-          <!-- 内容 + 发送行 -->
-          <div class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300 dark:border-[#2B2B2B] dark:bg-[#141414]/80 focus-within:border-[#8B7CB3]/45 focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)] focus-within:ring-4 focus-within:ring-[#8B7CB3]/8">
+          <!-- 内容输入 -->
+          <div class="relative rounded-2xl border border-[#E8E4F0] dark:border-[#2B2840] bg-white/75 dark:bg-[#141414]/80 transition-all duration-300 focus-within:border-[#8B7CB3]/50 focus-within:shadow-[0_0_0_3px_rgba(139,124,179,.1)]">
             <textarea id="msg-content" rows="2" maxlength="500" placeholder="给现在的我留句话..."
-              class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none dark:text-[#EAEAEA] dark:placeholder:text-[#666]"></textarea>
-            <div class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300 dark:bg-[#2F2F2F] group-focus-within:bg-[#8B7CB3]/25"></div>
-            <button type="button" id="msg-send-btn"
-              class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98] border-none cursor-pointer">
-              <span class="absolute inset-0 overflow-hidden">
-                <span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
-              </span>
-              <span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide transition-colors duration-300 group-hover/btn:text-white">
-                发送
-                <svg class="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-full resize-none bg-transparent px-4 pt-3 pb-2 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none dark:text-[#EAEAEA] dark:placeholder:text-[#666]"></textarea>
+            <div class="flex items-center justify-between px-3 pb-2.5">
+              <span id="msg-send-status" class="text-[11px] text-[#A0A0A0] dark:text-[#666]">留下此刻想说的话</span>
+              <button type="button" id="msg-send-btn"
+                class="group/btn relative flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#B26A8B] text-white text-xs font-bold shadow-[0_2px_8px_rgba(139,124,179,.35)] hover:shadow-[0_4px_14px_rgba(139,124,179,.5)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] border-none cursor-pointer overflow-hidden">
+                <span class="absolute inset-0 overflow-hidden rounded-full">
+                  <span class="animate-sweep absolute top-0 h-full w-8 -skew-x-12 bg-white/25"></span>
+                </span>
+                <span class="relative z-10">发送</span>
+                <svg class="relative z-10 h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                 </svg>
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
-          <div class="mt-2 flex items-center justify-between px-1">
-            <span id="msg-send-status" class="text-[11px] text-[#A0A0A0] dark:text-[#666]">留下此刻想说的话</span>
-            <span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">Ctrl + Enter 发送</span>
-          </div>
+          <p class="mt-1.5 text-right text-[10px] text-[#C0C0C0] dark:text-[#555]">Ctrl + Enter 发送</p>
         </div>
 
         <!-- 留言列表 -->
-        <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1 pl-2 pt-2" id="messages-list">
+        <div class="space-y-3.5 flex-1 overflow-y-auto hide-scrollbar pr-1 pt-1" id="messages-list">
           {messages.map((msg, idx) => {
             const name = msg.author || '访客';
             const initial = name.charAt(0).toUpperCase();
@@ -411,24 +418,21 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
             let hash = 0;
             for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
             const color = colors[Math.abs(hash) % colors.length];
-            const avatarClass = idx % 3 === 0 ? 'text-[#8B7CB3]' : idx % 3 === 1 ? 'text-blue-500' : 'text-emerald-500';
-            const borderHover = idx % 3 === 0 ? 'group-hover:border-[#8B7CB3]/20' : idx % 3 === 1 ? 'group-hover:border-blue-500/20' : 'group-hover:border-emerald-500/20';
-            const nameHover = idx % 3 === 0 ? 'group-hover:text-[#8B7CB3]' : idx % 3 === 1 ? 'group-hover:text-blue-500' : 'group-hover:text-emerald-500';
             return (
               <div class="group flex gap-3 cursor-default">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style={`background: linear-gradient(135deg, ${color}20, ${color}30)`}>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden ring-2 ring-white/60 dark:ring-white/10 shadow-sm" style={`background: linear-gradient(135deg, ${color}25, ${color}40)`}>
                   {msg.email ? (
                     <img src={`https://www.gravatar.com/avatar/${md5(msg.email.trim().toLowerCase())}?d=mp&s=64`} alt="" class="w-full h-full object-cover" loading="lazy" />
                   ) : (
-                    <span class={`text-xs font-bold ${avatarClass}`}>{initial}</span>
+                    <span class="text-xs font-bold" style={`color: ${color}`}>{initial}</span>
                   )}
                 </div>
-                <div class="flex flex-col gap-1 w-full">
+                <div class="flex flex-col gap-1 w-full min-w-0">
                   <div class="flex items-center justify-between pl-1">
-                    <span class={`text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ${nameHover} transition-colors duration-300`}>{name}</span>
+                    <span class="msg-name text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] transition-colors duration-300" style={`--name-color: ${color}`}>{name}</span>
                     <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{msg.createdAt ? new Date(msg.createdAt + 'Z').toLocaleString('zh-CN', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : ''}</span>
                   </div>
-                  <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borderHover} transition-all duration-300`}>
+                  <div class="p-3 rounded-2xl rounded-tl-md text-sm text-[#666] dark:text-[#888] border border-transparent group-hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" style={`background: linear-gradient(135deg, ${color}08, ${color}12)`}>
                     {msg.content}
                   </div>
                 </div>
@@ -439,6 +443,32 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
       </div>
     			</div>
   			</div>
+
+  <style>
+    /* --- /now 页专属动效 --- */
+    /* 区块 Q 弹入场 */
+    .now-pop {
+      animation: now-pop-in .5s cubic-bezier(0.34,1.56,0.64,1) backwards;
+    }
+    @keyframes now-pop-in {
+      0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* "ing" 光标闪烁 */
+    .now-blink {
+      animation: now-blink-anim 1s steps(2) infinite;
+    }
+    @keyframes now-blink-anim {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* 留言昵称 hover 变色（CSS 变量由内联 style 注入；:global 确保 JS 动态插入的留言也生效） */
+    :global(.msg-name):hover {
+      color: var(--name-color) !important;
+    }
+  </style>
 
   <script define:vars={{ startDate: status.startDate }}>
     (function () {
@@ -533,26 +563,22 @@ const progressPercent = Math.max(0, Math.min(100, status.progress || 0));
         var name = msg.author || '访客';
         var initial = name.charAt(0).toUpperCase();
         var color = getColor(name);
-        var avatarClasses = ['text-[#8B7CB3]','text-blue-500','text-emerald-500'];
-        var avatarClass = avatarClasses[idx % 3];
-        var borderHover = ['group-hover:border-[#8B7CB3]/20','group-hover:border-blue-500/20','group-hover:border-emerald-500/20'][idx % 3];
-        var nameHover = ['group-hover:text-[#8B7CB3]','group-hover:text-blue-500','group-hover:text-emerald-500'][idx % 3];
         var timeStr = formatTime(msg.createdAt);
 
         var avatarHtml = msg.email
           ? '<img src="https://www.gravatar.com/avatar/' + md5(msg.email.trim().toLowerCase()) + '?d=mp&s=64" alt="" class="w-full h-full object-cover" loading="lazy" />'
-          : '<span class="text-xs font-bold ' + avatarClass + '">' + initial + '</span>';
+          : '<span class="text-xs font-bold" style="color:' + color + '">' + initial + '</span>';
 
         return '<div class="group flex gap-3 cursor-default">' +
-          '<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 overflow-hidden" style="background: linear-gradient(135deg, ' + color + '20, ' + color + '30)">' +
+          '<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden ring-2 ring-white/60 dark:ring-white/10 shadow-sm" style="background:linear-gradient(135deg,' + color + '25,' + color + '40)">' +
             avatarHtml +
           '</div>' +
-          '<div class="flex flex-col gap-1 w-full">' +
+          '<div class="flex flex-col gap-1 w-full min-w-0">' +
             '<div class="flex items-center justify-between pl-1">' +
-              '<span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ' + nameHover + ' transition-colors duration-300">' + name + '</span>' +
+              '<span class="msg-name text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] transition-colors duration-300" style="--name-color:' + color + '">' + name + '</span>' +
               (timeStr ? '<span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">' + timeStr + '</span>' : '') +
             '</div>' +
-            '<div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ' + borderHover + ' transition-all duration-300">' +
+            '<div class="p-3 rounded-2xl rounded-tl-md text-sm text-[#666] dark:text-[#888] border border-transparent group-hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" style="background:linear-gradient(135deg,' + color + '08,' + color + '12)">' +
               msg.content +
             '</div>' +
           '</div>' +
