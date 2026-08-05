@@ -963,7 +963,7 @@ try {
 		})();
 
 					// ============================================================
-					// 全局滚动淡入动画（IntersectionObserver，可重复触发）
+					// 全局滚动淡入动画（IntersectionObserver，播一次即定格）
 					(function () {
 						if (window.__scrollFadeAnimator) {
 							window.__scrollFadeAnimator.scan();
@@ -971,25 +971,14 @@ try {
 						}
 
 						const observedElements = new WeakSet();
-						const pendingEntries = new Map();
-						let frameId = 0;
-
-						function flushAnimations() {
-							frameId = 0;
-							pendingEntries.forEach((isIntersecting, target) => {
-								target.classList.toggle('animate-fade-in-up', isIntersecting);
-							});
-							pendingEntries.clear();
-						}
 
 						const observer = new IntersectionObserver((entries) => {
 							entries.forEach(entry => {
-								pendingEntries.set(entry.target, entry.isIntersecting);
+								if (entry.isIntersecting) {
+									entry.target.classList.add('animate-fade-in-up');
+									observer.unobserve(entry.target); // 播一次，不再监听
+								}
 							});
-
-							if (!frameId) {
-								frameId = requestAnimationFrame(flushAnimations);
-							}
 						}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
 
 						function isInitiallyVisible(el) {
