@@ -131,6 +131,7 @@ try {
     <!-- 返回链接 -->
     <a
       href={backUrl}
+      data-back-link
       class="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-all duration-300 mb-8 group no-underline hover:-translate-x-1"
     >
       <svg
@@ -365,6 +366,7 @@ try {
     <div class="mt-12 text-center">
       <a
         href={backUrl}
+        data-back-link
         class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 active:scale-95 border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] no-underline"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -374,6 +376,31 @@ try {
       </a>
     </div>
   </article>
+
+  <script is:inline>
+    // —— 智能返回修正（客户端优先）——
+    // 服务端 referer 在 ClientRouter 预取下不可靠，改用 sessionStorage：
+    // 首页/归档页点击文章卡片时会写入 blogBackTarget，此处读取并修正返回链接。
+    (function () {
+      var target = '';
+      try { target = sessionStorage.getItem('blogBackTarget') || ''; } catch (e) {}
+      if (target !== 'home' && target !== 'archive') return;
+      var url = target === 'home' ? '/' : '/archive';
+      var label = target === 'home' ? '返回首页' : '返回归档';
+      document.querySelectorAll('a[data-back-link]').forEach(function (a) {
+        a.setAttribute('href', url);
+        // 顶部链接文字在 <span> 里，底部按钮文字是 a 的直接文本节点
+        var span = a.querySelector('span');
+        if (span) { span.textContent = label; }
+        else {
+          for (var i = 0; i < a.childNodes.length; i++) {
+            var n = a.childNodes[i];
+            if (n.nodeType === 3 && n.textContent.trim()) { n.textContent = label; break; }
+          }
+        }
+      });
+    })();
+  </script>
 
   <script is:inline>
     // —— 阅读进度条 ——
