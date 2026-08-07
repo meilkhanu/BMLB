@@ -314,9 +314,18 @@ const LINK_ACCENTS = ['#8B7CB3', '#FF6B9D'];
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {links.map((link, i) => {
               const accent = LINK_ACCENTS[i % LINK_ACCENTS.length];
+              // URL 防御：不完整/无效的地址（如只填了 "https://"）不渲染为可点击链接，
+              // 避免浏览器导航被拦截显示 about:blank#blocked
+              const url = (link.url || '').trim();
+              const validUrl = /^(https?:\/\/\S+|\/\S*|#\S*)$/.test(url);
               return (
-                <a href={link.url}
-                   class="group relative rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-7 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(139,124,179,.28)] hover:border-[#8B7CB3]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden no-underline text-inherit delay-1"
+                <a href={validUrl ? url : undefined}
+                   class:list={[
+                     "group relative rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-7 shadow-sm overflow-hidden no-underline text-inherit delay-1",
+                     validUrl
+                       ? "hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(139,124,179,.28)] hover:border-[#8B7CB3]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                       : "cursor-default opacity-70",
+                   ]}
                    data-animate>
                   <!-- 幽灵图标：外链 -->
                   <svg class="absolute -right-2 -bottom-2 w-20 h-20 text-[#8B7CB3] opacity-[0.05] dark:opacity-[0.08] blur-[2px] group-hover:opacity-[0.14] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
