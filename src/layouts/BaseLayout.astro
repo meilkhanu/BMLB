@@ -4,6 +4,7 @@ import { getDb } from '../lib/db';
 import { ClientRouter } from 'astro:transitions';
 import SunIcon from '../components/icons/SunIcon.astro';
 import MoonIcon from '../components/icons/MoonIcon.astro';
+import AutoIcon from '../components/icons/AutoIcon.astro';
 import SearchIcon from '../components/icons/SearchIcon.astro';
 import UserIcon from '../components/icons/UserIcon.astro';
 import HamburgerIcon from '../components/icons/HamburgerIcon.astro';
@@ -36,10 +37,9 @@ try {
 	<link rel="stylesheet" href="/fonts/xiaolai/xiaolai.css" />
 	<script is:inline>
 		(function() {
+			// 三态主题：'light' / 'dark' 强制，'auto' 或未设置 → 跟随系统
 			const stored = localStorage.getItem('theme');
-			const isDark = stored
-				? stored === 'dark'
-				: window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const isDark = (stored === 'dark') || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 			if (isDark) {
 				document.documentElement.classList.add('dark');
 			}
@@ -73,9 +73,10 @@ try {
 					<SearchIcon />
 				</button>
 				<input type="text" id="search-input" placeholder="Search..." class="w-0 focus:w-28 md:focus:w-40 bg-transparent border-none outline-none text-sm text-[#1A1A1A] dark:text-[#EAEAEA] placeholder-[#999] transition-all duration-300 px-0 focus:px-2 focus:mr-2" /></div>
-				<button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0">
-				<span id="theme-sun"><SunIcon /></span>
+				<button onclick="cycleTheme()" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0" title="切换主题：自动 / 浅色 / 深色">
+				<span id="theme-sun" class="hidden"><SunIcon /></span>
 				<span id="theme-moon" class="hidden"><MoonIcon /></span>
+				<span id="theme-auto" class="hidden"><AutoIcon /></span>
 				</button>
 				<a href="/admin" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0" title="管理后台">
 					<UserIcon />
@@ -214,57 +215,59 @@ try {
 	</footer>
 
 	<script is:inline>
-		function toggleDarkMode() {
-			document.documentElement.classList.toggle('dark');
-			const isDark = document.documentElement.classList.contains('dark');
-			localStorage.setItem('theme', isDark ? 'dark' : 'light');
-			updateThemeIcon(isDark);
+		// ============================================================
+		// 三态主题：auto（跟随系统）→ light → dark → auto …
+		// localStorage.theme ∈ { 'auto', 'light', 'dark' }，默认 'auto'
+		// ============================================================
+		const THEME_MQ = window.matchMedia('(prefers-color-scheme: dark)');
+
+		function getThemePref() {
+			const stored = localStorage.getItem('theme');
+			return (stored === 'light' || stored === 'dark') ? stored : 'auto';
 		}
 
-		function updateThemeIcon(isDark) {
+		function resolveIsDark(pref) {
+			return pref === 'dark' || (pref === 'auto' && THEME_MQ.matches);
+		}
+
+		function applyTheme() {
+			const pref = getThemePref();
+			document.documentElement.classList.toggle('dark', resolveIsDark(pref));
+			updateThemeIcon(pref);
+		}
+
+		function cycleTheme() {
+			// 循环顺序：auto → light → dark → auto
+			const next = { auto: 'light', light: 'dark', dark: 'auto' }[getThemePref()];
+			localStorage.setItem('theme', next);
+			applyTheme();
+		}
+
+		function updateThemeIcon(pref) {
 			const sun = document.getElementById('theme-sun');
 			const moon = document.getElementById('theme-moon');
-			if (sun && moon) {
-				if (isDark) {
-					sun.classList.add('hidden');
-					moon.classList.remove('hidden');
-				} else {
-					sun.classList.remove('hidden');
-					moon.classList.add('hidden');
-				}
-			}
+			const auto = document.getElementById('theme-auto');
+			if (!sun || !moon || !auto) return;
+			sun.classList.toggle('hidden', pref !== 'light');
+			moon.classList.toggle('hidden', pref !== 'dark');
+			auto.classList.toggle('hidden', pref !== 'auto');
 		}
 
-		function initTheme() {
-			const stored = localStorage.getItem('theme');
-			const isDark = stored
-				? stored === 'dark'
-				: window.matchMedia('(prefers-color-scheme: dark)').matches;
-			if (isDark) {
-				document.documentElement.classList.add('dark');
-				updateThemeIcon(true);
-			} else {
-				document.documentElement.classList.remove('dark');
-				updateThemeIcon(false);
-			}
-		}
+		// 系统主题变化时：auto 模式实时跟随切换（light/dark 强制模式不受影响）
+		THEME_MQ.addEventListener('change', applyTheme);
 
 		// 初始加载时执行
-		initTheme();
+		applyTheme();
 
 		// View Transitions 交换前：确保 dark class 已应用于新文档，消除切换闪烁
 		document.addEventListener('astro:before-swap', (ev) => {
-			const stored = localStorage.getItem('theme');
-			const isDark = stored
-				? stored === 'dark'
-				: window.matchMedia('(prefers-color-scheme: dark)').matches;
-			if (isDark) {
+			if (resolveIsDark(getThemePref())) {
 				ev.newDocument.documentElement.classList.add('dark');
 			}
 		});
 
 		// View Transitions 页面切换后重新同步主题图标
-		document.addEventListener('astro:page-load', initTheme);
+		document.addEventListener('astro:page-load', applyTheme);
 
 		// 导航栏滚动效果（简化版：只控制阴影深浅）
 		const nav = document.getElementById('site-nav');
@@ -960,6 +963,24 @@ try {
 			bindPlayerDom();
 			document.addEventListener('astro:page-load', bindPlayerDom);
 			document.addEventListener('DOMContentLoaded', bindPlayerDom);
+		})();
+
+		// ============================================================
+		// 全站访问埋点 — 记录 PV/UV（每次页面加载仅上报一次）
+		// ============================================================
+		(function () {
+			let sent = false;
+			function trackVisit() {
+				if (sent) return;
+				sent = true;
+				try {
+					fetch('/api/stats', { method: 'POST', keepalive: true }).catch(() => {
+						// fetch 被取消（如立刻关页）时用 sendBeacon 兜底
+						try { if (navigator.sendBeacon) navigator.sendBeacon('/api/stats', ''); } catch (e) {}
+					});
+				} catch (e) { /* 统计失败静默 */ }
+			}
+			trackVisit();
 		})();
 
 					// ============================================================

@@ -208,7 +208,37 @@ function ensureDb(): any {
       value       TEXT NOT NULL,
       expires_at  INTEGER
     );
+
+    -- 全站访问统计（id=1 单行汇总）
+    CREATE TABLE IF NOT EXISTS site_stats (
+      id          INTEGER PRIMARY KEY,
+      views       INTEGER NOT NULL DEFAULT 0,
+      visitors    INTEGER NOT NULL DEFAULT 0,
+      updated_at  TEXT DEFAULT (datetime('now'))
+    );
+
+    -- 访客去重（ip+ua 哈希，不存原始 IP）
+    CREATE TABLE IF NOT EXISTS visitor_log (
+      hash        TEXT PRIMARY KEY,
+      first_seen  TEXT DEFAULT (datetime('now'))
+    );
+
+    -- 实验室：小工具/小实验登记
+    CREATE TABLE IF NOT EXISTS lab_apps (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug        TEXT UNIQUE NOT NULL,
+      title       TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      icon        TEXT DEFAULT '',
+      category    TEXT DEFAULT 'other',
+      path        TEXT NOT NULL,
+      sort_order  INTEGER DEFAULT 0,
+      published   INTEGER DEFAULT 1,
+      created_at  TEXT DEFAULT (datetime('now'))
+    );
   `);
+
+  _db.exec(`INSERT OR IGNORE INTO site_stats (id, views, visitors) VALUES (1, 0, 0)`);
 
   console.log("[db] SQLite initialized:", dbPath);
   return _db;

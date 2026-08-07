@@ -181,18 +181,18 @@ const DEFAULT_WORKS: AboutWork[] = [
 const DEFAULT_LINKS: AboutLink[] = [
   {
     id: 1,
-    title: '主站入口',
-    description: '进入主项目 / 博客 / 系统',
-    url: 'https://your-main-site.com',
-    actionText: 'Visit →',
+    title: '实验室',
+    description: '一些不成器的小玩意儿 / 工具与实验',
+    url: '/lab',
+    actionText: '进入实验室 →',
     sortOrder: 0,
   },
   {
     id: 2,
-    title: '备用站 / 项目站',
-    description: '作品集 / 实验性内容 / 镜像系统',
-    url: 'https://your-secondary-site.com',
-    actionText: 'Explore →',
+    title: 'RSS 订阅',
+    description: '用你喜欢的阅读器 / 跟上更新',
+    url: '/rss.xml',
+    actionText: '订阅 →',
     sortOrder: 1,
   },
 ];

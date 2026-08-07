@@ -363,6 +363,12 @@ try {
 								<div class="status-label">已发文章</div>
 							</div>
 						</div>
+
+						<!-- 全站访问统计（PV/UV）—— 数据来自 /api/stats，加载成功才显示 -->
+						<div id="stat-traffic-row" class="mt-3 pt-3 border-t border-white/40 dark:border-white/10 flex items-center justify-center gap-1.5 text-[11px] text-[#999] dark:text-[#666]" style="opacity:0; transition:opacity .6s ease">
+							<svg class="w-3.5 h-3.5 text-[#8B7CB3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+							<span>阅读 <span id="stat-views" class="font-xiaolai font-bold text-[#8B7CB3]">--</span> · 访客 <span id="stat-visitors" class="font-xiaolai font-bold text-[#FF6B9D]">--</span></span>
+						</div>
 					</div>
 			</div>
 
@@ -683,6 +689,38 @@ try {
 			const runtimeDays = Math.floor((now - siteStart) / (1000 * 60 * 60 * 24));
 			const runtimeEl = document.getElementById('stat-runtime');
 			if (runtimeEl) runtimeEl.textContent = runtimeDays + '天';
+
+			// —— 全站访问统计（PV/UV）：localStorage 缓存 5 分钟，失败静默隐藏 ——
+			(function () {
+				const row = document.getElementById('stat-traffic-row');
+				const viewsEl = document.getElementById('stat-views');
+				const visitorsEl = document.getElementById('stat-visitors');
+				if (!row || !viewsEl || !visitorsEl) return;
+
+				function render(data) {
+					viewsEl.textContent = data.views.toLocaleString();
+					visitorsEl.textContent = data.visitors.toLocaleString();
+					row.style.opacity = '1';
+				}
+
+				try {
+					const cacheKey = 'bmlb-stats';
+					const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+					if (cached && cached.ts && Date.now() - cached.ts < 5 * 60 * 1000) {
+						render(cached.data);
+						return;
+					}
+				} catch (e) { /* 缓存坏了就重新拉 */ }
+
+				fetch('/api/stats')
+					.then(function (res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+					.then(function (data) {
+						if (typeof data.views !== 'number' || typeof data.visitors !== 'number') return;
+						try { localStorage.setItem('bmlb-stats', JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+						render(data);
+					})
+					.catch(function () { /* 加载失败 → 整行保持隐藏 */ });
+			})();
 
 			const lastActiveEl = document.getElementById('stat-last-active');
 			if (lastActiveEl) {

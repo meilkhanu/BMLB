@@ -15,9 +15,14 @@ import { handleComments } from "../../lib/comments";
 import { handleSongs } from "../../lib/songs";
 import { handleAbout } from "../../lib/about";
 import { handleSearch } from "../../lib/search";
+import { handleStats } from "../../lib/stats";
 
 export const ALL = async (ctx: APIContext): Promise<Response> => {
   const url = new URL(ctx.request.url);
+
+  if (url.pathname.startsWith("/api/stats")) {
+    return handleStats(ctx);
+  }
 
   if (url.pathname.startsWith("/api/search")) {
     return handleSearch(ctx);

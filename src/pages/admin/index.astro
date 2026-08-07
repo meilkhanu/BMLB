@@ -12,8 +12,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
   <title>管理后台 — 贝谟拉比</title>
   <script is:inline>
     (function() {
+      // 三态主题：'light' / 'dark' 强制，'auto' 或未设置 → 跟随系统
       const stored = localStorage.getItem('theme');
-      const isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = (stored === 'dark') || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isDark) document.documentElement.classList.add('dark');
     })();
   </script>

@@ -10,8 +10,9 @@ import { SITE_CONFIG } from '../../config.ts';
   <title>管理登录 — {SITE_CONFIG.siteName}</title>
   <script is:inline>
     (function() {
+      // 三态主题：'light' / 'dark' 强制，'auto' 或未设置 → 跟随系统
       const stored = localStorage.getItem('theme');
-      const isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = (stored === 'dark') || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isDark) document.documentElement.classList.add('dark');
     })();
   </script>
