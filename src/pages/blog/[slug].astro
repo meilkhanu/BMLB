@@ -377,7 +377,7 @@ try {
     </div>
   </article>
 
-  <script is:inline>
+  <script is:inline data-astro-rerun>
     // —— 智能返回修正（客户端优先）——
     // 服务端 referer 在 ClientRouter 预取下不可靠，改用 sessionStorage：
     // 首页/归档页点击文章卡片时会写入 blogBackTarget，此处读取并修正返回链接。
@@ -402,24 +402,28 @@ try {
     })();
   </script>
 
-  <script is:inline>
+  <script is:inline data-astro-rerun>
     // —— 阅读进度条 ——
     (function () {
-      var bar = document.getElementById('reading-progress');
-      if (!bar) return;
       function update() {
+        var bar = document.getElementById('reading-progress');
+        if (!bar) return;
         var scrollTop = window.scrollY;
         var docHeight = document.documentElement.scrollHeight - window.innerHeight;
         var pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
         bar.style.width = pct + '%';
       }
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
+      // 监听器只注册一次；update 每次查询最新元素（SPA 导航后元素可能被替换）
+      if (!window.__readingProgressBound) {
+        window.__readingProgressBound = true;
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+      }
       update();
     })();
   </script>
 
-  <script is:inline>
+  <script is:inline data-astro-rerun>
     // —— 文章留言交互 ——
     (function () {
       var slug = window.location.pathname.replace(/^\/blog\//, '').replace(/\/$/, '');
@@ -578,6 +582,10 @@ try {
           sendBtn.disabled = false;
         }
       }
+
+      // SPA 导航后脚本会重新执行；元素若被复用则跳过重复绑定
+      if (sendBtn && sendBtn.dataset.cmtBound) return;
+      if (sendBtn) sendBtn.dataset.cmtBound = '1';
 
       sendBtn.addEventListener('click', submitComment);
       contentEl.addEventListener('keydown', function (e) {

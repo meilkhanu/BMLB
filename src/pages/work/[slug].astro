@@ -201,10 +201,13 @@ const title = work.title || '作品详情';
     <div id="lightbox-counter" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/60"></div>
   </div>
 
-  <script is:inline>
+  <script is:inline data-astro-rerun>
     (function() {
       const gallery = document.getElementById('work-gallery');
       const lightbox = document.getElementById('lightbox');
+      // SPA 导航后脚本会重新执行；元素若被复用则跳过重复绑定
+      if (lightbox && lightbox.dataset.lbBound) return;
+      if (lightbox) lightbox.dataset.lbBound = '1';
       const lightboxImg = document.getElementById('lightbox-img');
       const lightboxCounter = document.getElementById('lightbox-counter');
       const images = gallery ? Array.from(gallery.querySelectorAll('img')) : [];
