@@ -1,7 +1,7 @@
 // ============================================================
 // src/pages/api/[...all].ts
-// 唯一的 API catch-all 路由 — 避免 Cloudflare Pages
-// 因多 API 文件而降级到 Functions runtime
+// 唯一的 API catch-all 路由
+// 统一分发到 src/lib 下的各 handler 模块
 // ============================================================
 
 import type { APIContext } from "astro";

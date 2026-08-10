@@ -1,6 +1,6 @@
 -- ============================================================
 -- now_messages — /now 页面留言板
--- 执行: wrangler d1 execute <db> --file=db/now_messages.sql
+-- 执行: sqlite3 data/app.db < db/now_messages.sql
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS now_messages (

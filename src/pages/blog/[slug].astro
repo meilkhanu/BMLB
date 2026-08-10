@@ -10,7 +10,7 @@ if (!slug) {
 }
 
 // —— 服务端调用内部 API 获取文章数据 ——
-// Astro SSR 在 Cloudflare Worker 中运行，fetch 同源 API 无额外延迟
+// Astro SSR 在 Node 中运行，fetch 同源 API 无额外延迟
 
 interface ApiPost {
   id: number;

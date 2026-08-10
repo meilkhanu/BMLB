@@ -1,6 +1,6 @@
 -- ============================================================
 -- comments — 文章留言表
--- 执行: wrangler d1 execute <db> --file=db/comments.sql
+-- 执行: sqlite3 data/app.db < db/comments.sql
 -- 与 now_messages 表独立，不冲突
 -- ============================================================
 

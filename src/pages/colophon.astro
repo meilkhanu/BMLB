@@ -350,32 +350,6 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 							</div>
 						</div>
 
-						<!-- KV -->
-						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(255,107,157,.25)] hover:border-[#FF6B9D]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
-							<svg class="absolute -right-2 -bottom-2 w-16 h-16 text-[#FF6B9D] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-							<div class="relative z-10">
-								<div class="flex items-center gap-2 mb-1.5">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#FF6B9D] group-hover:shadow-[0_0_6px_[#FF6B9D]] transition-all duration-500"></span>
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#FF6B9D] transition-colors duration-500">KV</div>
-								</div>
-								<span class="block h-0.5 w-6 mb-2 rounded-full bg-gradient-to-r from-[#FF6B9D] to-transparent group-hover:w-10 transition-all duration-500"></span>
-								<div class="text-xs text-[#999] dark:text-[#666] group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-500">Session & 站点配置缓存</div>
-							</div>
-						</div>
-
-						<!-- R2 -->
-						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(123,163,217,.25)] hover:border-[#7BA3D9]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
-							<svg class="absolute -right-2 -bottom-2 w-16 h-16 text-[#7BA3D9] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
-							<div class="relative z-10">
-								<div class="flex items-center gap-2 mb-1.5">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#7BA3D9] group-hover:shadow-[0_0_6px_[#7BA3D9]] transition-all duration-500"></span>
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors duration-500">R2</div>
-								</div>
-								<span class="block h-0.5 w-6 mb-2 rounded-full bg-gradient-to-r from-[#7BA3D9] to-transparent group-hover:w-10 transition-all duration-500"></span>
-								<div class="text-xs text-[#999] dark:text-[#666] group-hover:text-[#666] dark:group-hover:text-[#AAA] transition-colors duration-500">图片/音频对象存储</div>
-							</div>
-						</div>
-
 						<!-- VS Code -->
 						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(255,107,157,.25)] hover:border-[#FF6B9D]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
 							<svg class="absolute -right-2 -bottom-2 w-16 h-16 text-[#FF6B9D] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -409,65 +383,16 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 				<!-- 4.3 Architecture -->
 				<div id="architecture" class="py-12">
 					<h3 class="font-xiaolai text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight">Architecture</h3>
-					<p class="text-sm text-[#666] dark:text-[#999] mb-10">双路径 · 现役与遗留</p>
+					<p class="text-sm text-[#666] dark:text-[#999] mb-10">单路径 · 现役</p>
 
-					<div class="grid md:grid-cols-2 gap-6">
+					<div class="grid gap-6 md:max-w-xl">
 
-						<!-- Workers 路径（main 分支 · 遗留待命） -->
-						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(139,124,179,.28)] hover:border-[#8B7CB3]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
-							<svg class="absolute -right-3 -bottom-3 w-28 h-28 text-[#7BA3D9] opacity-[0.05] dark:opacity-[0.08] blur-[2px] group-hover:opacity-[0.12] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
-							<div class="relative z-10">
-								<div class="flex items-center justify-between mb-1.5">
-									<p class="text-[10px] font-bold text-[#999] tracking-widest uppercase group-hover:text-[#8B7CB3] transition-colors duration-500">Legacy · main</p>
-									<span class="text-[10px] font-bold text-[#999] tracking-widest bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full">STANDBY</span>
-								</div>
-								<h4 class="font-xiaolai text-base font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight group-hover:text-[#8B7CB3] transition-colors duration-500">Workers 路径</h4>
-								<span class="block h-0.5 w-8 mt-2 mb-5 rounded-full bg-gradient-to-r from-[#8B7CB3]/60 to-transparent group-hover:w-14 transition-all duration-500"></span>
-
-								<div class="flex flex-col items-center">
-								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/40 hover:scale-[1.03] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-default">
-									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Browser</span>
-								</div>
-								<div class="relative h-7 w-px mx-auto bg-gradient-to-b from-[#8B7CB3]/15 to-[#8B7CB3]/35">
-									<span class="colo-flow-dot absolute left-1/2 top-0.5 w-1.5 h-1.5 rounded-full bg-[#8B7CB3] shadow-[0_0_6px_[#8B7CB3]]" style="--flow-i: 0"></span>
-								</div>
-								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/40 hover:scale-[1.03] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-default">
-									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Cloudflare CDN</span>
-								</div>
-								<div class="relative h-7 w-px mx-auto bg-gradient-to-b from-[#8B7CB3]/15 to-[#8B7CB3]/35">
-									<span class="colo-flow-dot absolute left-1/2 top-0.5 w-1.5 h-1.5 rounded-full bg-[#8B7CB3] shadow-[0_0_6px_[#8B7CB3]]" style="--flow-i: 1"></span>
-								</div>
-								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/40 hover:scale-[1.03] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-default">
-									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Pages <span class="text-xs font-normal text-[#999] ml-1">(前端)</span></span>
-								</div>
-								<div class="relative h-7 w-px mx-auto bg-gradient-to-b from-[#8B7CB3]/15 to-[#8B7CB3]/35">
-									<span class="colo-flow-dot absolute left-1/2 top-0.5 w-1.5 h-1.5 rounded-full bg-[#8B7CB3] shadow-[0_0_6px_[#8B7CB3]]" style="--flow-i: 2"></span>
-								</div>
-								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/40 hover:scale-[1.03] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-default">
-									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">Workers <span class="text-xs font-normal text-[#999] ml-1">(API)</span></span>
-								</div>
-								<div class="relative h-7 w-px mx-auto bg-gradient-to-b from-[#8B7CB3]/15 to-[#8B7CB3]/35">
-									<span class="colo-flow-dot absolute left-1/2 top-0.5 w-1.5 h-1.5 rounded-full bg-[#8B7CB3] shadow-[0_0_6px_[#8B7CB3]]" style="--flow-i: 3"></span>
-								</div>
-								<div class="w-full flex justify-center bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-sm rounded-xl py-2.5 px-5 border border-white/20 dark:border-white/10 shadow-sm hover:border-[#8B7CB3]/40 hover:scale-[1.03] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-default">
-									<span class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">D1 / KV / R2</span>
-								</div>
-								</div>
-
-							<div class="mt-5 pt-4 border-t border-white/10 dark:border-white/5 space-y-1.5 text-[10px] text-[#999] dark:text-[#666]">
-								<div class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-[#8B7CB3]/40 shrink-0"></span>适配器：@astrojs/cloudflare</div>
-								<div class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-[#8B7CB3]/40 shrink-0"></span>数据库：Cloudflare D1</div>
-								<div class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-[#8B7CB3]/40 shrink-0"></span>部署：Cloudflare Workers Build</div>
-							</div>
-							</div>
-						</div>
-
-						<!-- ECS 路径（isNode 分支 · 现役） -->
+						<!-- ECS 路径（现役） -->
 						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(124,179,139,.25)] hover:border-[#7CB38B]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
 							<svg class="absolute -right-3 -bottom-3 w-28 h-28 text-[#7CB38B] opacity-[0.05] dark:opacity-[0.08] blur-[2px] group-hover:opacity-[0.12] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
 							<div class="relative z-10">
 								<div class="flex items-center justify-between mb-1.5">
-									<p class="text-[10px] font-bold text-[#7CB38B] tracking-widest uppercase">Production · isNode</p>
+									<p class="text-[10px] font-bold text-[#7CB38B] tracking-widest uppercase">Production · ECS</p>
 									<span class="text-[10px] font-bold text-[#7CB38B] tracking-widest bg-[#7CB38B]/10 px-2 py-0.5 rounded-full animate-pulse">● LIVE</span>
 								</div>
 								<h4 class="font-xiaolai text-base font-bold text-[#1A1A1A] dark:text-[#EAEAEA] tracking-tight group-hover:text-[#7CB38B] transition-colors duration-500">ECS 路径</h4>
@@ -885,9 +810,9 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 					<h3 class="font-xiaolai text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2 tracking-tight">Data Layer</h3>
 					<p class="text-sm text-[#666] dark:text-[#999] mb-10">内容来源 · 各管一摊</p>
 
-					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-						<!-- D1 (SQLite) · 主紫 · 数据库图标 -->
+						<!-- SQLite · 主紫 · 数据库图标 -->
 						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(139,124,179,.28)] hover:border-[#8B7CB3]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
 							<!-- 背景幽灵图标：数据库圆柱 -->
 							<svg class="absolute -right-3 -bottom-3 w-24 h-24 text-[#8B7CB3] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -897,44 +822,12 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 							</svg>
 							<div class="relative z-10">
 								<div class="flex items-center justify-between mb-1.5">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-500">D1 <span class="text-xs font-normal text-[#999] ml-1">(SQLite)</span></div>
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-500">SQLite</div></div>
 									<!-- 数据读取指示灯 -->
 									<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#8B7CB3] group-hover:shadow-[0_0_8px_#8B7CB3] transition-all duration-500"></div>
 								</div>
 								<span class="block h-0.5 w-8 mb-2.5 rounded-full bg-gradient-to-r from-[#8B7CB3] to-transparent group-hover:w-14 transition-all duration-500"></span>
 								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-500">文章表、留言表、分类表</div>
-							</div>
-						</div>
-
-						<!-- KV · 粉 · 钥匙图标 -->
-						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(255,107,157,.25)] hover:border-[#FF6B9D]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
-							<!-- 背景幽灵图标：钥匙 -->
-							<svg class="absolute -right-3 -bottom-3 w-24 h-24 text-[#FF6B9D] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-							</svg>
-							<div class="relative z-10">
-								<div class="flex items-center justify-between mb-1.5">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#FF6B9D] transition-colors duration-500">KV</div>
-									<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#FF6B9D] group-hover:shadow-[0_0_8px_#FF6B9D] transition-all duration-500"></div>
-								</div>
-								<span class="block h-0.5 w-8 mb-2.5 rounded-full bg-gradient-to-r from-[#FF6B9D] to-transparent group-hover:w-14 transition-all duration-500"></span>
-								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-500">站点配置、访问计数、主题缓存</div>
-							</div>
-						</div>
-
-						<!-- 内容来源 · 薄荷 · 文档图标 -->
-						<div class="group relative bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2rem] p-6 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1.5 hover:shadow-[0_10px_32px_-8px_rgba(124,179,139,.25)] hover:border-[#7CB38B]/30 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden">
-							<!-- 背景幽灵图标：文档 -->
-							<svg class="absolute -right-3 -bottom-3 w-24 h-24 text-[#7CB38B] opacity-[0.06] dark:opacity-[0.1] blur-[2px] group-hover:opacity-[0.16] group-hover:blur-md group-hover:scale-125 transition-all duration-700 ease-out pointer-events-none select-none z-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-							</svg>
-							<div class="relative z-10">
-								<div class="flex items-center justify-between mb-1.5">
-									<div class="font-xiaolai text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7CB38B] transition-colors duration-500">内容来源</div>
-									<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#7CB38B] group-hover:shadow-[0_0_8px_#7CB38B] transition-all duration-500"></div>
-								</div>
-								<span class="block h-0.5 w-8 mb-2.5 rounded-full bg-gradient-to-r from-[#7CB38B] to-transparent group-hover:w-14 transition-all duration-500"></span>
-								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-500">原创 / 转载 / AI 生成</div>
 							</div>
 						</div>
 
@@ -946,11 +839,11 @@ const lastBuildRelative = relativeTime(status.updatedAt);
 							</svg>
 							<div class="relative z-10">
 								<div class="flex items-center justify-between mb-1.5">
-									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors duration-500">R2 / 本地</div>
+									<div class="text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors duration-500">本地存储</div>
 									<div class="w-2 h-2 rounded-full bg-[#E0E0E0] dark:bg-[#444] group-hover:bg-[#7BA3D9] group-hover:shadow-[0_0_8px_#7BA3D9] transition-all duration-500"></div>
 								</div>
 								<span class="block h-0.5 w-8 mb-2.5 rounded-full bg-gradient-to-r from-[#7BA3D9] to-transparent group-hover:w-14 transition-all duration-500"></span>
-								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-500">Workers: R2 对象存储<br>ECS: data/uploads/ 本地文件</div>
+								<div class="text-xs text-[#666] dark:text-[#999] leading-relaxed group-hover:text-[#444] dark:group-hover:text-[#AAA] transition-colors duration-500">data/uploads/ 本地文件</div>
 							</div>
 						</div>
 

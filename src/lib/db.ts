@@ -1,6 +1,6 @@
 // ============================================================
 // src/lib/db.ts — ECS (Node.js) 版本
-// 无 cloudflare:workers 依赖，用 createRequire 加载 better-sqlite3
+// 用 createRequire 加载 better-sqlite3
 // ============================================================
 
 import { createRequire } from "node:module";

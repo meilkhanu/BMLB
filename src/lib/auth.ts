@@ -5,14 +5,14 @@
 // GET  /api/auth  → 检查登录状态
 // POST /api/auth  → 登录 / 首次 SETUP / 登出
 //
-// 双部署兼容：Workers(KV) / ECS(SQLite kv_store)
+// 部署：ECS（SQLite kv_store）
 // ============================================================
 
 import type { APIContext } from "astro";
 import { getDb, getKV, isNode } from "./db";
 
 // ============================================================
-// Env 类型（简化，不再绑定 Cloudflare 特定类型）
+// Env 类型（简化）
 // ============================================================
 
 export interface Env {
