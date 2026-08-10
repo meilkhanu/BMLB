@@ -136,10 +136,17 @@ try {
 				<span class="text-sm font-bold text-[#999] dark:text-[#666] border-r border-black/5 dark:border-white/10 pr-4 mr-4">分类</span>
 				<div class="relative flex gap-1 z-0">
 					<div id="pc-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-white/80 dark:bg-[#2A2A2A]/80 backdrop-blur-md shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white/50 dark:border-white/5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
+					<button
+						data-tab="all"
+						data-active="true"
+						class="relative z-10 px-5 py-1.5 text-[15px] font-bold transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
+					>
+						全部
+					</button>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
-							data-active={idx === 0 ? 'true' : 'false'}
+							data-active="false"
 							class="relative z-10 px-5 py-1.5 text-[15px] font-bold transition-colors duration-300 outline-none select-none active:scale-95 text-[#999] hover:text-[#666] dark:text-[#666] dark:hover:text-[#EAEAEA] data-[active=true]:text-[#8B7CB3] data-[active=true]:dark:text-[#8B7CB3]"
 						>
 							{cat.name}
@@ -156,10 +163,17 @@ try {
 			<div class="flex md:hidden flex-1 h-12 items-center px-2 rounded-full bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5 overflow-hidden">
 				<div class="relative flex gap-1 overflow-x-auto hide-scrollbar w-full items-center z-0">
 					<div id="mobile-tab-slider" class="absolute top-0 bottom-0 left-0 rounded-full bg-[#8B7CB3] shadow-md transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-[-1]"></div>
+					<button
+						data-tab="all"
+						data-active="true"
+						class="relative z-10 px-4 py-1.5 text-sm font-bold whitespace-nowrap transition-colors duration-300 outline-none select-none active:scale-95 text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] data-[active=true]:text-white font-xiaolai"
+					>
+						全部
+					</button>
 					{SITE_CONFIG.categories.map((cat, idx) => (
 						<button
 							data-tab={cat.id}
-							data-active={idx === 0 ? 'true' : 'false'}
+							data-active="false"
 							class="relative z-10 px-4 py-1.5 text-sm font-bold whitespace-nowrap transition-colors duration-300 outline-none select-none active:scale-95 text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] data-[active=true]:text-white font-xiaolai"
 						>
 							{cat.name}
@@ -374,11 +388,84 @@ try {
 
 			<!-- 3.5 右侧主容器区 —— 服务端渲染文章卡片 -->
 			<div id="tab-panel-container" class="flex-1 min-h-[400px] w-full mt-4 md:mt-0">
+				{/* —— 全部面板（默认显示） —— */}
+				<div class="panel-all" data-panel="all" style="display: block">
+					<div id="posts-all" class="flex flex-col gap-6">
+						{allPosts.map((p, idx) => {
+							const cat = SITE_CONFIG.categories.find(c => c.id === (p.categoryId || 'notes')) || SITE_CONFIG.categories[0];
+							const date = formatDate(p.publishedAt);
+							const excerpt = p.excerpt || '';
+							return (
+								<a
+									href={`/blog/${encodeURIComponent(p.slug)}`}
+									class={`block no-underline post-card-item ${idx >= POSTS_PER_PAGE ? 'hidden post-card-hidden' : ''}`}
+									data-cat="all"
+								>
+									<article class={`group relative bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col-reverse md:flex-row gap-6 border border-transparent hover:border-[#8B7CB3]/20 overflow-hidden delay-${idx % 5}`} data-animate>
+										<div class="flex-1 flex flex-col justify-center">
+											<div class="flex items-center gap-3 mb-3">
+												<span class="font-xiaolai px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase" style={`background-color:${cat.color}18;color:${cat.color}`}>
+													{cat.name}
+												</span>
+												<span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+													<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+													{date}
+												</span>
+											</div>
+
+											<h3 class="font-xiaolai text-xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 group-hover:text-[#8B7CB3] transition-colors leading-snug">
+												{p.title}
+											</h3>
+											{excerpt && (
+												<p class="text-sm text-[#666] dark:text-[#888] leading-relaxed line-clamp-2 mb-4">
+													{excerpt}
+												</p>
+											)}
+
+											<div class="mt-auto flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+												Read Article
+												<svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+											</div>
+										</div>
+										<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
+											{p.coverImage ? (
+												<img src={p.coverImage} alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+											) : (
+												<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
+													<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+												</div>
+											)}
+										</div>
+									</article>
+								</a>
+							);
+						})}
+					</div>
+
+					{allPosts.length === 0 && (
+						<div id="empty-all" class="w-full min-h-[300px] rounded-3xl border-2 border-dashed border-[#E0E0E0] dark:border-[#2A2A2A] flex items-center justify-center text-[#999] text-sm">
+							暂无文章
+						</div>
+					)}
+
+					{allPosts.length > POSTS_PER_PAGE && (
+						<div id="load-more-all" class="w-full flex justify-center mt-8 mb-4">
+							<button
+								class="load-more-btn group relative px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 active:scale-95 overflow-hidden flex items-center gap-2 cursor-pointer outline-none"
+								data-cat="all"
+							>
+								<svg class="w-4 h-4 text-[#999] group-hover:text-[#8B7CB3] transition-all duration-300 group-hover:translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+								<span class="text-sm font-medium text-[#666] dark:text-[#999] group-hover:text-[#1A1A1A] group-hover:dark:text-[#EAEAEA] transition-colors">加载更多</span>
+							</button>
+						</div>
+					)}
+				</div>
+
 				{SITE_CONFIG.categories.map(cat => {
 					const catPosts = postsByCategory[cat.id] || [];
 					const hasMore = catPosts.length > POSTS_PER_PAGE;
 					return (
-						<div class={`panel-${cat.id}`} data-panel={cat.id} style={`display: ${cat.id === 'notes' ? 'block' : 'none'}`}>
+						<div class={`panel-${cat.id}`} data-panel={cat.id} style="display: none">
 							<div id={`posts-${cat.id}`} class="flex flex-col gap-6">
 								{catPosts.map((p, idx) => {
 									const date = formatDate(p.publishedAt);
@@ -466,7 +553,7 @@ try {
 
 		function init() {
 			const tabButtons = document.querySelectorAll('[data-tab]');
-			const panelClasses = ['panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
+			const panelClasses = ['panel-all', 'panel-notes', 'panel-critique', 'panel-stack', 'panel-body', 'panel-transit', 'panel-archive'];
 
 			function syncSliders() {
 				const activePcBtn = document.querySelector('.hidden.md\\:flex [data-tab][data-active="true"]');
