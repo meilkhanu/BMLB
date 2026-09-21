@@ -38,13 +38,22 @@ async function sha256(text: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function isSecureRequest(): boolean {
+  // 本地 dev 是 http，ECS 走 nginx https 反代（由 ecosystem.config.cjs 注入 PROTOCOL）
+  if (isNode()) {
+    const proto = process.env.PROTOCOL || "";
+    return proto === "https";
+  }
+  return true;
+}
+
 function setCookie(value: string, maxAge = 86400) {
-  const secure = isNode() ? '' : ' Secure;';
+  const secure = isSecureRequest() ? ' Secure;' : '';
   return `auth_token=${value}; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=${maxAge}`;
 }
 
 function clearCookie() {
-  const secure = isNode() ? '' : ' Secure;';
+  const secure = isSecureRequest() ? ' Secure;' : '';
   return `auth_token=; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=0`;
 }
 
