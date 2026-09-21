@@ -5,6 +5,7 @@ module.exports = {
     env: {
       PORT: 4321,
       NODE_ENV: 'production',
+      PROTOCOL: 'https',
     }
   }]
 };
