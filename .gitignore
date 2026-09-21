@@ -32,3 +32,17 @@ data/app.db-shm
 data/app.db-wal
 *.db
 *.db-*
+data/*.bak*
+data/*.bak-*
+
+# all logs
+*.log
+
+# stale build artifacts
+dist.tar.gz
+
+# hermes plans
+.hermes/
+
+# uploaded files (ECS only, lives under data/)
+data/uploads/
