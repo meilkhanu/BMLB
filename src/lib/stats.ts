@@ -19,6 +19,26 @@ const BOT_RE =
 let cache: { data: { views: number; visitors: number }; ts: number } | null = null;
 const CACHE_TTL = 60_000;
 
+// —— 写接口限流：每 IP 每分钟最多 10 次，超出返回 429 ——
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+const rateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function rateLimited(ip: string): boolean {
+	const now = Date.now();
+	const bucket = rateBuckets.get(ip);
+	if (!bucket || now >= bucket.resetAt) {
+		rateBuckets.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+		// 顺带清理过期桶，避免内存无限增长
+		if (rateBuckets.size > 5000) {
+			for (const [k, v] of rateBuckets) if (now >= v.resetAt) rateBuckets.delete(k);
+		}
+		return false;
+	}
+	bucket.count += 1;
+	return bucket.count > RATE_LIMIT;
+}
+
 function json(data: unknown, status = 200): Response {
 	return new Response(JSON.stringify(data), {
 		status,
@@ -69,6 +89,15 @@ async function handleTrack(ctx: APIContext): Promise<Response> {
 		}
 
 		const ip = getClientIp(ctx);
+
+		// 限流：超频返回 429，不写库
+		if (rateLimited(ip)) {
+			return new Response(JSON.stringify({ error: "请求过于频繁" }), {
+				status: 429,
+				headers: { "Content-Type": "application/json", "Retry-After": "60" },
+			});
+		}
+
 		const hash = md5(`${ip}|${ua}`);
 
 		const db = await getDb();
