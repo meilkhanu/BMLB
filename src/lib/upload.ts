@@ -63,8 +63,13 @@ function generateKey(originalName: string): string {
 
 // —— POST /api/upload ——
 async function handleUploadRequest(ctx: APIContext): Promise<Response> {
-  // 鉴权（ECS 环境跳过，因 PM2 重启后 kv_store 表为空导致 session 丢失）
-  const authed = isNode() ? true : await verifySession(ctx.request, getKV());
+  // 鉴权（所有环境统一走 session；ECS 的 session 同样持久化在 data/app.db 的 kv_store 表中）
+  const kv = getKV();
+  if (!kv) {
+    console.error("[upload] FATAL: KV 存储不可用");
+    return json({ error: "运行时不可用" }, 500);
+  }
+  const authed = await verifySession(ctx.request, kv);
   if (!authed) {
     return json({ error: "未登录" }, 401);
   }
