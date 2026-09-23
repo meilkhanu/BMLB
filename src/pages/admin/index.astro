@@ -22,30 +22,50 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
   <!-- ========== 顶部栏 ========== -->
-  <header class="fixed top-0 left-0 w-full h-16 z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
-    <div class="max-w-[1600px] mx-auto px-8 h-full flex items-center justify-between">
-      <div class="flex items-center gap-4">
+  <header class="fixed top-0 left-0 w-full z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
+    <!-- 移动端两行（品牌+常驻操作 / 导航横滑），桌面端单行 -->
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-2 md:py-0 h-auto md:h-16 flex flex-wrap md:flex-nowrap items-center gap-x-4 gap-y-2 md:justify-between">
+      <!-- 第一行：品牌 + 常驻操作 -->
+      <div class="flex items-center gap-3 md:gap-4 order-1">
         <a href="/" class="text-lg font-bold no-underline text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] transition-colors">贝谟拉比</a>
         <span class="text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
       </div>
-      <div class="flex items-center gap-3">
-        <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">编辑 /now</button>
-        <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">微日志</button>
-        <button id="music-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">音乐</button>
-        <button id="edit-about-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">关于</button>
-        <button id="edit-site-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none">站点设置</button>
-        <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">+ 新建文章</button>
-        <button id="admin-theme-btn" title="切换深色/浅色" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-90 transition-all cursor-pointer border-none">
+      <div class="order-2 md:order-3 flex items-center gap-2 md:gap-3 ml-auto md:ml-0">
+        <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">+ 新建文章</button>
+        <button id="admin-theme-btn" title="切换深色/浅色" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-90 transition-all cursor-pointer border-none shrink-0">
           <svg id="admin-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <svg id="admin-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
-        <button id="logout-btn" class="px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none">登出</button>
+        <button id="logout-btn" class="px-3 md:px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none whitespace-nowrap">登出</button>
+      </div>
+      <!-- 第二行（移动端）/ 行内（桌面端）：板块导航，移动端横向滚动 -->
+      <div class="order-3 md:order-2 w-full md:w-auto flex items-center gap-2 md:gap-3 overflow-x-auto admin-nav-scroll -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible">
+        <button id="edit-now-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">编辑 /now</button>
+        <button id="edit-activity-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">微日志</button>
+        <button id="music-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">音乐</button>
+        <button id="edit-about-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">关于</button>
+        <button id="edit-site-btn" class="px-4 py-2 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] text-sm font-bold hover:bg-[#8B7CB3] hover:text-white active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">站点设置</button>
       </div>
     </div>
   </header>
+  <style>
+    .admin-nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .admin-nav-scroll::-webkit-scrollbar { display: none; }
+    /* 文章列表：按断点切换表格/卡片。用 .is-list-active 而非 Tailwind hidden，
+       避免 .hidden 与 .md\:block 特异性相同导致 <768px 下表格泄漏显示 */
+    #posts-table.is-list-active { display: block; }
+    #posts-cards.is-list-active { display: block; }
+    @media (max-width: 767px) {
+      #posts-table { display: none !important; }
+    }
+    @media (min-width: 768px) {
+      #posts-cards { display: none !important; }
+    }
+  </style>
 
   <!-- ========== 主体区域 ========== -->
-  <main class="pt-20 pb-16 px-8 max-w-[1600px] mx-auto">
+  <!-- pt 需覆盖移动端更高的头部（两行约 96px），桌面端仍是 80px -->
+  <main class="pt-[104px] md:pt-20 pb-24 md:pb-16 px-4 md:px-8 max-w-[1600px] mx-auto">
 
     <!-- —— 文章列表 —— -->
     <div id="list-view">
@@ -64,8 +84,8 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         <p class="text-[#999] text-sm mb-6">点击上方「+ 新建文章」开始写作</p>
       </div>
 
-      <!-- 文章表格 -->
-      <div id="posts-table" class="hidden">
+      <!-- 文章表格（桌面端 md+，移动端隐藏） -->
+      <div id="posts-table" class="hidden md:block">
         <div class="overflow-x-auto rounded-2xl border border-[#EAEAEA] dark:border-[#2A2A2A]">
           <table class="w-full text-sm">
             <thead>
@@ -81,6 +101,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </table>
         </div>
       </div>
+
+      <!-- 文章卡片列表（移动端专用，md 以下显示；md 以上 display:none） -->
+      <div id="posts-cards" class="hidden md:hidden space-y-3"></div>
     </div>
 
     <!-- —— 编辑器面板（隐藏） —— -->
@@ -101,8 +124,8 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           <div>
             <label class="block text-xs font-medium text-[#999] mb-2">Slug（URL标识）*</label>
             <div class="flex gap-2">
-              <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="flex-1 px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-              <button type="button" id="gen-slug-btn" class="px-4 py-3 rounded-xl bg-[#F5F5F5] dark:bg-[#252525] text-xs font-bold text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">随机生成</button>
+              <input type="text" id="field-slug" required pattern="[a-z0-9\-]+" class="flex-1 min-w-0 px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
+              <button type="button" id="gen-slug-btn" class="px-4 py-3 rounded-xl bg-[#F5F5F5] dark:bg-[#252525] text-xs font-bold text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0">随机生成</button>
             </div>
           </div>
           <div>
@@ -143,9 +166,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           <div>
             <label class="block text-xs font-medium text-[#999] mb-2">封面图（可选）</label>
             <input type="text" id="field-coverImage" placeholder="https://... 或直接上传" class="w-full px-4 py-3 rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all" />
-            <div class="flex gap-2 mt-2.5">
+            <div class="flex flex-col sm:flex-row gap-2 mt-2.5">
               <input type="file" id="cover-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-              <button type="button" id="cover-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+              <button type="button" id="cover-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0 self-start sm:self-auto">上传</button>
             </div>
             <span id="cover-upload-status" class="text-[11px] text-[#999] mt-2 block"></span>
           </div>
@@ -165,13 +188,20 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </div>
         </div>
 
-        <!-- 操作按钮 -->
-        <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+        <!-- 操作按钮（桌面端原位） -->
+        <div class="hidden md:flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
           <button type="button" id="save-draft-btn" class="px-8 py-3 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-medium text-[#666] dark:text-[#999] hover:bg-[#E0E0E0] dark:hover:bg-[#333] active:scale-95 transition-all cursor-pointer border-none">保存草稿</button>
           <button type="button" id="publish-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">发布</button>
           <span id="save-status" class="text-xs text-[#999] ml-2"></span>
         </div>
       </form>
+
+      <!-- 移动端底部固定保存栏（md 以下，免长滚动） -->
+      <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[rgba(250,250,250,0.92)] dark:bg-[rgba(15,15,15,0.92)] backdrop-blur-md border-t border-[#EAEAEA] dark:border-[#222] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-3">
+        <button type="button" id="save-draft-btn-mobile" class="flex-1 py-3 rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-sm font-bold text-[#666] dark:text-[#999] active:scale-95 transition-all cursor-pointer border-none">保存草稿</button>
+        <button type="button" id="publish-btn-mobile" class="flex-1 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold active:scale-95 transition-all cursor-pointer border-none">发布</button>
+        <span id="save-status-mobile" class="text-xs text-[#999] shrink-0 max-w-[80px] truncate"></span>
+      </div>
     </div>
 
     <!-- —— /now 状态面板编辑器（隐藏） —— -->
@@ -270,9 +300,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
               <!-- 左侧：上传控件 -->
               <div>
                 <label class="block text-xs font-medium text-[#999] mb-2">上传截图</label>
-                <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                   <input type="file" id="now-screenshot-file" accept="image/png,image/jpeg,image/webp,image/avif" class="flex-1 text-sm text-[#666] dark:text-[#999] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#8B7CB3]/10 file:text-[#8B7CB3] hover:file:bg-[#8B7CB3]/20 file:transition-colors file:cursor-pointer" />
-                  <button type="button" id="now-screenshot-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">上传</button>
+                  <button type="button" id="now-screenshot-upload-btn" class="px-5 py-2 rounded-full bg-[#8B7CB3] text-white text-xs font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap shrink-0 self-start sm:self-auto">上传</button>
                 </div>
                 <span id="now-screenshot-upload-status" class="text-[11px] text-[#999] mt-2 block"></span>
                 <input type="hidden" id="now-screenshot-url" />
@@ -339,11 +369,17 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
+        <div class="hidden md:flex items-center gap-4 pt-6 border-t border-[#EAEAEA] dark:border-[#2A2A2A]">
           <button type="button" id="save-now-btn" class="px-8 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
           <span id="now-save-status" class="text-xs text-[#999]"></span>
         </div>
       </div>
+    </div>
+
+    <!-- /now 编辑器：移动端底部固定保存栏 -->
+    <div id="now-mobile-save-bar" class="md:hidden hidden fixed bottom-0 left-0 right-0 z-40 bg-[rgba(250,250,250,0.92)] dark:bg-[rgba(15,15,15,0.92)] backdrop-blur-md border-t border-[#EAEAEA] dark:border-[#222] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-3">
+      <button type="button" id="save-now-btn-mobile" class="flex-1 py-3 rounded-full bg-[#8B7CB3] text-white text-sm font-bold active:scale-95 transition-all cursor-pointer border-none">保存状态</button>
+      <span id="now-save-status-mobile" class="text-xs text-[#999] shrink-0 max-w-[80px] truncate"></span>
     </div>
 
     <!-- —— 微日志编辑器 —— -->
@@ -869,11 +905,11 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     function renderAboutBasicItems(items) {
       const container = document.getElementById('about-basic-items');
       container.innerHTML = items.map((item, i) => `
-        <div class="flex gap-2 items-center" data-idx="${i}">
-          <input type="text" value="${escapeAttr(item.label)}" placeholder="Key" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="label" />
-          <span class="text-[#999]">:</span>
-          <input type="text" value="${escapeAttr(item.value)}" placeholder="Value" class="flex-[2] px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="value" />
-          <button onclick="removeAboutBasicItem(${i})" class="text-xs text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+        <div class="flex flex-col sm:flex-row gap-2 sm:items-center" data-idx="${i}">
+          <input type="text" value="${escapeAttr(item.label)}" placeholder="Key" class="sm:flex-1 min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="label" />
+          <span class="text-[#999] hidden sm:inline">:</span>
+          <input type="text" value="${escapeAttr(item.value)}" placeholder="Value" class="sm:flex-[2] min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="value" />
+          <button onclick="removeAboutBasicItem(${i})" class="text-xs text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0 self-start sm:self-auto">删除</button>
         </div>
       `).join('');
     }
@@ -906,10 +942,10 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         return;
       }
       container.innerHTML = skills.map(s => `
-        <div class="flex gap-2 items-center p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-skill-id="${s.id}">
-          <input type="text" value="${escapeAttr(s.name)}" placeholder="技能名称" class="flex-1 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="name" />
-          <input type="number" value="${s.sortOrder}" placeholder="排序" class="w-20 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="sort" />
-          <button onclick="deleteAboutSkill(${s.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+        <div class="flex flex-col sm:flex-row gap-2 sm:items-center p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-skill-id="${s.id}">
+          <input type="text" value="${escapeAttr(s.name)}" placeholder="技能名称" class="flex-1 min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="name" />
+          <input type="number" value="${s.sortOrder}" placeholder="排序" class="w-full sm:w-20 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="sort" />
+          <button onclick="deleteAboutSkill(${s.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0 self-start sm:self-auto">删除</button>
         </div>
       `).join('');
     }
@@ -1205,11 +1241,11 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       }
       container.innerHTML = links.map(l => `
         <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto_auto] gap-3 items-center p-3 rounded-2xl bg-[#F5F5F5] dark:bg-[#1A1A1A] border border-[#EAEAEA] dark:border-[#2A2A2A]" data-link-id="${l.id}">
-          <input type="text" value="${escapeAttr(l.title)}" placeholder="标题" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="title" />
-          <input type="text" value="${escapeAttr(l.description)}" placeholder="描述" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="desc" />
-          <input type="text" value="${escapeAttr(l.url)}" placeholder="URL" class="px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] transition-all" data-field="url" />
-          <input type="text" value="${escapeAttr(l.actionText)}" placeholder="按钮文字" class="w-28 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="action" />
-          <button onclick="deleteAboutLink(${l.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0">删除</button>
+          <input type="text" value="${escapeAttr(l.title)}" placeholder="标题" class="min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="title" />
+          <input type="text" value="${escapeAttr(l.description)}" placeholder="描述" class="min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="desc" />
+          <input type="text" value="${escapeAttr(l.url)}" placeholder="URL" class="min-w-0 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm font-mono outline-none focus:border-[#8B7CB3] transition-all" data-field="url" />
+          <input type="text" value="${escapeAttr(l.actionText)}" placeholder="按钮文字" class="w-full md:w-28 px-3 py-2.5 rounded-lg border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] text-sm outline-none focus:border-[#8B7CB3] transition-all" data-field="action" />
+          <button onclick="deleteAboutLink(${l.id})" class="text-xs font-bold text-[#999] hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer px-2 py-1 shrink-0 self-start md:self-auto">删除</button>
         </div>
       `).join('');
     }
@@ -1326,6 +1362,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     document.getElementById('edit-now-btn').addEventListener('click', () => openNowEditor());
     document.getElementById('now-back-btn').addEventListener('click', () => closeNowEditor());
     document.getElementById('save-now-btn').addEventListener('click', () => saveNowStatus());
+    document.getElementById('save-now-btn-mobile').addEventListener('click', () => saveNowStatus());
     document.getElementById('now-screenshot-upload-btn').addEventListener('click', () => uploadNowScreenshot());
     document.getElementById('cover-upload-btn').addEventListener('click', () => uploadCoverImage());
     document.getElementById('field-coverImage').addEventListener('input', function() {
@@ -1372,11 +1409,13 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.remove('hidden');
       document.getElementById('save-status').textContent = '';
+      document.getElementById('now-mobile-save-bar').classList.remove('hidden');
       await loadNowStatus();
     }
 
     function closeNowEditor() {
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('now-mobile-save-bar').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
@@ -1708,14 +1747,11 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       };
 
       if (!data.startDate || !data.endDate || !data.phase || !data.description) {
-        document.getElementById('now-save-status').textContent = '请填写所有必填字段';
-        document.getElementById('now-save-status').className = 'text-xs text-red-500';
+        setNowStatus('请填写所有必填字段', true);
         return;
       }
 
-      const statusEl = document.getElementById('now-save-status');
-      statusEl.textContent = '保存中...';
-      statusEl.className = 'text-xs text-[#999]';
+      setNowStatus('保存中...', false);
 
       try {
         const res = await fetch('/api/now', {
@@ -1726,21 +1762,30 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         if (res.status === 401) { window.location.href = '/admin/login'; return; }
         const result = await res.json();
         if (result.error) {
-          statusEl.textContent = result.error;
-          statusEl.className = 'text-xs text-red-500';
+          setNowStatus(result.error, true);
         } else {
-          statusEl.textContent = '✓ 已保存';
-          statusEl.className = 'text-xs text-[#7CB38B]';
+          setNowStatus('✓ 已保存', false);
           nowStatusData = result;
           updateNowPreview();
           setTimeout(() => {
-            if (statusEl.textContent.includes('✓')) statusEl.textContent = '';
+            if (document.getElementById('now-save-status').textContent.includes('✓')) {
+              document.getElementById('now-save-status').textContent = '';
+              document.getElementById('now-save-status-mobile').textContent = '';
+            }
           }, 2000);
         }
       } catch (e) {
-        statusEl.textContent = '网络错误，请重试';
-        statusEl.className = 'text-xs text-red-500';
+        setNowStatus('网络错误，请重试', true);
       }
+    }
+
+    // /now 状态文案同时输出桌面端/移动端两处
+    function setNowStatus(text, isError) {
+      const cls = isError ? 'text-xs text-red-500' : (text.startsWith('✓') ? 'text-xs text-[#7CB38B]' : 'text-xs text-[#999]');
+      const a = document.getElementById('now-save-status');
+      const b = document.getElementById('now-save-status-mobile');
+      if (a) { a.textContent = text; a.className = cls; }
+      if (b) { b.textContent = text; b.className = cls; }
     }
 
     // ============================================================
@@ -1786,29 +1831,37 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       }
     }
 
+    // 列表视图状态切换。
+    // 注意：不能对 posts-table / posts-cards 直接 toggle 'hidden' —— Tailwind 的 .hidden{display:none}
+    // 与 .md\:block{display:block} 特异性同为 0-1-0，书写顺序决定胜负，在 <768px 下移除 hidden 会让
+    // 桌面表格意外显示。改用专用 class 'is-list-active'，由下方 CSS 按断点接管显隐。
     function showListState(state, msg) {
       document.getElementById('loading-state').classList.toggle('hidden', state !== 'loading');
       document.getElementById('empty-state').classList.toggle('hidden', state !== 'empty');
       document.getElementById('error-state').classList.toggle('hidden', state !== 'error');
-      document.getElementById('posts-table').classList.toggle('hidden', state !== 'table');
+      const showTable = state === 'table';
+      document.getElementById('posts-table').classList.toggle('is-list-active', showTable);
+      document.getElementById('posts-cards').classList.toggle('is-list-active', showTable);
       if (state === 'error') {
         document.getElementById('error-msg-text').textContent = msg || '加载失败';
       }
     }
 
     function renderTable(posts) {
+      const catMap = { notes:'札记', critique:'时评簿', stack:'车间', body:'体感', transit:'行记', archive:'底片' };
+      const statusMeta = p => p.status === 'published'
+        ? { cls: 'bg-[#7CB38B]/10 text-[#7CB38B]', text: '已发布' }
+        : { cls: 'bg-[#E8913A]/10 text-[#E8913A]', text: '草稿' };
+
+      // 桌面端：表格
       const tbody = document.getElementById('posts-tbody');
       tbody.innerHTML = posts.map(p => {
-        const statusClass = p.status === 'published'
-          ? 'bg-[#7CB38B]/10 text-[#7CB38B]'
-          : 'bg-[#E8913A]/10 text-[#E8913A]';
-        const statusText = p.status === 'published' ? '已发布' : '草稿';
-        const catMap = { notes:'札记', critique:'时评簿', stack:'车间', body:'体感', transit:'行记', archive:'底片' };
+        const st = statusMeta(p);
         const catName = catMap[p.categoryId] || p.categoryId;
         const date = p.publishedAt || '—';
         return `
           <tr class="hover:bg-[#F5F5F5] dark:hover:bg-[#1A1A1A] transition-colors">
-            <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-md text-[10px] font-bold ${statusClass}">${statusText}</span></td>
+            <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-md text-[10px] font-bold ${st.cls}">${st.text}</span></td>
             <td class="px-6 py-4 font-medium">${escapeHtml(p.title)}</td>
             <td class="px-6 py-4 text-[#999] text-xs">${catName}</td>
             <td class="px-6 py-4 text-[#999] text-xs font-mono">${date}</td>
@@ -1819,6 +1872,29 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
               </div>
             </td>
           </tr>
+        `;
+      }).join('');
+
+      // 移动端：卡片列表
+      document.getElementById('posts-cards').innerHTML = posts.map(p => {
+        const st = statusMeta(p);
+        const catName = catMap[p.categoryId] || p.categoryId;
+        const date = p.publishedAt || '—';
+        return `
+          <div class="bg-white dark:bg-[#1A1A1A] rounded-2xl border border-[#EAEAEA] dark:border-[#2A2A2A] p-4">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <h3 class="font-bold text-sm text-[#1A1A1A] dark:text-[#EAEAEA] leading-snug line-clamp-2 flex-1">${escapeHtml(p.title)}</h3>
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold shrink-0 ${st.cls}">${st.text}</span>
+            </div>
+            <div class="flex items-center gap-3 text-[11px] text-[#999] mb-3">
+              <span>${catName}</span>
+              <span class="font-mono">${date}</span>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="editPost('${p.slug}')" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] hover:bg-[#8B7CB3] hover:text-white transition-colors cursor-pointer border-none">编辑</button>
+              <button onclick="confirmDelete('${p.slug}', '${escapeJs(p.title)}')" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-[#F5F5F5] dark:bg-[#252525] text-[#999] hover:bg-red-500 hover:text-white transition-colors cursor-pointer border-none">删除</button>
+            </div>
+          </div>
         `;
       }).join('');
     }
@@ -1864,6 +1940,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       currentSlug = null;
       document.getElementById('editor-view').classList.add('hidden');
       document.getElementById('now-editor-view').classList.add('hidden');
+      document.getElementById('now-mobile-save-bar').classList.add('hidden');
       document.getElementById('activity-editor-view').classList.add('hidden');
       document.getElementById('music-editor-view').classList.add('hidden');
       document.getElementById('about-editor-view').classList.add('hidden');
@@ -2192,6 +2269,18 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     // ============================================================
     document.getElementById('save-draft-btn').addEventListener('click', () => savePost('draft'));
     document.getElementById('publish-btn').addEventListener('click', () => savePost('published'));
+    // 移动端底部固定栏的镜像按钮
+    document.getElementById('save-draft-btn-mobile').addEventListener('click', () => savePost('draft'));
+    document.getElementById('publish-btn-mobile').addEventListener('click', () => savePost('published'));
+
+    // 状态文案统一输出到桌面端/移动端两个位置
+    function setSaveStatus(text, isError) {
+      const cls = isError ? 'text-xs text-red-500' : 'text-xs text-[#7CB38B]';
+      const a = document.getElementById('save-status');
+      const b = document.getElementById('save-status-mobile');
+      if (a) { a.textContent = text; a.className = cls + ' ml-2'; }
+      if (b) { b.textContent = text; b.className = cls; }
+    }
 
     async function savePost(status) {
       const data = collectFormData();
@@ -2207,8 +2296,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
       // 校验
       if (!data.title || !data.slug || !data.content || !data.categoryId) {
-        document.getElementById('save-status').textContent = '请填写标题和正文';
-        document.getElementById('save-status').className = 'text-xs text-red-500 ml-2';
+        setSaveStatus('请填写标题和正文', true);
         return;
       }
 
@@ -2216,9 +2304,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       const url = '/api/posts';
       const method = isUpdate ? 'PUT' : 'POST';
 
-      const statusEl = document.getElementById('save-status');
-      statusEl.textContent = '保存中...';
-      statusEl.className = 'text-xs text-[#999] ml-2';
+      setSaveStatus('保存中...', false);
 
       try {
         const res = await fetch(url, {
@@ -2231,14 +2317,12 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
         const result = await res.json();
         if (result.error) {
-          statusEl.textContent = result.error;
-          statusEl.className = 'text-xs text-red-500 ml-2';
+          setSaveStatus(result.error, true);
         } else {
-          statusEl.textContent = status === 'published' ? '✓ 已发布' : '✓ 草稿已保存';
-          statusEl.className = 'text-xs text-[#7CB38B] ml-2';
+          setSaveStatus(status === 'published' ? '✓ 已发布' : '✓ 草稿已保存', false);
           currentSlug = result.slug || data.slug;
 
-          // 3 秒后返回列表
+          // 1.5 秒后返回列表
           setTimeout(() => {
             if (document.getElementById('save-status').textContent.includes('✓')) {
               closeEditor();
@@ -2246,8 +2330,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
           }, 1500);
         }
       } catch (e) {
-        statusEl.textContent = '网络错误，请重试';
-        statusEl.className = 'text-xs text-red-500 ml-2';
+        setSaveStatus('网络错误，请重试', true);
       }
     }
 

@@ -211,7 +211,8 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
 
   return (
     <div className="border border-[#E0E0E0] dark:border-[#333] rounded-xl overflow-hidden bg-white dark:bg-[#252525]">
-      <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-[#E0E0E0] dark:border-[#333] bg-[#FAFAFA] dark:bg-[#1A1A1A]">
+      {/* 工具栏：移动端单行横向滚动（不折行），桌面端 flex-wrap */}
+      <div className="admin-toolbar flex flex-nowrap md:flex-wrap items-center gap-0.5 p-2 border-b border-[#E0E0E0] dark:border-[#333] bg-[#FAFAFA] dark:bg-[#1A1A1A] overflow-x-auto hide-scrollbar">
         <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="撤销">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 10h10a5 5 0 015 5v0a5 5 0 01-5 5H8" /><path d="M3 10l4-4M3 10l4 4" /></svg>
         </ToolbarButton>
@@ -318,6 +319,10 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
         .dark .tiptap hr{border-color:#333}
         .tiptap .selectedCell::after{background:rgba(139,124,179,.15)}
         .dark .tiptap ::selection{background:rgba(139,124,179,.4)}
+        .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+        .hide-scrollbar::-webkit-scrollbar{display:none}
+        .admin-toolbar{-webkit-overflow-scrolling:touch}
+        .admin-toolbar > *{flex-shrink:0}
       `}</style>
     </div>
   );

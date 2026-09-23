@@ -36,13 +36,13 @@ import { SITE_CONFIG } from '../../config.ts';
       <h1 id="login-title" class="text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-2">管理登录</h1>
       <p id="login-desc" class="text-sm text-[#999] mb-6">请输入管理密码</p>
 
-      <!-- 密码输入 -->
+      <!-- 密码输入：text-base 防止 iOS Safari 聚焦时自动放大页面 -->
       <div class="mb-4">
         <input
           id="password-input"
           type="password"
           placeholder="密码"
-          class="w-full px-4 py-3 rounded-2xl border border-[#E0E0E0] dark:border-[#333] bg-[#FAFAFA] dark:bg-[#252525] text-[#1A1A1A] dark:text-[#EAEAEA] text-sm outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-[#E0E0E0] dark:border-[#333] bg-[#FAFAFA] dark:bg-[#252525] text-[#1A1A1A] dark:text-[#EAEAEA] text-base outline-none focus:border-[#8B7CB3] focus:ring-2 focus:ring-[#8B7CB3]/20 transition-all"
         />
       </div>
 
@@ -58,8 +58,8 @@ import { SITE_CONFIG } from '../../config.ts';
       </button>
     </div>
 
-    <!-- 返回首页 -->
-    <a href="/" class="block text-center text-xs text-[#999] hover:text-[#666] dark:hover:text-[#AAA] mt-6 no-underline transition-colors">
+    <!-- 返回首页：加大点击热区（py-2 -my-2），便于移动端触按 -->
+    <a href="/" class="block text-center text-xs text-[#999] hover:text-[#666] dark:hover:text-[#AAA] mt-6 py-2 -my-2 no-underline transition-colors">
       ← 返回首页
     </a>
   </div>
