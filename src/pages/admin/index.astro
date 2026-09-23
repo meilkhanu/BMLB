@@ -22,21 +22,22 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 <body class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA]">
 
   <!-- ========== 顶部栏 ========== -->
-  <header class="fixed top-0 left-0 w-full z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
+  <header id="admin-header" class="fixed top-0 left-0 w-full z-50 bg-[rgba(250,250,250,0.9)] dark:bg-[rgba(15,15,15,0.9)] backdrop-blur-md border-b border-[#EAEAEA] dark:border-[#222]">
     <!-- 移动端两行（品牌+常驻操作 / 导航横滑），桌面端单行 -->
     <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-2 md:py-0 h-auto md:h-16 flex flex-wrap md:flex-nowrap items-center gap-x-4 gap-y-2 md:justify-between">
       <!-- 第一行：品牌 + 常驻操作 -->
-      <div class="flex items-center gap-3 md:gap-4 order-1">
-        <a href="/" class="text-lg font-bold no-underline text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] transition-colors">贝谟拉比</a>
-        <span class="text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
+      <div class="flex items-center gap-2 md:gap-4 order-1 min-w-0">
+        <a href="/" class="text-base md:text-lg font-bold no-underline text-[#1A1A1A] dark:text-[#EAEAEA] hover:text-[#8B7CB3] transition-colors whitespace-nowrap">贝谟拉比</a>
+        <!-- 徽章在窄屏隐藏：给第一行留出空间，避免折行把头部撑高 -->
+        <span class="hidden sm:inline-block text-[10px] font-bold text-[#8B7CB3] bg-[#8B7CB3]/10 px-2 py-1 rounded-md tracking-widest uppercase">管理后台</span>
       </div>
-      <div class="order-2 md:order-3 flex items-center gap-2 md:gap-3 ml-auto md:ml-0">
-        <button id="new-post-btn" class="px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">+ 新建文章</button>
+      <div class="order-2 md:order-3 flex items-center gap-2 md:gap-3 ml-auto md:ml-0 shrink-0">
+        <button id="new-post-btn" class="px-3.5 md:px-4 py-2 rounded-full bg-[#8B7CB3] text-white text-sm font-bold hover:bg-[#7A6BA2] active:scale-95 transition-all cursor-pointer border-none whitespace-nowrap">+ 新建文章</button>
         <button id="admin-theme-btn" title="切换深色/浅色" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#252525] text-[#8B7CB3] hover:bg-[#8B7CB3]/20 active:scale-90 transition-all cursor-pointer border-none shrink-0">
           <svg id="admin-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <svg id="admin-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
-        <button id="logout-btn" class="px-3 md:px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none whitespace-nowrap">登出</button>
+        <button id="logout-btn" class="px-2.5 md:px-4 py-2 rounded-full bg-transparent text-sm text-[#999] hover:text-red-500 transition-colors cursor-pointer border-none whitespace-nowrap">登出</button>
       </div>
       <!-- 第二行（移动端）/ 行内（桌面端）：板块导航，移动端横向滚动 -->
       <div class="order-3 md:order-2 w-full md:w-auto flex items-center gap-2 md:gap-3 overflow-x-auto admin-nav-scroll -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible">
@@ -62,10 +63,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       #posts-cards { display: none !important; }
     }
   </style>
-
   <!-- ========== 主体区域 ========== -->
-  <!-- pt 需覆盖移动端更高的头部（两行约 96px），桌面端仍是 80px -->
-  <main class="pt-[104px] md:pt-20 pb-24 md:pb-16 px-4 md:px-8 max-w-[1600px] mx-auto">
+  <!-- padding-top 由 JS 按头部实测高度写入 CSS 变量，杜绝固定值在窄屏/大字号下遮挡内容 -->
+  <main class="pt-[var(--admin-header-h,104px)] md:pt-20 pb-24 md:pb-16 px-4 md:px-8 max-w-[1600px] mx-auto">
 
     <!-- —— 文章列表 —— -->
     <div id="list-view">
@@ -1791,9 +1791,27 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
     // ============================================================
     // 初始化
     // ============================================================
+    // ============================================================
+    // 头部高度自适应：把 header 实测高度写进 CSS 变量，main 用它做 padding-top。
+    // 固定值在窄屏（品牌+操作按钮折行）、大字号、系统缩放时会偏小，导致内容被遮。
+    // ============================================================
+    function syncAdminHeaderHeight() {
+      const hdr = document.getElementById('admin-header');
+      if (!hdr) return;
+      const h = Math.ceil(hdr.getBoundingClientRect().height);
+      if (h > 0) document.documentElement.style.setProperty('--admin-header-h', h + 'px');
+    }
+    syncAdminHeaderHeight();
+    window.addEventListener('resize', syncAdminHeaderHeight);
+    // 字体异步加载完后高度可能变化，再校准一次
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncAdminHeaderHeight);
+    // 横竖屏切换
+    window.addEventListener('orientationchange', () => setTimeout(syncAdminHeaderHeight, 120));
+
     (async function init() {
       await checkAuth();
       await loadPosts();
+      syncAdminHeaderHeight();
     })();
 
     // 登录状态检查
