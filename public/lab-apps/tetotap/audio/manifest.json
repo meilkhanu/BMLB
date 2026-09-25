@@ -4,16 +4,16 @@
    "て",
    "と"
   ],
-  "dur": 1.81,
-  "size": 22614
+  "dur": 1.05,
+  "size": 13524
  },
  "tapa": {
   "syllables": [
    "た",
    "ぱ"
   ],
-  "dur": 1.431,
-  "size": 17912
+  "dur": 0.823,
+  "size": 10703
  },
  "kawaii": {
   "syllables": [
@@ -22,8 +22,8 @@
    "い",
    "い"
   ],
-  "dur": 4.229,
-  "size": 51454
+  "dur": 2.466,
+  "size": 30451
  },
  "haiyo": {
   "syllables": [
@@ -31,8 +31,8 @@
    "い",
    "よ"
   ],
-  "dur": 2.596,
-  "size": 32018
+  "dur": 1.523,
+  "size": 19166
  },
  "arigato": {
   "syllables": [
@@ -41,8 +41,8 @@
    "が",
    "と"
   ],
-  "dur": 3.841,
-  "size": 47065
+  "dur": 2.235,
+  "size": 27630
  },
  "ohayo": {
   "syllables": [
@@ -50,8 +50,8 @@
    "は",
    "よ"
   ],
-  "dur": 2.172,
-  "size": 27003
+  "dur": 1.269,
+  "size": 16031
  },
  "konnichi": {
   "syllables": [
@@ -60,71 +60,71 @@
    "に",
    "ち"
   ],
-  "dur": 4.481,
-  "size": 54588
+  "dur": 2.62,
+  "size": 32332
  },
  "pin": {
   "syllables": [
    "ぴ",
    "ん"
   ],
-  "dur": 1.59,
-  "size": 19793
+  "dur": 0.924,
+  "size": 11956
  },
  "doki": {
   "syllables": [
    "ど",
    "き"
   ],
-  "dur": 1.821,
-  "size": 22614
+  "dur": 1.071,
+  "size": 13837
  },
  "miao": {
   "syllables": [
    "みゃ",
    "お"
   ],
-  "dur": 1.655,
-  "size": 20734
+  "dur": 0.957,
+  "size": 12270
  },
  "pyon": {
   "syllables": [
    "ぴょ",
    "ん"
   ],
-  "dur": 1.587,
-  "size": 19793
+  "dur": 0.92,
+  "size": 11956
  },
  "niu": {
   "syllables": [
    "に",
    "う"
   ],
-  "dur": 2.138,
-  "size": 26376
+  "dur": 1.247,
+  "size": 15718
  },
  "bubu": {
   "syllables": [
    "ぶ",
    "ぶ"
   ],
-  "dur": 1.604,
-  "size": 20107
+  "dur": 0.927,
+  "size": 11956
  },
  "munya": {
   "syllables": [
    "む",
    "にゃ"
   ],
-  "dur": 1.519,
-  "size": 19166
+  "dur": 0.876,
+  "size": 11329
  },
  "uso": {
   "syllables": [
    "う",
    "そ"
   ],
-  "dur": 1.546,
-  "size": 19480
+  "dur": 0.902,
+  "size": 11643
  }
 }
