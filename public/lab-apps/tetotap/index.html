@@ -96,7 +96,7 @@ a:hover{animation:animover .2s linear}
   <div class="set">
     <p class="attention">点击 &amp; 拖动或者按任意键!<br>Click &amp; drag or press any key!</p>
     <p id="bt_feedback"><a href="#">反馈: 开启</a></p>
-    <p id="bt_backtrack"><a href="#">背景音乐: 开启</a></p>
+    <p id="bt_backtrack"><a href="#">背景音乐: 关闭</a></p>
   </div>
 </div>
 
@@ -154,7 +154,7 @@ let ctxAudio = null;
 let buffers = [];
 let ready = false, started = false;
 let feedback = true;      // 点击反馈（视觉）
-let backtrack = true;     // 背景自动旋律
+let backtrack = false;    // 背景自动旋律（默认关闭，避免无操作时自动出声）
 let bgTimer = 0, bgStep = 0, bgStartTime = 0;
 let lastWord = -1;
 
@@ -630,9 +630,27 @@ function hit(x, y) {
 function bindInput() {
   const view = $('#view');
   view.addEventListener('pointerdown', (e) => { hit(e.clientX, e.clientY); });
+  // 拖动时节流：最短间隔 180ms，且位移超过 40px 才触发，避免声音糊成一团
+  let lastDragTime = 0, lastDragX = null, lastDragY = null;
   view.addEventListener('pointermove', (e) => {
-    if (e.buttons > 0 || e.pointerType === 'touch') hit(e.clientX, e.clientY);
+    if (e.buttons === 0 && e.pointerType !== 'touch') return;
+    const now = performance.now();
+    // 首次 move 只记录基准点，不触发（避免用 0,0 当基准算出假位移）
+    if (lastDragX === null) {
+      lastDragX = e.clientX; lastDragY = e.clientY; lastDragTime = now;
+      return;
+    }
+    const dx = e.clientX - lastDragX, dy = e.clientY - lastDragY;
+    if (now - lastDragTime < 180) return;
+    if (Math.sqrt(dx * dx + dy * dy) < 40) return;
+    lastDragTime = now; lastDragX = e.clientX; lastDragY = e.clientY;
+    hit(e.clientX, e.clientY);
   });
+  // pointerup / pointercancel 时清空基准，下次按下重新开始
+  const resetDrag = () => { lastDragX = null; lastDragY = null; };
+  view.addEventListener('pointerup', resetDrag);
+  view.addEventListener('pointercancel', resetDrag);
+  view.addEventListener('pointerleave', resetDrag);
   window.addEventListener('keydown', (e) => {
     if (!started) return;
     hit(W / 2 + rand(-W * 0.2, W * 0.2), H / 2 + rand(-H * 0.2, H * 0.2));
