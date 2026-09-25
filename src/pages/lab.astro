@@ -6,35 +6,39 @@ import { getLabApps, LAB_CATEGORIES, categoryLabel } from "../lib/lab";
 const db = await getDb();
 const apps = await getLabApps(db);
 
-// 卡片四色轮换（完整字面量，Tailwind 可扫描）
-const CARD_ACCENTS = [
-  { hex: '#8B7CB3', glow: 'hover:shadow-[0_10px_32px_-8px_rgba(139,124,179,.28)]', border: 'hover:border-[#8B7CB3]/30' },
-  { hex: '#FF6B9D', glow: 'hover:shadow-[0_10px_32px_-8px_rgba(255,107,157,.28)]', border: 'hover:border-[#FF6B9D]/30' },
-  { hex: '#7CB38B', glow: 'hover:shadow-[0_10px_32px_-8px_rgba(124,179,139,.28)]', border: 'hover:border-[#7CB38B]/30' },
-  { hex: '#7BA3D9', glow: 'hover:shadow-[0_10px_32px_-8px_rgba(123,163,217,.28)]', border: 'hover:border-[#7BA3D9]/30' },
-];
+// 单色 accent（科技感：一页一个强调色，不做多彩轮换）
+const ACCENT = "#22D3EE";
+const ACCENT_SOFT = "rgba(34,211,238,.35)";
 ---
 
 <BaseLayout title="实验室 — 贝谟拉比">
-  <main class="bg-[#FAFAFA] dark:bg-[#0F0F0F] text-[#1A1A1A] dark:text-[#EAEAEA] min-h-screen pt-24 pb-20">
+  <main class="bg-[#FAFAFA] dark:bg-[#0A0A0F] text-[#1A1A1A] dark:text-[#EAEAEA] min-h-screen pt-24 pb-20 lab-grid-bg">
     <div class="max-w-5xl mx-auto px-6">
 
       <!-- ================= 页头 ================= -->
-      <section class="text-center mb-12" data-animate>
-        <p class="text-[10px] font-bold text-[#999] tracking-widest uppercase mb-2">Laboratory</p>
-        <h1 class="font-xiaolai text-4xl font-bold tracking-tight">实验室</h1>
-        <span class="block h-0.5 w-10 mx-auto mt-3 rounded-full bg-gradient-to-r from-[#8B7CB3] via-[#FF6B9D] to-transparent"></span>
-        <p class="mt-4 text-sm text-[#666] dark:text-[#999]">
-          一些不成器的小玩意儿，实验失败也没关系。
+      <section class="mb-10" data-animate>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-1.5 h-1.5 rounded-full" style={`background:${ACCENT}`}></span>
+          <p class="font-mono text-[10px] font-bold tracking-widest uppercase text-[#999] dark:text-[#666]">~/lab</p>
+        </div>
+        <h1 class="font-mono text-3xl font-bold tracking-tight">实验室</h1>
+        <p class="mt-3 font-mono text-xs text-[#666] dark:text-[#999]">
+          <span class="text-[#999] dark:text-[#666]">$</span>
+          experiments --list
+          <span class="text-[#999] dark:text-[#666]">·</span>
+          {apps.length} item{apps.length === 1 ? "" : "s"}
+        </p>
+        <p class="mt-3 text-sm text-[#666] dark:text-[#999]">
+          实验性工具与原型，可能不稳定。
         </p>
       </section>
 
-      <!-- ================= 分类筛选 ================= -->
+      <!-- ================= 分类筛选（segmented 下划线） ================= -->
       {apps.length > 0 && (
-        <div class="flex justify-center gap-2 mb-10 flex-wrap" data-animate>
+        <div class="flex gap-6 mb-8 border-b border-black/10 dark:border-white/10" data-animate>
           {LAB_CATEGORIES.map((cat, i) => (
             <button
-              class="lab-cat-btn px-4 py-1.5 rounded-full text-xs font-bold border border-black/10 dark:border-white/15 text-[#666] dark:text-[#999] bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 hover:text-[#8B7CB3] hover:border-[#8B7CB3]/40 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 cursor-pointer"
+              class="lab-cat-btn font-mono text-xs font-bold pb-2.5 border-b -mb-px text-[#999] dark:text-[#666] border-transparent hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] transition-colors duration-200 cursor-pointer bg-transparent"
               data-cat={cat.id}
               style={`animation-delay:${0.05 * i}s`}
             >
@@ -46,26 +50,33 @@ const CARD_ACCENTS = [
 
       <!-- ================= 卡片网格 ================= -->
       {apps.length === 0 ? (
-        <!-- 空状态：建设中 -->
-        <section class="group relative rounded-[2rem] bg-white/40 dark:bg-[#1A1A1A]/40 backdrop-blur-md border border-dashed border-[#8B7CB3]/25 p-12 text-center overflow-hidden" data-animate>
-          <!-- 幽灵烧瓶图标 -->
-          <svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 text-[#8B7CB3] opacity-[0.05] dark:opacity-[0.08] blur-[3px] pointer-events-none select-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
-
-          <div class="relative z-10">
-            <div class="flex items-center justify-center gap-2 mb-3">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB38B] opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#7CB38B]"></span>
-              </span>
-              <span class="font-xiaolai text-lg font-bold text-[#8B7CB3]">暂无实验</span>
-            </div>
-            <p class="text-sm text-[#666] dark:text-[#999]">正在酝酿第一个实验，敬请期待。</p>
+        <!-- 空状态：终端窗口 -->
+        <section class="max-w-xl mx-auto rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-[#0D1117] overflow-hidden shadow-sm" data-animate>
+          <!-- 标题栏 -->
+          <div class="flex items-center gap-2 px-4 py-2.5 border-b border-black/[0.07] dark:border-white/[0.07]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></span>
+            <span class="ml-2 font-mono text-[10px] text-[#999] dark:text-[#666]">/lab</span>
+          </div>
+          <!-- 终端内容 -->
+          <div class="p-6 font-mono text-xs leading-relaxed">
+            <p class="text-[#666] dark:text-[#999]"><span style={`color:${ACCENT}`}>$</span> ./experiments --status</p>
+            <p class="mt-4 text-[#1A1A1A] dark:text-[#EAEAEA]">No experiments yet.</p>
+            <p class="mt-1 text-[#666] dark:text-[#999]">
+              Build in progress<span class="inline-block w-[7px] h-[13px] align-[-2px] ml-0.5 lab-cursor" style={`background:${ACCENT}`}></span>
+            </p>
+            <p class="mt-5 text-[#999] dark:text-[#666]">
+              <span style={`color:${ACCENT}`}>→</span> 正在酝酿第一个实验，敬请期待。
+            </p>
+            <p class="mt-4 text-[#999] dark:text-[#666] opacity-60">
+              <span style={`color:${ACCENT}`}>→</span> 用管理后台添加实验，或手动 INSERT 到 lab_apps 表。
+            </p>
           </div>
         </section>
       ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="lab-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="lab-grid">
           {apps.map((app, i) => {
-            const accent = CARD_ACCENTS[i % CARD_ACCENTS.length];
             const isExternal = /^https?:\/\//.test(app.path);
             return (
               <a
@@ -73,37 +84,34 @@ const CARD_ACCENTS = [
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
                 data-cat={app.category}
-                class:list={[
-                  'group lab-card relative rounded-[2rem] bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-white/20 dark:border-white/10 p-6 shadow-sm hover:-translate-y-1.5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden no-underline text-inherit',
-                  accent.glow,
-                  accent.border,
-                  `delay-${i % 5}`,
-                ]}
+                class="group lab-card relative rounded-lg bg-white dark:bg-[#0D1117] border border-black/10 dark:border-white/10 p-5 no-underline text-inherit transition-[border-color,box-shadow] duration-200 hover:border-[#22D3EE]/40 hover:shadow-[0_0_0_1px_rgba(34,211,238,.15)]"
                 data-animate
               >
-                <!-- 顶部：图标 + 分类标签 -->
-                <div class="flex items-start justify-between mb-4">
-                  <span class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl bg-black/5 dark:bg-white/10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                    {app.icon || '🧪'}
-                  </span>
-                  <span class="text-[10px] font-bold text-[#999] tracking-widest uppercase">{categoryLabel(app.category)}</span>
+                <!-- 顶部：序号 + 分类标签 -->
+                <div class="flex items-center justify-between mb-4">
+                  <span class="font-mono text-[10px] font-bold text-[#999] dark:text-[#666]">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="font-mono text-[10px] font-bold text-[#999] dark:text-[#666] tracking-wider uppercase">{categoryLabel(app.category)}</span>
                 </div>
 
                 <!-- 标题 -->
-                <h3 class="font-xiaolai text-lg font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300">
-                  {app.title}
-                </h3>
-                <span class="block h-0.5 w-8 mt-2 mb-3 rounded-full bg-gradient-to-r from-[#8B7CB3] to-transparent group-hover:w-14 transition-all duration-500"></span>
+                <div class="flex items-center gap-2.5">
+                  <span class="w-8 h-8 rounded-md flex items-center justify-center text-base border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/5 text-[#1A1A1A] dark:text-[#EAEAEA]">
+                    {app.icon || '◈'}
+                  </span>
+                  <h3 class="text-base font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#22D3EE] transition-colors duration-200">
+                    {app.title}
+                  </h3>
+                </div>
 
                 <!-- 描述 -->
-                <p class="text-sm text-[#666] dark:text-[#999] leading-relaxed line-clamp-2">
+                <p class="mt-3 text-sm text-[#666] dark:text-[#999] leading-relaxed line-clamp-2">
                   {app.description}
                 </p>
 
-                <!-- 进入提示（hover 滑入） -->
-                <div class="mt-4 flex items-center text-[#8B7CB3] text-sm font-bold opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                  进入
-                  <svg class="w-4 h-4 ml-1 mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                <!-- 底部 meta -->
+                <div class="mt-4 pt-3 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between font-mono text-[10px] text-[#999] dark:text-[#666]">
+                  <span>{categoryLabel(app.category)}</span>
+                  <span class="transition-transform duration-200 group-hover:translate-x-1" style={`color:${ACCENT}`}>→</span>
                 </div>
               </a>
             );
@@ -119,10 +127,18 @@ const CARD_ACCENTS = [
     (function () {
       const btns = document.querySelectorAll('.lab-cat-btn');
       const cards = document.querySelectorAll('.lab-card');
+      const activate = (btn) => {
+        btns.forEach(b => {
+          const on = b === btn;
+          b.classList.toggle('lab-cat-active', on);
+          b.style.color = on ? '#22D3EE' : '';
+          b.style.borderBottomColor = on ? '#22D3EE' : 'transparent';
+        });
+      };
       btns.forEach(btn => {
         btn.addEventListener('click', () => {
           const cat = btn.dataset.cat;
-          btns.forEach(b => b.classList.toggle('lab-cat-active', b === btn));
+          activate(btn);
           cards.forEach(card => {
             const show = cat === 'all' || card.dataset.cat === cat;
             card.style.display = show ? '' : 'none';
@@ -130,16 +146,32 @@ const CARD_ACCENTS = [
         });
       });
       // 初始高亮"全部"
-      if (btns.length) btns[0].click();
+      if (btns.length) activate(btns[0]);
     })();
   </script>
 
   <style>
-    .lab-cat-btn.lab-cat-active {
-      background: #8B7CB3;
-      color: #fff;
-      border-color: #8B7CB3;
-      box-shadow: 0 4px 14px -4px rgba(139, 124, 179, 0.5);
+    /* 极淡点阵网格背景 —— 科技感里性价比最高的细节 */
+    .lab-grid-bg {
+      background-image: radial-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    :root.dark .lab-grid-bg,
+    .dark .lab-grid-bg {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    }
+    /* 终端光标闪烁 */
+    .lab-cursor {
+      animation: lab-blink 1.1s steps(2, start) infinite;
+    }
+    @keyframes lab-blink {
+      to { visibility: hidden; }
+    }
+    /* 卡片入场：只做位移+淡入，不用弹簧 */
+    .lab-card[data-animate] { will-change: transform, opacity; }
+    /* 覆盖全站弹簧入场动画，改为克制的 ease-out（仅本页） */
+    main [data-animate].animate-fade-in-up {
+      animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
   </style>
 </BaseLayout>

@@ -182,7 +182,7 @@ const DEFAULT_LINKS: AboutLink[] = [
   {
     id: 1,
     title: '实验室',
-    description: '一些不成器的小玩意儿 / 工具与实验',
+    description: '实验性工具与原型，可能不稳定',
     url: '/lab',
     actionText: '进入实验室 →',
     sortOrder: 0,
