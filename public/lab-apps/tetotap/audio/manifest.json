@@ -4,16 +4,32 @@
    "て",
    "と"
   ],
-  "dur": 1.05,
-  "size": 13524
+  "dur": 1.42,
+  "size": 17912,
+  "midi": 58,
+  "note": "A#3",
+  "shift": -5,
+  "variant": {
+   "note": "C4",
+   "shift": -3,
+   "size": 16031
+  }
  },
  "tapa": {
   "syllables": [
    "た",
    "ぱ"
   ],
-  "dur": 0.823,
-  "size": 10703
+  "dur": 0.997,
+  "size": 12897,
+  "midi": 60,
+  "note": "C4",
+  "shift": -3,
+  "variant": {
+   "note": "D4",
+   "shift": -1,
+   "size": 11643
+  }
  },
  "kawaii": {
   "syllables": [
@@ -22,8 +38,16 @@
    "い",
    "い"
   ],
-  "dur": 2.466,
-  "size": 30451
+  "dur": 2.604,
+  "size": 32018,
+  "midi": 62,
+  "note": "D4",
+  "shift": -1,
+  "variant": {
+   "note": "E4",
+   "shift": 1,
+   "size": 28884
+  }
  },
  "haiyo": {
   "syllables": [
@@ -31,8 +55,16 @@
    "い",
    "よ"
   ],
-  "dur": 1.523,
-  "size": 19166
+  "dur": 1.441,
+  "size": 18226,
+  "midi": 64,
+  "note": "E4",
+  "shift": 1,
+  "variant": {
+   "note": "F#4",
+   "shift": 3,
+   "size": 16345
+  }
  },
  "arigato": {
   "syllables": [
@@ -41,8 +73,16 @@
    "が",
    "と"
   ],
-  "dur": 2.235,
-  "size": 27630
+  "dur": 1.879,
+  "size": 23241,
+  "midi": 66,
+  "note": "F#4",
+  "shift": 3,
+  "variant": {
+   "note": "G#4",
+   "shift": 5,
+   "size": 21047
+  }
  },
  "ohayo": {
   "syllables": [
@@ -50,8 +90,16 @@
    "は",
    "よ"
   ],
-  "dur": 1.269,
-  "size": 16031
+  "dur": 0.965,
+  "size": 12270,
+  "midi": 68,
+  "note": "G#4",
+  "shift": 5,
+  "variant": {
+   "note": "A#4",
+   "shift": 7,
+   "size": 11329
+  }
  },
  "konnichi": {
   "syllables": [
@@ -60,71 +108,143 @@
    "に",
    "ち"
   ],
-  "dur": 2.62,
-  "size": 32332
+  "dur": 2.089,
+  "size": 25749,
+  "midi": 67,
+  "note": "G4",
+  "shift": 4,
+  "variant": {
+   "note": "A4",
+   "shift": 6,
+   "size": 23241
+  }
  },
  "pin": {
   "syllables": [
    "ぴ",
    "ん"
   ],
-  "dur": 0.924,
-  "size": 11956
+  "dur": 0.849,
+  "size": 11016,
+  "midi": 65,
+  "note": "F4",
+  "shift": 2,
+  "variant": {
+   "note": "G4",
+   "shift": 4,
+   "size": 10076
+  }
  },
  "doki": {
   "syllables": [
    "ど",
    "き"
   ],
-  "dur": 1.071,
-  "size": 13837
+  "dur": 1.096,
+  "size": 13837,
+  "midi": 63,
+  "note": "D#4",
+  "shift": 0,
+  "variant": {
+   "note": "F4",
+   "shift": 2,
+   "size": 12583
+  }
  },
  "miao": {
   "syllables": [
    "みゃ",
    "お"
   ],
-  "dur": 0.957,
-  "size": 12270
+  "dur": 1.103,
+  "size": 14151,
+  "midi": 61,
+  "note": "C#4",
+  "shift": -2,
+  "variant": {
+   "note": "D#4",
+   "shift": 0,
+   "size": 12583
+  }
  },
  "pyon": {
   "syllables": [
    "ぴょ",
    "ん"
   ],
-  "dur": 0.92,
-  "size": 11956
+  "dur": 1.182,
+  "size": 15091,
+  "midi": 59,
+  "note": "B3",
+  "shift": -4,
+  "variant": {
+   "note": "C#4",
+   "shift": -2,
+   "size": 13524
+  }
  },
  "niu": {
   "syllables": [
    "に",
    "う"
   ],
-  "dur": 1.247,
-  "size": 15718
+  "dur": 1.714,
+  "size": 21360,
+  "midi": 58,
+  "note": "A#3",
+  "shift": -5,
+  "variant": {
+   "note": "C4",
+   "shift": -3,
+   "size": 19166
+  }
  },
  "bubu": {
   "syllables": [
    "ぶ",
    "ぶ"
   ],
-  "dur": 0.927,
-  "size": 11956
+  "dur": 1.128,
+  "size": 14464,
+  "midi": 60,
+  "note": "C4",
+  "shift": -3,
+  "variant": {
+   "note": "D4",
+   "shift": -1,
+   "size": 12897
+  }
  },
  "munya": {
   "syllables": [
    "む",
    "にゃ"
   ],
-  "dur": 0.876,
-  "size": 11329
+  "dur": 0.952,
+  "size": 12270,
+  "midi": 62,
+  "note": "D4",
+  "shift": -1,
+  "variant": {
+   "note": "E4",
+   "shift": 1,
+   "size": 11016
+  }
  },
  "uso": {
   "syllables": [
    "う",
    "そ"
   ],
-  "dur": 0.902,
-  "size": 11643
+  "dur": 0.88,
+  "size": 11329,
+  "midi": 64,
+  "note": "E4",
+  "shift": 1,
+  "variant": {
+   "note": "F#4",
+   "shift": 3,
+   "size": 10389
+  }
  }
 }

@@ -124,22 +124,23 @@ a:hover{animation:animover .2s linear}
 'use strict';
 
 // ── 音频清单（本地渲染产物）──
+// 每个词有两个音高版本（主/变体），播放时随机选，避免同频嗡鸣
 const WORDS = [
-  { key: 'teto',     text: 'てと' },
-  { key: 'tapa',     text: 'たぱ' },
-  { key: 'kawaii',   text: 'かわいい' },
-  { key: 'haiyo',    text: 'はいよ' },
-  { key: 'arigato',  text: 'ありがと' },
-  { key: 'ohayo',    text: 'おはよ' },
-  { key: 'konnichi', text: 'こんにち' },
-  { key: 'pin',      text: 'ぴん' },
-  { key: 'doki',     text: 'どき' },
-  { key: 'miao',     text: 'みゃお' },
-  { key: 'pyon',     text: 'ぴょん' },
-  { key: 'niu',      text: 'にう' },
-  { key: 'bubu',     text: 'ぶぶ' },
-  { key: 'munya',    text: 'むにゃ' },
-  { key: 'uso',      text: 'うそ' },
+  { key: 'teto',     text: 'てと',     variant: true },
+  { key: 'tapa',     text: 'たぱ',     variant: true },
+  { key: 'kawaii',   text: 'かわいい', variant: true },
+  { key: 'haiyo',    text: 'はいよ',   variant: true },
+  { key: 'arigato',  text: 'ありがと', variant: true },
+  { key: 'ohayo',    text: 'おはよ',   variant: true },
+  { key: 'konnichi', text: 'こんにち', variant: true },
+  { key: 'pin',      text: 'ぴん',     variant: true },
+  { key: 'doki',     text: 'どき',     variant: true },
+  { key: 'miao',     text: 'みゃお',   variant: true },
+  { key: 'pyon',     text: 'ぴょん',   variant: true },
+  { key: 'niu',      text: 'にう',     variant: true },
+  { key: 'bubu',     text: 'ぶぶ',     variant: true },
+  { key: 'munya',    text: 'むにゃ',   variant: true },
+  { key: 'uso',      text: 'うそ',     variant: true },
 ];
 
 // ── 调色板（白 + 青灰系，与原版气质一致）──
@@ -156,7 +157,8 @@ let ready = false, started = false;
 let feedback = true;      // 点击反馈（视觉）
 let backtrack = false;    // 背景自动旋律（默认关闭，避免无操作时自动出声）
 let bgTimer = 0, bgStep = 0, bgStartTime = 0;
-let lastWord = -1;
+let lastWord = -1;          // 上一个播放的词索引（playWord 内部用）
+let lastWordIndex = -1;     // 上一个词索引（hit 用来避免连续重复）
 
 /* ============================================================
    音频
@@ -167,21 +169,32 @@ async function loadAudio() {
     fetch(`audio/${w.key}.mp3`)
       .then(r => r.arrayBuffer())
       .then(buf => ctxAudio.decodeAudioData(buf))
-      .catch(e => { console.warn('audio fail', w.key, e); return null; })
+      .then(main => {
+        // 变体音高（+2 半音），失败不影响主版本
+        return fetch(`audio/${w.key}b.mp3`)
+          .then(r => r.arrayBuffer())
+          .then(b => ctxAudio.decodeAudioData(b))
+          .then(alt => ({ main, alt }))
+          .catch(() => ({ main, alt: null }));
+      })
+      .catch(e => { console.warn('audio fail', w.key, e); return { main: null, alt: null }; })
   );
   buffers = await Promise.all(jobs);
 }
 
 function playWord(i) {
-  if (!ctxAudio || !buffers[i]) return;
+  const pack = buffers[i];
+  if (!ctxAudio || !pack || !pack.main) return;
+  // 随机选主版本或变体（不同音高），避免重叠时同频嗡鸣
+  const buf = (pack.alt && Math.random() < 0.45) ? pack.alt : pack.main;
   // 同一音符快速重复时，先停掉上一个，避免叠加浑浊
   if (lastWord === i && ctxAudio.__lastSrc) {
     try { ctxAudio.__lastSrc.stop(); } catch (e) {}
   }
   const src = ctxAudio.createBufferSource();
-  src.buffer = buffers[i];
+  src.buffer = buf;
   const gain = ctxAudio.createGain();
-  gain.gain.value = 0.9;
+  gain.gain.value = 0.85;
   src.connect(gain).connect(ctxAudio.destination);
   src.start();
   ctxAudio.__lastSrc = src;
@@ -617,7 +630,15 @@ function floatText(txt, x, y) {
    ============================================================ */
 function hit(x, y) {
   if (!ready) return;
-  const i = Math.floor(Math.random() * WORDS.length);
+  // 避免连续两次同一个词（重叠时像复读），从剩余词里随机
+  let i = Math.floor(Math.random() * WORDS.length);
+  if (WORDS.length > 1) {
+    let guard = 0;
+    while (i === lastWordIndex && guard++ < 5) {
+      i = Math.floor(Math.random() * WORDS.length);
+    }
+  }
+  lastWordIndex = i;
   playWord(i);
   if (feedback) {
     playEffect(x, y, PALETTE[Math.floor(Math.random() * PALETTE.length)]);
