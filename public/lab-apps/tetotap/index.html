@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="重音テト版本的点击/触摸播放声音并出现变化图案的互动内容。">
+<title>Tetotap</title>
+<style>
+:root{
+  --bg:#8cc;                       /* 沿用原版青灰底，保证视觉一致 */
+  --ink:#fff;
+  --font:"Quicksand","游ゴシック","Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{position:absolute;width:100%;height:100%;overflow:hidden;text-align:center;
+  background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent}
+a{color:#fff;text-decoration:none;border-bottom:dashed 1px #fff}
+a:hover{animation:animover .2s linear}
+@keyframes animover{from{opacity:0}to{opacity:1}}
+
+#view,#view canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+
+.scene{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;display:none;width:90%}
+.scene h1{font-size:1.5rem;margin-bottom:25px;font-weight:400;letter-spacing:.1em}
+.atten{font-size:.9rem;margin-bottom:20px;line-height:1.7}
+.attention{font-size:.9rem;margin-top:25px;line-height:1.6}
+.tit{margin:20px 0 10px;font-size:1rem}
+.con{letter-spacing:-.5rem;line-height:1.7;margin-bottom:6px;font-size:.95rem}
+.link{margin-top:30px;line-height:1.5;font-size:.95rem}
+#bt_start{margin-bottom:15px;font-size:1.15rem}
+#bt_about{margin-top:8px;font-size:.95rem}
+#ng{display:none}
+.ok{display:none}
+
+#scene_loading hr{width:0;border:0;border-top:1px solid #fff;transition:width .2s linear}
+#scene_main{pointer-events:none}
+#scene_main .set{margin-top:20px}
+#bt_feedback,#bt_backtrack{font-size:.9rem;margin-top:20px;pointer-events:auto;display:inline-block;margin-left:10px;margin-right:10px}
+
+#about_cover{position:fixed;inset:0;z-index:900;background:#fff;opacity:.5;display:none}
+#about{z-index:1000;background:var(--bg);max-width:640px;letter-spacing:.2rem;line-height:1.2;width:100%;
+  padding:40px;display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+#about_in{padding:0}
+#bt_close{font-size:2rem;cursor:pointer;line-height:1;margin-bottom:30px;display:block}
+#about .con{margin-bottom:20px}
+#about .link{margin:30px 0 10px}
+
+#bt_back,#bt_fs{position:absolute;z-index:100;padding:10px;left:0;font-size:1rem;cursor:pointer;
+  transition:.2s ease;display:none;user-select:none}
+#bt_fs{left:auto;right:0}
+#bt_back:hover,#bt_fs:hover,#bt_close:hover{animation:animover .2s linear}
+
+@media(max-width:640px){
+  .scene h1{font-size:1.2rem;margin-bottom:18px}
+  #bt_start{font-size:1rem;margin-bottom:10px}
+  .atten,.attention{font-size:.6rem}
+  .tit{font-size:.9rem;margin-top:20px}
+  .con{letter-spacing:-.5rem;font-size:.8rem}
+  .link{font-size:.8rem}
+  #bt_feedback,#bt_backtrack{font-size:.7rem}
+  #about{padding:30px;letter-spacing:.1rem}
+  #about .con,#about .link{font-size:.9rem}
+  #bt_close{font-size:1.8rem}
+  #bt_back,#bt_fs{font-size:.8rem;padding:8px}
+}
+</style>
+<script src="js/pixi.min.js"></script>
+<script src="js/gsap.min.js"></script>
+</head>
+<body>
+<div id="view"></div>
+
+<!-- 起始场景 -->
+<div id="scene_top" class="scene">
+  <h1>Tetotap</h1>
+  <div id="ng">
+    <p class="atten">十分抱歉<br>您的浏览器并不支持本页面需要的特性</p>
+  </div>
+  <div class="ok">
+    <p id="bt_start"><a href="#">!开始!</a></p>
+  </div>
+  <p id="bt_about"><a href="#">*关于*</a></p>
+  <div class="ok">
+    <p class="attention">※请打开声音并享受。<br>Raise the volume and enjoy!</p>
+  </div>
+</div>
+
+<!-- 加载场景 -->
+<div id="scene_loading" class="scene">
+  <hr size="1" color="#fff">
+</div>
+
+<!-- 主场景 -->
+<div id="scene_main" class="scene">
+  <div class="set">
+    <p class="attention">点击 &amp; 拖动或者按任意键!<br>Click &amp; drag or press any key!</p>
+    <p id="bt_feedback"><a href="#">反馈: 开启</a></p>
+    <p id="bt_backtrack"><a href="#">背景音乐: 开启</a></p>
+  </div>
+</div>
+
+<div id="about_cover"></div>
+<div id="about">
+  <div id="about_in">
+    <p class="close"><span id="bt_close">×</span></p>
+    <p class="con"> 声音来源 <a href="https://kasaneteto.jp/utau/" target="_blank" rel="noopener">重音テト</a> </p>
+    <p class="con"> 音源作者 <a href="https://kasaneteto.jp/" target="_blank" rel="noopener">小山乃舞世 / TWINDRILL</a> </p>
+    <p class="con"> 本站为二次创作演示，音源仅用于非商用个人作品 </p>
+    <p class="link"> 灵感来源 <a href="http://patatap.com/" target="_blank" rel="noopener">Patatap</a><br>(令人赞叹的网页!)<br>
+      原版实现参考 <a href="https://github.com/AkariRin/mikutap" target="_blank" rel="noopener">mikutap</a> (MIT) </p>
+  </div>
+</div>
+
+<div id="bt_back">＜返回</div>
+<div id="bt_fs">□全屏显示</div>
+
+<script>
+/* ============================================================
+   Tetotap — 点击/触摸/按键播放 Teto 音节 + PIXI/GSAP 视觉特效
+   复刻 mikutap 机制；音频为本地用 Teto 音源渲染的成品词
+   ============================================================ */
+(function () {
+'use strict';
+
+// ── 音频清单（本地渲染产物）──
+const WORDS = [
+  { key: 'teto',     text: 'てと' },
+  { key: 'tapa',     text: 'たぱ' },
+  { key: 'kawaii',   text: 'かわいい' },
+  { key: 'haiyo',    text: 'はいよ' },
+  { key: 'arigato',  text: 'ありがと' },
+  { key: 'ohayo',    text: 'おはよ' },
+  { key: 'konnichi', text: 'こんにち' },
+  { key: 'pin',      text: 'ぴん' },
+  { key: 'doki',     text: 'どき' },
+  { key: 'miao',     text: 'みゃお' },
+  { key: 'pyon',     text: 'ぴょん' },
+  { key: 'niu',      text: 'にう' },
+  { key: 'bubu',     text: 'ぶぶ' },
+  { key: 'munya',    text: 'むにゃ' },
+  { key: 'uso',      text: 'うそ' },
+];
+
+// ── 调色板（白 + 青灰系，与原版气质一致）──
+const PALETTE = [0xffffff, 0x8ccccc, 0xaad4d4, 0xffffff, 0x9fc4c4, 0xbfe0e0];
+
+const $ = (s) => document.querySelector(s);
+const rand = (a, b) => a + Math.random() * (b - a);
+
+let W = 0, H = 0, DPR = 1;
+let renderer, stage, bgLayer, fxLayer, floatLayer;
+let ctxAudio = null;
+let buffers = [];
+let ready = false, started = false;
+let feedback = true;      // 点击反馈（视觉）
+let backtrack = true;     // 背景自动旋律
+let bgTimer = 0, bgStep = 0, bgStartTime = 0;
+let lastWord = -1;
+
+/* ============================================================
+   音频
+   ============================================================ */
+async function loadAudio() {
+  ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+  const jobs = WORDS.map(w =>
+    fetch(`audio/${w.key}.mp3`)
+      .then(r => r.arrayBuffer())
+      .then(buf => ctxAudio.decodeAudioData(buf))
+      .catch(e => { console.warn('audio fail', w.key, e); return null; })
+  );
+  buffers = await Promise.all(jobs);
+}
+
+function playWord(i) {
+  if (!ctxAudio || !buffers[i]) return;
+  // 同一音符快速重复时，先停掉上一个，避免叠加浑浊
+  if (lastWord === i && ctxAudio.__lastSrc) {
+    try { ctxAudio.__lastSrc.stop(); } catch (e) {}
+  }
+  const src = ctxAudio.createBufferSource();
+  src.buffer = buffers[i];
+  const gain = ctxAudio.createGain();
+  gain.gain.value = 0.9;
+  src.connect(gain).connect(ctxAudio.destination);
+  src.start();
+  ctxAudio.__lastSrc = src;
+  lastWord = i;
+}
+
+/* ============================================================
+   视觉：PIXI 渲染器 + 特效池
+   ============================================================ */
+function initRenderer() {
+  DPR = (window.devicePixelRatio >= 2) ? 2 : 1;
+  renderer = PIXI.autoDetectRenderer({
+    width: W, height: H,
+    backgroundColor: 0x8ccccc,
+    antialias: false,
+    resolution: DPR,
+    autoDensity: true,
+  });
+  $('#view').appendChild(renderer.view);
+  stage = new PIXI.Container();
+  bgLayer = new PIXI.Container();
+  fxLayer = new PIXI.Container();
+  floatLayer = new PIXI.Container();
+  stage.addChild(bgLayer, fxLayer, floatLayer);
+  // 图层就绪后才实例化特效池（否则 addChild 到 undefined）
+  EFFECT_FACTORIES.forEach(f => { try { EFFECTS.push(f()); } catch (e) { console.error('effect init fail', e); } });
+  console.log(`[tetotap] ${EFFECTS.length} effects ready`);
+  resize();
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(tick);
+}
+
+function resize() {
+  W = window.innerWidth; H = window.innerHeight;
+  renderer.resize(W, H);
+}
+
+/* ── 特效池：注册工厂，待 renderer 就绪后再实例化 ── */
+const EFFECT_FACTORIES = [];
+const EFFECTS = [];
+function registerEffect(fn) { EFFECT_FACTORIES.push(fn); }
+
+// 通用：从池中取一个空闲特效播放
+function playEffect(x, y, color) {
+  if (!feedback || EFFECTS.length === 0) return;
+  const eff = EFFECTS[Math.floor(Math.random() * EFFECTS.length)];
+  eff.play(x, y, color);
+}
+
+/* ---- 特效 1：飞散圆环 ---- */
+registerEffect(function () {
+  const pool = [];
+  function make() {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    const item = {
+      g,
+      play(x, y, c) {
+        const tx = W * Math.random(), ty = H * Math.random();
+        const r = Math.min(W, H) * (Math.random() * 0.03 + 0.02);
+        g.clear();
+        g.lineStyle(Math.random() * 3 + 3, c, 1);
+        g.drawCircle(0, 0, r);
+        g.x = x; g.y = y; g.scale.x = 0; g.scale.y = 0;
+        g.rotation = Math.random() * Math.PI;
+        const dur = Math.random() * 0.2 + 0.4;
+        gsap.to(g, dur, { x: tx, y: ty, rotation: Math.random() * Math.PI, ease: 'power3.out', onComplete: () => { g.visible = false; } });
+        gsap.to(g.scale, dur, { x: 1, y: 1, ease: 'back.out(1.7)' });
+      }
+    };
+    pool.push(item);
+    return item;
+  }
+  for (let i = 0; i < 24; i++) make();
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 2：扩散实心圆 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 24; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    pool.push({
+      g,
+      play(x, y, c) {
+        const r = Math.min(W, H) * (Math.random() * 0.05 + 0.014);
+        g.clear();
+        g.beginFill(c, 1);
+        g.drawCircle(0, 0, r);
+        g.x = x; g.y = y; g.scale.x = 0; g.scale.y = 0;
+        gsap.to(g.scale, 0.5, { x: 1, y: 1, ease: 'elastic.out(1,0.3)', onComplete: done });
+        const self = this;
+        function done() { gsap.to(g.scale, 0.5, { x: 0, y: 0, ease: 'back.in(1.7)', onComplete: () => { g.visible = false; } }); }
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 3：旋转扇形 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 20; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    const holder = new PIXI.Container();
+    fxLayer.addChild(holder);
+    holder.addChild(g);
+    pool.push({
+      holder, g,
+      play(x, y, c) {
+        const R = 1.3 * Math.min(W, H) * 0.35;
+        const dir = Math.random() < 0.5 ? 1 : -1;
+        const offset = Math.random() * 360;
+        const proxy = { rot: 0 };
+        const draw = () => {
+          g.clear();
+          g.beginFill(c, 1);
+          g.moveTo(0, 0);
+          for (let a = 0; a < proxy.rot; a += 30) {
+            const rad = (dir * a + offset) * Math.PI / 180;
+            g.lineTo(Math.cos(rad) * R, Math.sin(rad) * R);
+          }
+          const rad = (dir * proxy.rot + offset) * Math.PI / 180;
+          g.lineTo(Math.cos(rad) * R, Math.sin(rad) * R);
+          g.lineTo(0, 0);
+          g.endFill();
+        };
+        holder.x = x; holder.y = y;
+        gsap.to(proxy, 0.6, { rot: 360, ease: 'power1.out', onUpdate: draw, onComplete: hide });
+        function hide() { holder.visible = false; }
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 4：多边形描边 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 20; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    pool.push({
+      g,
+      play(x, y, c) {
+        const n = 3 + Math.floor(Math.random() * 5);
+        const R = Math.min(W, H) * (Math.random() * 0.08 + 0.05);
+        const rot = Math.random() * Math.PI;
+        const proxy = { t: 0 };
+        const pts = [];
+        for (let k = 0; k < n; k++) pts.push([Math.cos(rot + k / n * Math.PI * 2) * R, Math.sin(rot + k / n * Math.PI * 2) * R]);
+        const draw = () => {
+          g.clear();
+          g.lineStyle(3, c, 1);
+          const shown = proxy.t * n;
+          g.moveTo(pts[0][0], pts[0][1]);
+          for (let k = 1; k <= Math.floor(shown); k++) {
+            if (k < n) g.lineTo(pts[k][0], pts[k][1]);
+          }
+          const frac = shown - Math.floor(shown);
+          if (frac > 0 && Math.floor(shown) < n) {
+            const k = Math.floor(shown);
+            g.lineTo(pts[k][0] * (1 - frac) + pts[(k + 1) % n][0] * frac,
+                     pts[k][1] * (1 - frac) + pts[(k + 1) % n][1] * frac);
+          }
+        };
+        g.x = x; g.y = y;
+        gsap.to(proxy, 0.9, { t: 1, ease: 'power2.inOut', onUpdate: draw, onComplete: () => {
+          gsap.to(g, 0.3, { alpha: 0, onComplete: () => { g.visible = false; g.alpha = 1; } });
+        }});
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 5：直线飞行（带尾迹）---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 20; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    pool.push({
+      g,
+      play(x, y, c) {
+        const ang = Math.random() * Math.PI * 2;
+        const len = Math.min(W, H) * (Math.random() * 0.2 + 0.1);
+        const proxy = { t: 0 };
+        const draw = () => {
+          const ex = Math.cos(ang) * len * proxy.t;
+          const ey = Math.sin(ang) * len * proxy.t;
+          g.clear();
+          g.lineStyle(Math.random() * 4 + 2, c, 1);
+          g.moveTo(0, 0); g.lineTo(ex, ey);
+        };
+        g.x = x; g.y = y;
+        gsap.to(proxy, 0.55, { t: 1, ease: 'power3.out', onUpdate: draw, onComplete: () => {
+          gsap.to(g, 0.25, { alpha: 0, onComplete: () => { g.visible = false; g.alpha = 1; } });
+        }});
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 6：同心双环 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 20; i++) {
+    const g1 = new PIXI.Graphics(), g2 = new PIXI.Graphics();
+    fxLayer.addChild(g1, g2);
+    pool.push({
+      play(x, y, c) {
+        const R1 = Math.min(W, H) * 0.06, R2 = Math.min(W, H) * 0.11;
+        g1.clear(); g2.clear();
+        g1.lineStyle(3, c, 1); g1.drawCircle(0, 0, R1);
+        g2.lineStyle(2, c, 0.7); g2.drawCircle(0, 0, R2);
+        g1.x = g2.x = x; g1.y = g2.y = y;
+        g1.scale.set(0); g2.scale.set(0);
+        gsap.to(g1.scale, 0.6, { x: 1.6, y: 1.6, alpha: 0, ease: 'power2.out', onComplete: () => { g1.visible = false; } });
+        gsap.to(g2.scale, 0.8, { x: 1.3, y: 1.3, alpha: 0, ease: 'power2.out', delay: 0.08, onComplete: () => { g2.visible = false; } });
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 7：方块矩阵爆散 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 16; i++) {
+    const holder = new PIXI.Container();
+    fxLayer.addChild(holder);
+    const cells = [];
+    const N = 4;
+    const size = Math.min(W, H) * 0.05;
+    for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) {
+      const g = new PIXI.Graphics();
+      g.beginFill(0xffffff, 1);
+      g.drawRect(-size / 2, -size / 2, size, size);
+      g.x = (a - (N - 1) / 2) * size * 1.4;
+      g.y = (b - (N - 1) / 2) * size * 1.4;
+      holder.addChild(g);
+      cells.push(g);
+    }
+    pool.push({
+      holder,
+      play(x, y, c) {
+        holder.x = x; holder.y = y;
+        cells.forEach(g => {
+          g.tint = c;
+          g.scale.set(1);
+          g.alpha = 1;
+          const ang = Math.atan2(g.y, g.x) + rand(-0.4, 0.4);
+          const dist = Math.min(W, H) * rand(0.1, 0.3);
+          gsap.to(g, rand(0.4, 0.7), {
+            x: g.x + Math.cos(ang) * dist,
+            y: g.y + Math.sin(ang) * dist,
+            rotation: rand(-3, 3),
+            alpha: 0,
+            ease: 'power3.out',
+          });
+        });
+        gsap.delayedCall(0.75, () => { holder.visible = false; });
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 8：螺旋 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 16; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    pool.push({
+      g,
+      play(x, y, c) {
+        const proxy = { t: 0 };
+        const turns = rand(2, 4);
+        const R = Math.min(W, H) * rand(0.08, 0.16);
+        const draw = () => {
+          g.clear();
+          g.lineStyle(3, c, 1);
+          const steps = Math.floor(proxy.t * 120);
+          for (let k = 0; k <= steps; k++) {
+            const a = k / 120 * turns * Math.PI * 2;
+            const r = R * k / 120;
+            const px = Math.cos(a) * r, py = Math.sin(a) * r;
+            if (k === 0) g.moveTo(px, py); else g.lineTo(px, py);
+          }
+        };
+        g.x = x; g.y = y;
+        gsap.to(proxy, 0.9, { t: 1, ease: 'power2.inOut', onUpdate: draw, onComplete: () => {
+          gsap.to(g, 0.3, { alpha: 0, onComplete: () => { g.visible = false; g.alpha = 1; } });
+        }});
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 9：星形迸发 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 16; i++) {
+    const g = new PIXI.Graphics();
+    fxLayer.addChild(g);
+    pool.push({
+      g,
+      play(x, y, c) {
+        const spikes = 5 + Math.floor(Math.random() * 4);
+        const R = Math.min(W, H) * rand(0.08, 0.15);
+        const r = R * 0.45;
+        const rot = Math.random() * Math.PI;
+        const pts = [];
+        for (let k = 0; k < spikes * 2; k++) {
+          const rad = rot + k / (spikes * 2) * Math.PI * 2;
+          const rr = (k % 2 === 0) ? R : r;
+          pts.push([Math.cos(rad) * rr, Math.sin(rad) * rr]);
+        }
+        const proxy = { t: 0 };
+        const draw = () => {
+          g.clear();
+          g.beginFill(c, 1);
+          const n = Math.max(1, Math.floor(proxy.t * pts.length));
+          g.moveTo(pts[0][0], pts[0][1]);
+          for (let k = 1; k <= n && k < pts.length; k++) g.lineTo(pts[k][0], pts[k][1]);
+          g.closePath();
+          g.endFill();
+        };
+        g.x = x; g.y = y;
+        g.scale.set(0);
+        gsap.to(proxy, 0.5, { t: 1, ease: 'power2.out', onUpdate: draw });
+        gsap.to(g.scale, 0.7, { x: 1.2, y: 1.2, ease: 'elastic.out(1,0.4)', onComplete: () => {
+          gsap.to(g.scale, 0.35, { x: 0, y: 0, ease: 'back.in(2)', onComplete: () => { g.visible = false; } });
+        }});
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ---- 特效 10：飘浮圆点群 ---- */
+registerEffect(function () {
+  const pool = [];
+  for (let i = 0; i < 14; i++) {
+    const holder = new PIXI.Container();
+    fxLayer.addChild(holder);
+    const dots = [];
+    for (let k = 0; k < 8; k++) {
+      const g = new PIXI.Graphics();
+      g.beginFill(0xffffff, 1);
+      g.drawCircle(0, 0, Math.min(W, H) * rand(0.004, 0.012));
+      holder.addChild(g);
+      dots.push(g);
+    }
+    pool.push({
+      holder,
+      play(x, y, c) {
+        holder.x = x; holder.y = y;
+        dots.forEach(g => {
+          g.tint = c;
+          const ang = Math.random() * Math.PI * 2;
+          const dist = Math.min(W, H) * rand(0.05, 0.18);
+          gsap.fromTo(g, rand(0.6, 1.0), { x: 0, y: 0, alpha: 1 }, {
+            x: Math.cos(ang) * dist, y: Math.sin(ang) * dist,
+            alpha: 0, ease: 'power2.out',
+          });
+        });
+        gsap.delayedCall(1.05, () => { holder.visible = false; });
+      }
+    });
+  }
+  let cur = 0;
+  return { play(x, y, c) { const it = pool[cur++ % pool.length]; it.play(x, y, c); } };
+});
+
+/* ── 中央浮动文字（显示当前播放的词）── */
+function floatText(txt, x, y) {
+  const el = document.createElement('div');
+  el.textContent = txt;
+  el.style.cssText = `position:fixed;left:${x}px;top:${y}px;transform:translate(-50%,-50%);
+    color:#fff;font-size:1.4rem;font-weight:700;letter-spacing:.15em;pointer-events:none;
+    z-index:50;text-shadow:0 2px 12px rgba(0,0,0,.25);font-family:var(--font);white-space:nowrap;`;
+  document.body.appendChild(el);
+  gsap.to(el, {
+    y: -70, opacity: 0, duration: 1.1, ease: 'power2.out',
+    onComplete: () => el.remove(),
+  });
+}
+
+/* ============================================================
+   交互
+   ============================================================ */
+function hit(x, y) {
+  if (!ready) return;
+  const i = Math.floor(Math.random() * WORDS.length);
+  playWord(i);
+  if (feedback) {
+    playEffect(x, y, PALETTE[Math.floor(Math.random() * PALETTE.length)]);
+    floatText(WORDS[i].text, x, y);
+  }
+  // 重置背景旋律计时，让用户主导节奏
+  bgStartTime = ctxAudio.currentTime;
+}
+
+function bindInput() {
+  const view = $('#view');
+  view.addEventListener('pointerdown', (e) => { hit(e.clientX, e.clientY); });
+  view.addEventListener('pointermove', (e) => {
+    if (e.buttons > 0 || e.pointerType === 'touch') hit(e.clientX, e.clientY);
+  });
+  window.addEventListener('keydown', (e) => {
+    if (!started) return;
+    hit(W / 2 + rand(-W * 0.2, W * 0.2), H / 2 + rand(-H * 0.2, H * 0.2));
+  });
+}
+
+/* ============================================================
+   背景自动旋律（轻量，偶尔触发）
+   ============================================================ */
+function bgTick() {
+  if (!backtrack || !started) return;
+  const now = ctxAudio.currentTime;
+  if (now - bgStartTime > 3.2) {          // 用户 3.2s 无操作才自动播
+    bgStartTime = now;
+    const i = Math.floor(Math.random() * WORDS.length);
+    playWord(i);
+    if (feedback) {
+      playEffect(W * Math.random(), H * Math.random(), PALETTE[0]);
+    }
+  }
+}
+
+/* ============================================================
+   场景切换
+   ============================================================ */
+function show(id) {
+  document.querySelectorAll('.scene').forEach(s => s.style.display = 'none');
+  $(id).style.display = 'block';
+}
+
+function enterMain() {
+  if (started) return;
+  started = true;
+  show('#scene_main');
+  $('#bt_back').style.display = 'block';
+  $('#bt_fs').style.display = 'block';
+  bgStartTime = ctxAudio.currentTime;
+}
+
+async function boot() {
+  // 能力检测
+  const ok = !!(window.AudioContext || window.webkitAudioContext) && !!window.PIXI && !!window.gsap;
+  if (!ok) {
+    $('#ng').style.display = 'block';
+    $('.ok').forEach ? null : null;
+    document.querySelectorAll('.ok').forEach(e => e.style.display = 'none');
+    show('#scene_top');
+    return;
+  }
+  document.querySelectorAll('.ok').forEach(e => e.style.display = 'block');
+  show('#scene_top');
+
+  $('#bt_start').addEventListener('click', async (e) => {
+    e.preventDefault();
+    show('#scene_loading');
+    try {
+      await loadAudio();
+      initRenderer();
+      bindInput();
+      ready = true;
+      enterMain();
+    } catch (err) {
+      console.error(err);
+      alert('音频加载失败，请刷新重试');
+    }
+  });
+
+  // 关于
+  const openAbout = (e) => {
+    e.preventDefault();
+    $('#about_cover').style.display = 'block';
+    $('#about').style.display = 'block';
+  };
+  $('#bt_about').addEventListener('click', openAbout);
+  const closeAbout = () => {
+    $('#about_cover').style.display = 'none';
+    $('#about').style.display = 'none';
+  };
+  $('#bt_close').addEventListener('click', closeAbout);
+  $('#about_cover').addEventListener('click', closeAbout);
+
+  // 返回
+  $('#bt_back').addEventListener('click', () => { window.location.href = '/lab'; });
+
+  // 全屏
+  $('#bt_fs').addEventListener('click', () => {
+    const el = document.documentElement;
+    if (!document.fullscreenElement) {
+      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    }
+  });
+
+  // 开关
+  $('#bt_feedback').addEventListener('click', (e) => {
+    e.preventDefault();
+    feedback = !feedback;
+    $('#bt_feedback').querySelector('a').textContent = '反馈: ' + (feedback ? '开启' : '关闭');
+  });
+  $('#bt_backtrack').addEventListener('click', (e) => {
+    e.preventDefault();
+    backtrack = !backtrack;
+    $('#bt_backtrack').querySelector('a').textContent = '背景音乐: ' + (backtrack ? '开启' : '关闭');
+  });
+}
+
+function tick() {
+  bgTick();
+  renderer.render(stage);
+  requestAnimationFrame(tick);
+}
+
+boot();
+})();
+</script>
+</body>
+</html>
