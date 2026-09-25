@@ -78,11 +78,15 @@ const ACCENT_SOFT = "rgba(34,211,238,.35)";
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="lab-grid">
           {apps.map((app, i) => {
             const isExternal = /^https?:\/\//.test(app.path);
+            // public/ 下的静态 app（/lab-apps/xxx）不是 Astro 路由，
+            // 必须整页加载，否则 ClientRouter 会把静态 HTML 注入当前 DOM，样式互相覆盖
+            const isStaticApp = app.path.includes('/lab-apps/');
             return (
               <a
                 href={app.path}
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
+                data-astro-reload={isStaticApp ? '' : undefined}
                 data-cat={app.category}
                 class="group lab-card relative rounded-lg bg-white dark:bg-[#0D1117] border border-black/10 dark:border-white/10 p-5 no-underline text-inherit transition-[border-color,box-shadow] duration-200 hover:border-[#22D3EE]/40 hover:shadow-[0_0_0_1px_rgba(34,211,238,.15)]"
                 data-animate
