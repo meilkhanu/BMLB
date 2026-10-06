@@ -44,5 +44,15 @@ dist.tar.gz
 # hermes plans
 .hermes/
 
+# tetotap audio source (rendered clips, re-processed by
+# scripts/render_tetotap_syllables.py into public/ as syl-*.mp3)
+tools/tetotap-src/
+
+# python cache
+__pycache__/
+
 # uploaded files (ECS only, lives under data/)
 data/uploads/
+
+# normify architecture snapshot (generated, not source — see normify-bmlb/README.md)
+normify-bmlb/

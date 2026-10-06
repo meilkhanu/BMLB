@@ -11,6 +11,7 @@
 import type { APIContext } from "astro";
 import { getDb, getKV, isNode } from "./db";
 import { scryptSync, randomBytes, timingSafeEqual } from "node:crypto";
+import { isRateLimited, lockRemaining, recordAttempt, recordFailure, clearFailures, rateLimitKey } from "./rate-limit";
 
 // ============================================================
 // Env 类型（简化）
@@ -161,12 +162,29 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
     return json({ error: "密码至少 4 位" }, 400);
   }
 
+  // —— 登录限流：先查闸，再动口令 ——
+  // 标识取「IP + 尝试的登录名」。这里只有一个通用口令，login 固定为 "admin"，
+  // 因此实际等价于按 IP 限流；保留 login 维度是为了将来加了用户名也不用改逻辑。
+  const rlKey = rateLimitKey(ctx.request, "admin");
+  if (isRateLimited(rlKey)) {
+    const secs = lockRemaining(rlKey);
+    return json(
+      { error: `尝试次数过多，请 ${Math.ceil(secs / 60)} 分钟后再试` },
+      429,
+      { "Retry-After": String(secs) }
+    );
+  }
+
   const storedHash = await kv.get("admin_password_hash");
 
   // 首次设置密码（SETUP 模式）
   if (!storedHash) {
+    if (recordAttempt(rlKey)) {
+      return json({ error: "尝试过于频繁，请稍后再试" }, 429);
+    }
     const newHash = await hashPassword(password);
     await kv.put("admin_password_hash", newHash);
+    clearFailures(rlKey);
     const token = await createSession(kv);
     return json(
       { success: true, setup: true },
@@ -176,8 +194,13 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
   }
 
   // 正常登录
+  if (recordAttempt(rlKey)) {
+    return json({ error: "尝试过于频繁，请稍后再试" }, 429);
+  }
+
   const verdict = await verifyPassword(password, storedHash);
   if (verdict === "fail") {
+    recordFailure(rlKey);
     return json({ error: "密码错误" }, 401);
   }
 
@@ -187,6 +210,7 @@ async function handlePostAuth(ctx: APIContext): Promise<Response> {
     console.log("[auth] admin password hash upgraded to scrypt");
   }
 
+  clearFailures(rlKey);
   const token = await createSession(kv);
   return json(
     { success: true },
