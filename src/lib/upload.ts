@@ -23,9 +23,33 @@ const ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
   "image/webp",
   "image/gif",
-  "image/svg+xml",
   "image/avif",
+  // 注意：不在此处放开 image/svg+xml。
+  // SVG 可内嵌 <script>，一旦经 /uploads/ 以 image/svg+xml 直出，
+  // 就是存储型 XSS 的真入口。本站上传场景（封面/配图/相册）从未用过 SVG。
+  // 若将来确需矢量图，先改为「上传即转 PNG」或强制走 CDN 隔离域名。
 ];
+
+const ALLOWED_EXTENSIONS = new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
+  "gif",
+  "avif",
+  "pdf",
+  "doc",
+  "docx",
+  "ppt",
+  "pptx",
+  "txt",
+  "mp3",
+  "wav",
+  "ogg",
+  "flac",
+  "m4a",
+  "mp4",
+]);
 
 const ALLOWED_DOC_TYPES = [
   "application/pdf",
@@ -61,6 +85,11 @@ function generateKey(originalName: string): string {
   return `${ts}-${random}.${ext}`;
 }
 
+/** 从原始文件名的最后一个扩展名（已小写化）。 */
+function extOf(name: string): string {
+  return name.split(".").pop()?.toLowerCase() || "";
+}
+
 // —— POST /api/upload ——
 async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   // 鉴权（所有环境统一走 session；ECS 的 session 同样持久化在 data/app.db 的 kv_store 表中）
@@ -87,7 +116,18 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
     return json({ error: "缺少文件" }, 400);
   }
 
-  // 类型校验
+  // 文件名校验：必须有一个落盘扩展名，且在白名单内。
+  // 只查 file.type 是不够的——它来自客户端 multipart 头，可随意伪造；
+  // 而真正决定了「/uploads/ 出去时按什么 MIME 直出」的是磁盘上的扩展名。
+  if (!file.name || !file.name.includes(".")) {
+    return json({ error: "文件名缺少扩展名" }, 400);
+  }
+  const ext = extOf(file.name);
+  if (!ALLOWED_EXTENSIONS.has(ext)) {
+    return json({ error: `不支持的扩展名: .${ext}` }, 400);
+  }
+
+  // 类型校验（MIME 与扩展名双闸，任一不符即拒）
   const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
   const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type);
   const isDoc = ALLOWED_DOC_TYPES.includes(file.type);
@@ -95,6 +135,21 @@ async function handleUploadRequest(ctx: APIContext): Promise<Response> {
   if (!isImage && !isAudio && !isDoc) {
     return json(
       { error: `不支持的文件类型: ${file.type}，仅支持图片、音频或文档(PDF/Word/PPT/TXT)` },
+      400
+    );
+  }
+
+  // MIME 与扩展名必须自洽：防 image/png 头 + .svg 落盘的绕过组合
+  const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "webp", "gif", "avif"]);
+  const AUDIO_EXT = new Set(["mp3", "wav", "ogg", "flac", "m4a", "mp4"]);
+  const DOC_EXT = new Set(["pdf", "doc", "docx", "ppt", "pptx", "txt"]);
+  const extMatchesMime =
+    (isImage && IMAGE_EXT.has(ext)) ||
+    (isAudio && AUDIO_EXT.has(ext)) ||
+    (isDoc && DOC_EXT.has(ext));
+  if (!extMatchesMime) {
+    return json(
+      { error: `文件类型与扩展名不匹配: ${file.type} / .${ext}` },
       400
     );
   }
