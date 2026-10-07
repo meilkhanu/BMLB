@@ -204,6 +204,8 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* 真实数据有空 excerpt 的文章，占住两行高度保证 meta 行不窜位 */
+  min-height: 2.25em;
 }
 
 :root[data-ui="constellation"] .star-meta {
