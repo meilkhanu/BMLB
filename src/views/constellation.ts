@@ -318,31 +318,22 @@ export const constellationView: ViewModule = {
           };
 
     // 只读调试探针：供验收脚本断言内部状态（不改动任何逻辑）
-    (window as any).__starDebug = () => ({
-      camera: { ...camera },
-      rCam,
-      rMax,
-      nodeCount: nodes.length,
-      linkCount: linkPairs.length,
-      visible: nodes.filter((n) => n.el && n.el.style.visibility !== "hidden")
-        .length,
-      culled: nodes.filter((n) => n.el && n.el.style.visibility === "hidden")
-        .length,
-      pinned: nodes
-        .filter((n) => n.pinned)
-        .map((n) => ({
-          slug: n.data.slug,
-          px: Math.round(n.px),
-          py: Math.round(n.py),
-        })),
-      nearest: (() => {
-        const r = rect(),
-          cx = r.width / 2,
-          cy = r.height / 2;
-        const scored = nodes.map((n) => ({
-          slug: n.data.slug,
-          d: Math.hypot(toScreen(n, cx, cy).x - cx, toScreen(n, cx, cy).y - cy),
-        }));
+    // import.meta.env.DEV 门禁：仅开发环境暴露，生产构建被静态消除，不泄漏内部状态给访客
+    if (import.meta.env.DEV) {
+      (window as any).__starDebug = () => ({
+        camera: { ...camera },
+        rCam,
+        rMax,
+        nodeCount: nodes.length,
+        linkCount: linkPairs.length,
+        visible: nodes.filter((n) => n.el && n.el.style.visibility !== 'hidden').length,
+        culled: nodes.filter((n) => n.el && n.el.style.visibility === 'hidden').length,
+        pinned: nodes.filter((n) => n.pinned).map((n) => ({ slug: n.data.slug, px: Math.round(n.px), py: Math.round(n.py) })),
+        nearest: (() => {
+          const r = rect();
+          const cx = r.width / 2;
+          const cy = r.height / 2;
+          const scored = nodes.map((n) => ({ slug: n.data.slug, d: Math.hypot(toScreen(n, cx, cy).x - cx, toScreen(n, cx, cy).y - cy) }));
         scored.sort((a, b) => a.d - b.d);
         return scored.slice(0, 2);
       })(),
@@ -363,10 +354,11 @@ export const constellationView: ViewModule = {
             blurred: n.blurred,
             focused: n.focused,
             z: n.el?.style.zIndex,
-            tf: n.el?.style.transform || "",
+            tf: n.el?.style.transform || '',
           };
         }),
-    });
+      });
+    }
 
     // —— 帧循环 ——
     let rafId = 0;
