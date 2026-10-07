@@ -82,6 +82,25 @@
   background: rgba(14, 18, 28, 0.94);
 }
 
+/* 悬浮态：缩放由 JS 在 rAF 里乘进 transform（CSS :hover 改 transform 会被下一帧覆盖），
+   这里只负责描边提亮 + 外发光这类不冲突的属性 */
+:root[data-ui="constellation"] .star-card.star-hover {
+  border-color: color-mix(in srgb, var(--cat, #22D3EE) 92%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cat, #22D3EE) 45%, transparent),
+    0 14px 44px -8px rgba(0, 0, 0, 0.75),
+    0 0 24px -4px color-mix(in srgb, var(--cat, #22D3EE) 35%, transparent);
+}
+
+/* 无 GPU 环境下降级：给缩放一个短过渡，让 JS 的瞬时阶跃不那么生硬 */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-ui="constellation"] .star-card.star-hover {
+    transition:
+      border-color 120ms ease-out,
+      box-shadow 120ms ease-out;
+  }
+}
+
 @media (max-width: 767px) {
   :root[data-ui="constellation"] .star-card {
     width: min(72vw, 200px);

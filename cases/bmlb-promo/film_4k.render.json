@@ -1,0 +1,22 @@
+{
+ "comp": "A:\\web_build\\cases\\bmlb-promo\\comp.html",
+ "fps": 60,
+ "scale": 2,
+ "size": [
+  3840,
+  2160
+ ],
+ "shutter": 180.0,
+ "samples": "adaptive",
+ "gap_px": 24.0,
+ "samples_per_moving_frame": {
+  "4": 772
+ },
+ "workers": 8,
+ "frames": 900,
+ "still_frames": 128,
+ "cut_frames": 154,
+ "captures": 3344,
+ "seconds": 243.7,
+ "final": true
+}

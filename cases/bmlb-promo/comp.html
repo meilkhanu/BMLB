@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>BMLB · 15s promo</title>
+<style>
+:root{
+  --bg:#FAFAFA; --ink:#1A1A1A; --grey:#999999; --purple:#8B7CB3; --pink:#FF6B9D;
+  --blue:#7BA3D9; --green:#7CB38B; --amber:#E8913A;
+  --cardBg:rgba(255,255,255,.60); --cardLine:rgba(255,255,255,.20);
+}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
+body{font-family:'Xiaolai','PingFang SC','Microsoft YaHei',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--bg)}
+.abs{position:absolute;left:0;top:0;will-change:transform,opacity}
+/* the one material: BMLB glass card — 全片唯一材质，从圆点一路形变到印章 */
+.glass{position:absolute;left:0;top:0;background:var(--cardBg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--cardLine);box-shadow:0 18px 50px -22px rgba(20,20,20,.18),0 2px 6px rgba(20,20,20,.04);
+  will-change:transform,opacity,border-radius,width,height;overflow:hidden}
+.lay{position:absolute;inset:0;opacity:0}
+/* title triple: english small label + xiaolai title + gradient hairline */
+.t-lab{font-family:'Sans',Inter,system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+.t-title{font-size:44px;font-weight:700;letter-spacing:-.01em;color:var(--ink);line-height:1.15}
+.t-rule{height:2px;width:64px;border-radius:99px;background:linear-gradient(90deg,var(--purple),rgba(255,107,157,0))}
+/* words beat */
+#w1{left:0;right:0;top:430px;text-align:center;font-size:66px;font-weight:700;letter-spacing:.01em}
+#w1 span{display:inline-block;margin:0 .12em}
+#dot{position:absolute;border-radius:50%;background:var(--pink);will-change:transform,opacity}
+/* article card: 居中单卡，内容纵向交替 */
+.art{position:absolute;inset:0;display:flex;gap:26px;padding:26px;opacity:0;will-change:transform,opacity}
+.art .txt{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.art .row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.art .cat{font-size:14px;font-weight:700;letter-spacing:.14em;padding:3px 10px;border-radius:8px}
+.art .date{font-size:15px;color:var(--grey);display:flex;align-items:center;gap:6px}
+.art h3{font-size:30px;font-weight:700;line-height:1.3;margin:0 0 10px;color:var(--ink)}
+.art .ex{font-size:16px;line-height:1.55;color:#666;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.art .thumb{width:250px;flex:none;border-radius:18px;overflow:hidden;background:#F5F5F5;position:relative}
+.art .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* nav pills */
+.navp{display:flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:999px;
+  background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(12px);
+  box-shadow:0 2px 10px -3px rgba(0,0,0,.05);font-size:17px;font-weight:700;white-space:nowrap}
+.navp.on{color:#fff;background:linear-gradient(90deg,var(--purple),#B39DDB);border-color:transparent}
+/* skill pills */
+.skill{display:flex;align-items:center;justify-content:center;height:46px;padding:0 20px;border-radius:999px;
+  border:1px solid;font-size:21px;font-weight:500;white-space:nowrap;background:#fff}
+/* end lockup */
+#end{position:absolute;inset:0;background:#0F0F0F;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0}
+#mark{font-size:104px;font-weight:700;color:#fff;letter-spacing:.02em;white-space:nowrap}
+#mark span{display:inline-block;transform-origin:50% 88%}
+#url{margin-top:22px;font-family:'Sans',Inter,system-ui,sans-serif;font-size:30px;font-weight:600;letter-spacing:.16em;color:#B39DDB}
+/* cursor */
+#cursor{position:absolute;left:0;top:0;width:30px;height:40px;will-change:transform;filter:drop-shadow(0 2px 5px rgba(0,0,0,.28))}
+#hud{position:absolute;right:14px;bottom:10px;font:13px monospace;color:#c00;display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="w1" class="abs"><span>贝谟拉比</span><span>的</span><span>网站</span><span>。</span></div>
+
+  <!-- 全片唯一材质：圆点 → 主卡 → 文章卡 → 胶囊条 → 作品卡 → 状态卡 → 印章 -->
+  <div id="glass" class="glass"></div>
+
+  <div id="end">
+    <div id="mark"></div>
+    <div id="url">bmlb.online</div>
+  </div>
+
+  <svg id="cursor" viewBox="0 0 34 44"><path d="M4 3 L30 22 L18 24 L26 40 L20 43 L12 27 L4 36 Z" fill="#1A1A1A" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+  <div id="hud"></div>
+</div>
+<script src="motion.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// BMLB 15s promo — one material, one unbroken morph chain (Apple 式：一个对象、
+// 大量留白、缓慢自信的形变、真的静止)。每个 beat 都由上一个 rect 长出来。
+// ══════════════════════════════════════════════════════════════════════════════
+const FPS=30, DUR=15;
+window.__meta={dur:DUR,fps:FPS,w:1920,h:1080,inFrame:{mark:[13.8,15,'whole'],glass:[1.6,14.1]}};
+
+// ─── timeline ───
+const W1=[0.05,0.42,0.79,1.16], W1_OUT=1.62;
+const DOT_IN=1.16;                                 // 句号聚成点
+const G_IN=1.62;                                   // 点 → 主卡
+const INFO0=2.35, SKILL0=3.20, SKILL_DT=0.11;      // 主卡内容
+const POST_IN=4.30, POST_DT=[1.10,0.90,0.80,0.80,0.70,0.60], POST_N=6;  // 前疏后密，收尾加速
+const NAV_IN=9.25, NAV_END=9.78;                   // 文章卡 → 胶囊条
+const WORK_IN=10.32, WORK_END=10.88;               // 胶囊条 → 作品卡
+const ZT_IN=11.34, ZT_END=11.92;                   // 作品卡 → 状态卡
+const SEAL_IN=13.55, SEAL_END=14.10, END_T=14.10;
+
+// ─── math ───
+const {clamp,lerp,sstep,ssstep}=OM;
+const $=id=>document.getElementById(id);
+const CALM=u=>OM.ease.quintInOut(u);               // Apple：慢起慢停的自信曲线
+
+// ─── content（全部来自线上 app.db 真实数据） ───
+const CATS={notes:{n:'札记',c:'#8B7CB3'},critique:{n:'时评簿',c:'#E8913A'},stack:{n:'车间',c:'#4A5D8A'},
+  body:{n:'体感',c:'#7CB38B'},transit:{n:'行记',c:'#B38B7C'},archive:{n:'底片',c:'#8B8B8B'}};
+const SKILLS=[{n:'Revit',c:'#8B7CB3'},{n:'PS',c:'#FF6B9D'},{n:'LR',c:'#7CB38B'},
+  {n:'MS Office',c:'#7BA3D9'},{n:'AI Agent',c:'#8B7CB3'},{n:'CAD',c:'#FF6B9D'}];
+const POSTS=[
+  {t:'欧布！留言板是坏的没发现QAQ',c:'notes',d:'2026-08-08',e:'已修复',img:'covers/1786190385609-d4194ec3.jpg'},
+  {t:'酒，与情绪摇滚',c:'body',d:'2026-08-07',e:'我见过一个人，很有才华，拍出来的照片特别好看，他爱喝酒，除白酒以外的酒',img:'covers/1786189585954-123a2a83.jpg'},
+  {t:'Qwen 3.8 Max Preview实测体验，超强',c:'stack',d:'2026-07-28',e:'在收到工作消息后，提前订阅了阿里云的 Token Plan，然后！在它的模型调用选项里',img:'covers/1786190139625-159ca511.jpg'},
+  {t:'网站主题个性化',c:'stack',d:'2026-07-27',e:'管理后台一直没有深浅色切换模式，晚上更新内容时总是很亮眼睛，很难受',img:'covers/1786190181419-cb2853aa.jpg'},
+  {t:'WorkBuddy 体验ing',c:'stack',d:'2026-07-24',e:'腾讯 WorkBuddy 的实测体验，虽然混元 3 在 WorkBuddy 上前端代码修改表现超预期',img:'covers/1784902550801-b27195bf.jpg'},
+  {t:'担心被AI取代？调转矛头！',c:'critique',d:'2026-07-25',e:'总是能在一些 AI 模型发布或 Agent 工具更新新闻下的评论中看到抵触 AI 的人',img:''},
+];
+const NAVS=[{n:'主页',on:true},{n:'归档'},{n:'关于'},{n:'/now'},{n:'/colophon'}];
+const WORK={t:'厦门市规划数字技术研究中心实习',s:'BIM建模'};
+const STATUS='欢迎访问我的网站';
+const MARKTEXT='贝谟拉比';
+
+// ─── the one rect chain：每一段都是上一段长出来的 ───
+const R_DOT =()=>({x:DOT_X-DOT_R*DOT_S,y:DOT_Y-DOT_R*DOT_S,w:DOT_R*2*DOT_S,h:DOT_R*2*DOT_S,r:DOT_R*DOT_S});
+const R_INFO={x:580,   y:320,   w:760, h:440, r:32};
+const R_POST={x:510,   y:400,   w:900, h:280, r:32};
+const R_BAR ={x:640,   y:508,   w:640, h:64,  r:32};
+const R_WORK={x:480,   y:340,   w:960, h:400, r:32};
+const R_STAT={x:300,   y:380,   w:1320,h:320, r:32};
+const CHAIN=[
+  [G_IN,    2.14,  null, R_INFO, OM.ease.expoOut],
+  [4.02,    POST_IN,R_INFO,R_POST, CALM],
+  [NAV_IN,  NAV_END,R_POST,R_BAR,  CALM],
+  [WORK_IN, WORK_END,R_BAR,R_WORK, CALM],
+  [ZT_IN,   ZT_END, R_WORK,R_STAT, CALM],
+];
+function glassRect(t){
+  for(const[t0,t1,A,B,cu]of CHAIN){ if(t<t1) return OM.morphRect(t,t0,t1,A||R_DOT(),B,{curve:cu}); }
+  return {...R_STAT,k:1};
+}
+
+// ─── camera：只有缓慢的推近，没有手持晃动；rests 全静 ───
+const KEYS=[
+  {t:0.00, x:960,y:470,zoom:1.00},
+  {t:1.55, x:960,y:470,zoom:1.00},
+  {t:2.20, x:960,y:540,zoom:1.10,curve:CALM},   // 点撑开成卡：慢推
+  {t:4.02, x:960,y:540,zoom:1.05,curve:CALM},   // 文章卡：让出呼吸空间
+  {t:9.25, x:960,y:540,zoom:1.07,curve:CALM},
+  {t:11.34,x:960,y:540,zoom:1.02,curve:CALM},   // 状态卡：最宽、最多留白
+  {t:13.55,x:960,y:540,zoom:1.02},              // 最长静止段：完全不动
+  {t:14.40,x:960,y:540,zoom:1.02},
+];
+const HITS=[];   // 全静：Apple 式平滑，不靠触地颤动制造存在感
+function camAt(t){
+  const c=OM.camera(t,KEYS);
+  let x=c.x,y=c.y,rot=c.rot;
+  return{x,y,zoom:c.zoom,rot};
+}
+
+// ─── DOM build ───
+const artEls=POSTS.map(p=>{
+  const cat=CATS[p.c];
+  const d=document.createElement('div');d.className='art';
+  d.innerHTML=`<div class="txt"><div class="row">
+      <span class="cat" style="background:${cat.c}18;color:${cat.c}">${cat.n}</span>
+      <span class="date"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${p.d}</span></div>
+    <h3>${p.t}</h3><p class="ex">${p.e}</p></div>
+    <div class="thumb">${p.img?`<img src="${p.img}" alt="">`:''}</div>`;
+  return d;});
+const navEls=NAVS.map(n=>{const d=document.createElement('div');d.className='navp'+(n.on?' on':'');d.textContent=n.n;return d;});
+const skillEls=SKILLS.map(s=>{const d=document.createElement('div');d.className='skill';d.textContent=s.n;d.style.borderColor=s.c+'40';d.style.color=s.c;return d;});
+const markEl=$('mark');const MARKL=[...MARKTEXT].map(ch=>{const s=document.createElement('span');s.textContent=ch;markEl.appendChild(s);return s;});
+
+(function buildGlass(){
+  const g=$('glass');
+  g.innerHTML=`<div class="lay" id="L-info">
+    <div style="position:absolute;left:56px;top:48px">
+      <div id="c-lab" class="t-lab">BMLB · Personal Site</div>
+      <div id="c-title" class="t-title" style="margin-top:14px">一个人的网站</div>
+      <div id="c-rule" class="t-rule" style="margin-top:18px"></div></div>
+    <div id="c-info" style="position:absolute;left:56px;top:206px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:14px"><span style="font-size:15px;color:var(--grey);letter-spacing:.1em;width:92px">Name</span><span style="font-size:23px;font-weight:700">MEilk Fans</span></div>
+      <div style="display:flex;align-items:baseline;gap:14px"><span style="font-size:15px;color:var(--grey);letter-spacing:.1em;width:92px">Focus</span><span style="font-size:23px;font-weight:700">CAD / Forward Design</span></div>
+      <div style="display:flex;align-items:baseline;gap:14px"><span style="font-size:15px;color:var(--grey);letter-spacing:.1em;width:92px">Location</span><span style="font-size:23px;font-weight:700">China Hunan</span></div>
+    </div>
+    <div id="c-skills" style="position:absolute;left:0;right:0;top:320px;height:96px"></div></div>
+  <div class="lay" id="L-post"></div>
+  <div class="lay" id="L-bar"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px"></div></div>
+  <div class="lay" id="L-work"><div style="position:absolute;inset:0;display:flex;gap:28px;padding:34px">
+    <div id="w-img" style="width:300px;flex:none;border-radius:20px;overflow:hidden;background:#F0EDF6"><img src="covers/avatar.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div id="w-lab" class="t-lab" style="color:var(--purple)">Works · Featured</div>
+      <div id="w-title" style="font-size:36px;font-weight:700;margin-top:14px;line-height:1.25">${WORK.t}</div>
+      <div id="w-sub" style="font-size:19px;color:#666;margin-top:12px">${WORK.s} · Revit / CAD</div>
+    </div></div></div>
+  <div class="lay" id="L-stat" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <div id="s-lab" class="t-lab" style="color:var(--purple)">Now Status</div>
+    <div id="s-text" style="font-size:64px;font-weight:700;margin-top:24px;letter-spacing:.04em;white-space:nowrap">${STATUS}</div></div>`;
+  // 真实节点在 innerHTML 之后 append，不会被销毁
+  $('L-post').append(...artEls);
+  $('L-bar').firstChild.append(...navEls);
+})();
+
+// 技能胶囊按实测宽度居中排两行（__ready 时测一次，之后当常量用）
+const SKILL_SLOT=[];
+(function layoutSkills(){
+  const box=$('c-skills');const rows=[[0,1,2],[3,4,5]];
+  rows.forEach((idx,r)=>{
+    let w=0;idx.forEach(i=>{skillEls[i].style.position='absolute';box.appendChild(skillEls[i]);w+=skillEls[i].offsetWidth;});
+    w+=(idx.length-1)*16;
+    let x=(760-w)/2;
+    idx.forEach(i=>{SKILL_SLOT[i]=[x,320+r*54];x+=skillEls[i].offsetWidth+16;});
+  });
+})();
+
+let DOT_X=960, DOT_Y=520, DOT_S=1, DOT_OP=0;
+const DOT_R=26;
+// ─── seek(t) ───
+let markW=0;
+function place(el,x,y,s=1,op=1,extra=''){el.style.opacity=op;el.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${s.toFixed(4)}) ${extra}`;}
+function seek(t){
+  const pending=[];
+  const CAM=camAt(t);
+  const M=OM.view(CAM);
+
+  // 1 · words（screen space）
+  {const w1=$('w1');const out1=sstep(W1_OUT,W1_OUT+0.25,t);
+   w1.style.opacity=1-out1;w1.style.transform=`translateY(${(-out1*46).toFixed(1)}px)`;
+   [...w1.children].forEach((s,i)=>{const w=OM.wordRise(t,W1[i],{dist:30});
+     s.style.opacity=w.op;s.style.transform=`translateY(${w.y.toFixed(1)}px) scale(${w.s.toFixed(4)})`;});}
+
+  // 2 · 点：句号聚成一点 —— #glass 的最小尺寸形态（词 → 点 → 卡 同一个节点）
+  {const fromX=960+markW*0.06, fromY=430;
+   const gk=OM.ease.expoOut(clamp((t-DOT_IN)/0.42,0,1));
+   DOT_X=lerp(fromX,960,gk); DOT_Y=lerp(fromY,520,gk);
+   const dk=OM.spring(t-DOT_IN,0.55,26);
+   DOT_S=0.55+0.45*clamp(dk,0,1);   // 只长一次，之后完全静止
+   DOT_OP=t>=DOT_IN-0.05?1:0;}
+
+  // 3 · 唯一材质：rect 链 + seal
+  {const el=$('glass');
+   if(t<G_IN){   // 圆点态：实心粉，无玻璃质感
+     el.style.background='var(--pink)';el.style.backdropFilter='none';el.style.border='none';
+     el.style.width=(DOT_R*2*DOT_S).toFixed(1)+'px';el.style.height=(DOT_R*2*DOT_S).toFixed(1)+'px';
+     el.style.borderRadius='50%';el.style.zIndex=5;
+     el.style.transform=`matrix(${M.map(v=>v.toFixed(5)).join(',')}) translate(${(DOT_X-DOT_R*DOT_S).toFixed(1)}px,${(DOT_Y-DOT_R*DOT_S).toFixed(1)}px)`;
+     el.style.opacity=DOT_OP;
+   } else {
+   let r=glassRect(t);
+   el.style.background='var(--cardBg)';el.style.backdropFilter='blur(18px)';el.style.border='1px solid var(--cardLine)';el.style.zIndex=4;
+   if(t>=SEAL_IN-0.05){
+     const k=CALM(clamp((t-SEAL_IN)/0.55,0,1));
+     const D=150;
+     r={x:lerp(R_STAT.x,960-D,k),y:lerp(R_STAT.y,540-D,k),
+        w:lerp(R_STAT.w,D*2,k),h:lerp(R_STAT.h,D*2,k),r:lerp(R_STAT.r,D,k)};
+     el.style.background='linear-gradient(135deg,#8B7CB3,#FF6B9D)';
+     el.style.backdropFilter='none';el.style.border='none';el.style.zIndex=7;
+   }
+   el.style.width=r.w.toFixed(1)+'px';el.style.height=r.h.toFixed(1)+'px';
+   el.style.borderRadius=Math.min(r.r,999).toFixed(1)+'px';
+   let tr=`matrix(${M.map(v=>v.toFixed(5)).join(',')}) translate(${r.x.toFixed(1)}px,${r.y.toFixed(1)}px)`;
+   el.style.transform=tr;
+   el.style.opacity=t<SEAL_IN+0.05?1:Math.max(0,1-sstep(SEAL_IN+0.05,SEAL_IN+0.45,t));}
+   }
+
+  // 3a · 主卡内容
+  {const op=sstep(2.06,2.30,t)*(1-sstep(3.96,4.22,t));
+   $('L-info').style.opacity=op;
+   {const lab=OM.wordRise(t,G_IN+0.42,{dist:14,omega:24}),ti=OM.wordRise(t,G_IN+0.54,{dist:20,omega:20}),
+      ru=sstep(G_IN+0.72,G_IN+0.97,t);
+    $('c-lab').style.opacity=lab.op;$('c-lab').style.transform=`translateY(${lab.y.toFixed(1)}px)`;
+    $('c-title').style.opacity=ti.op;$('c-title').style.transform=`translateY(${ti.y.toFixed(1)}px)`;
+    $('c-rule').style.opacity=ru;$('c-rule').style.transform=`scaleX(${ru.toFixed(3)})`;$('c-rule').style.transformOrigin='0 50%';}
+   {const rows=$('c-info').children;
+    for(let i=0;i<rows.length;i++){const m=sstep(INFO0+i*0.26,INFO0+i*0.26+0.42,t);
+      rows[i].style.opacity=m;rows[i].style.transform=`translateY(${((1-m)*26).toFixed(1)}px)`;}}
+   {skillEls.forEach((s,i)=>{
+      const e=OM.popIn(t,SKILL0+i*SKILL_DT,{rise:22});
+      const op2=t>=SKILL0+i*SKILL_DT-0.02&&t<3.96?e.op:0;
+      s.style.opacity=op2;
+      s.style.transform=`translate(${SKILL_SLOT[i][0].toFixed(1)}px,${SKILL_SLOT[i][1].toFixed(1)}px) scale(${e.s.toFixed(3)}) translateY(${e.dy.toFixed(1)}px)`;});}}
+
+  // 3b · 文章卡：居中单卡，6 层内容纵向交替（同一条形变链上的节奏）
+  {const op=sstep(POST_IN-0.10,POST_IN+0.18,t)*(1-sstep(NAV_IN-0.20,NAV_IN+0.10,t));
+   $('L-post').style.opacity=op;
+   const dt=i=>POST_DT[i]??POST_DT[POST_DT.length-1];
+   const off=i=>POST_DT.slice(0,i).reduce((a,b)=>a+b,0);
+   artEls.forEach((el,i)=>{
+     const t0=POST_IN+off(i);
+     const tail=i===POST_N-1?0.30:0.05;
+     const inK=sstep(t0-0.26,t0+0.14,t);
+     const outK=1-sstep(t0+dt(i)-0.30,t0+dt(i)+tail,t);
+     el.style.opacity=inK*outK;
+     el.style.transform=`translateY(${(((1-inK)*44)-(1-outK)*44).toFixed(1)}px)`;});}
+
+  // 3c · 胶囊条
+  {const op=sstep(NAV_IN+0.12,NAV_IN+0.45,t)*(1-sstep(WORK_IN-0.12,WORK_IN+0.25,t));
+   $('L-bar').style.opacity=op;
+   navEls.forEach((el,i)=>{const k=sstep(NAV_IN+0.18+i*0.05,NAV_IN+0.42+i*0.05,t);
+     el.style.opacity=k;el.style.transform=`translateY(${((1-k)*16).toFixed(1)}px)`;});}
+
+  // 3d · 作品卡
+  {const op=sstep(WORK_IN+0.18,WORK_IN+0.50,t)*(1-sstep(ZT_IN-0.18,ZT_IN+0.12,t));
+   $('L-work').style.opacity=op;
+   {const k=sstep(WORK_IN+0.24,WORK_IN+0.56,t);
+    $('w-img').style.opacity=k;$('w-title').style.opacity=k;$('w-sub').style.opacity=k;$('w-lab').style.opacity=k;}}
+
+  // 3e · 状态卡：全片最长的静止段
+  {const op=sstep(ZT_IN+0.42,ZT_IN+0.88,t)*(1-sstep(SEAL_IN-0.28,SEAL_IN+0.02,t));
+   $('L-stat').style.opacity=op;
+   {const k=sstep(ZT_IN+0.50,ZT_IN+0.95,t);
+    $('s-text').style.opacity=k;$('s-text').style.transform=`translateY(${((1-k)*26).toFixed(1)}px)`;
+    $('s-lab').style.opacity=sstep(ZT_IN+0.42,ZT_IN+0.85,t);}}
+
+  // 4 · seal 收拢 → 黑底字标
+  {$('end').style.opacity=sstep(SEAL_IN+0.10,SEAL_IN+0.40,t);
+   MARKL.forEach((s,i)=>{const d=OM.letterDrop(t,SEAL_IN+0.36+i*0.055,{stagger:0.055,dist:150,squash:1});
+     s.style.opacity=d.op;s.style.transform=`translateY(${d.y.toFixed(1)}px) scale(${(1+d.sx*0.3).toFixed(3)},${(1-d.sy*0.5).toFixed(3)})`;});
+   $('url').style.opacity=sstep(SEAL_IN+0.72,SEAL_IN+1.12,t);}
+
+  // 5 · hand：只出现一次——点一下圆点，网站长出来
+  {const cu=OM.cursor(t,[{t:1.30,x:1620,y:980},{t:1.44,x:960,y:520},{t:1.50,x:960,y:520},{t:1.66,x:960,y:520},{t:1.82,x:1620,y:980}],[1.50]);
+   const vis=t>=1.28&&t<1.86;
+   $('cursor').style.opacity=vis?1:0;
+   $('cursor').style.transform=`translate(${(cu.x-4).toFixed(1)}px,${(cu.y-3).toFixed(1)}px) scale(${cu.s.toFixed(3)})`;}
+
+  $('hud').textContent='t='+t.toFixed(3);
+  return Promise.all(pending);
+}
+window.__motion=(t0,t1)=>{
+  const c0=camAt(t0),c1=camAt(t1),cm=camAt((t0+t1)/2);
+  return Math.max(OM.screenTravel(c0,c1,cm), 40);
+};
+window.__seek=async t=>{await seek(t);return true;};
+window.__ready=document.fonts.ready.then(()=>{markEl.style.transform='none';markW=markEl.getBoundingClientRect().width;return seek(0);});
+const q=new URLSearchParams(location.search);
+if(q.has('t'))__ready.then(()=>seek(parseFloat(q.get('t'))));
+if(q.has('hud'))$('hud').style.display='block';
+if(q.has('play'))__ready.then(()=>{const t0=performance.now();(function loop(){seek(((performance.now()-t0)/1000)%DUR);requestAnimationFrame(loop);})();});
+</script>
+</body>
+</html>

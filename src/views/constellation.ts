@@ -44,25 +44,33 @@ interface StarNode {
   pinned: boolean;
   blurred: boolean;
   focused: boolean;
+  hovered: boolean; // 鼠标悬浮（放大 1.12×）
 }
 
 // —— 常量（方案定稿值）——
 const TILT_DEG = 13; // 最大倾斜角（22° 视觉过弯，卡片像被掰弯的纸片；13° 保留球面感又不夸张）
 const Z_LIFT = 90; // 中心最大前凸（120px 在宽屏下让近景卡片糊脸；90px 更含蓄）
 const SCALE_EDGE = 0.62; // 边缘最小缩放
-const ZOOM_MIN = 0.75;
+const ZOOM_MIN = 0.62; // 缩小下限。0.75 在宽屏放不下整个星盘（20 篇时横向差 600px+），
+                       // 0.62 让自适应初始缩放有空间把外圈纳入视野
 const ZOOM_MAX = 1.35;
 const SPACING = 110; // 螺旋基础间距（168 配 256px 卡片太散，20 篇铺不开宽屏；110 配 176px 卡片让星团凝聚，实测屏宽约 10 列）
+const SPIRAL_AR_X = 1.89; // 螺旋横向半径倍率 = 典型宽屏纵横比（1920/1016）。
+                          // 星盘生成阶段就按屏幕比例椭圆化，否则宽屏左右两侧永远空
+                          //（世界星盘纵横比 1.17 vs 屏幕 1.89，差 60%，实测四角覆盖 0）。
+                          // 吸附用的六边形平面仍是等向的，横向倍率只在生成/输出时生效。
 const GOLDEN = 2.399963229728653; // 黄金角
 const EDGE_LIMIT = 200; // 相机活动半径 = 最外圈 + 该值
 const OVERSCROLL = 0.35; // 越界阻尼系数
 const CLICK_SLOP = 4; // 位移 < 4px 视为点击
 const LONG_PRESS_MS = 300;
-const CULL_FACTOR = 1.25; // 视口剔除半径倍数
+const CULL_FACTOR = 1.35; // 视口剔除半径倍数。1.25 会把最外圈整层切掉，星团看起来"突兀中断"；
+                          // 1.35 多留一层，边缘卡片缩到最小后自然淡出，边界感更柔和
 const BLUR_T = 0.32; // t < 该值才启用 backdrop-filter。0.75 在 R 放大后等于"几乎全部开 blur"，
                      // 而 blur 是移动端/无 GPU 环境的最大开销（实测占 15ms/帧，60fps 直接砍半）。
                      // 收紧到 0.32 ≈ 只给聚焦区附近的卡片毛玻璃，其余用实底，视觉几乎无损。
 const FOCUS_T = 0.35; // t < 该值判定为聚焦卡
+const HOVER_SCALE = 1.12; // 鼠标悬浮时的额外放大倍率
 const LINK_T = 0.85; // 连线两端 t > 该值则淡出
 const LS_KEY = "bmlb-starmap";
 
@@ -75,7 +83,9 @@ const CATEGORY_EMOJI: Record<string, string> = {
   archive: "▣",
 };
 
-/** 像素 → 六边形轴向坐标（pointy-top，cube round） */
+/** 像素 → 六边形轴向坐标（pointy-top，cube round）
+ *  注意入参 x 必须是「未拉伸」的世界横坐标，横向倍率只在生成/输出两端生效。
+ *  调用方约定：toHex(x / SPIRAL_AR_X, y) ⇄ hexToWorld(q, r).x */
 function toHex(x: number, y: number, size: number): { q: number; r: number } {
   const q = ((Math.sqrt(3) / 3) * x - (1 / 3) * y) / size;
   const r = ((2 / 3) * y) / size;
@@ -97,6 +107,12 @@ function hexXY(q: number, r: number, size: number): { x: number; y: number } {
   };
 }
 
+/** 格心 → 世界坐标（把六边形横向拉开，适配宽屏） */
+function hexToWorld(q: number, r: number, size: number): { x: number; y: number } {
+  const h = hexXY(q, r, size);
+  return { x: h.x * SPIRAL_AR_X, y: h.y };
+}
+
 /**
  * 槽位分配：阿基米德螺旋 + 黄金角逐点，再吸附到六边形格心。
  *
@@ -108,9 +124,17 @@ const hexUsed = new Set<string>();
 
 function spiralSlot(n: number): { x: number; y: number } {
   const size = SPACING;
-  const r = size * Math.sqrt(n);
+  // 螺旋半径：横向按屏幕纵横比（约 1.89）摊开，纵向保持。
+  // 单纯拉伸六边形（HEX_STRETCH_X）改不了"20 篇只围出 1157px 横跨"的事实——
+  // 世界星盘纵横比 1.17 vs 屏幕 1.89，差 60%，必须从生成阶段就按屏幕比例椭圆化，
+  // 否则宽屏左右两侧永远空（实测四角覆盖 0、xSpread 403~1407）。
+  const rX = size * Math.sqrt(n) * SPIRAL_AR_X;
+  const rY = size * Math.sqrt(n);
   const a = n * GOLDEN;
-  let { q, r: rr } = toHex(r * Math.cos(a), r * Math.sin(a), size);
+  const worldX = rX * Math.cos(a);
+  const worldY = rY * Math.sin(a);
+  // 吸附前反归一化回未拉伸的六边形平面，保证吸附正确
+  let { q, r: rr } = toHex(worldX / SPIRAL_AR_X, worldY, size);
 
   // 环式外移去重
   if (hexUsed.has(q + "," + rr)) {
@@ -129,7 +153,7 @@ function spiralSlot(n: number): { x: number; y: number } {
     }
   }
   hexUsed.add(q + "," + rr);
-  return hexXY(q, rr, size);
+  return hexToWorld(q, rr, size);
 }
 
 function fmtDate(s: string): string {
@@ -243,6 +267,7 @@ export const constellationView: ViewModule = {
         pinned: !!p,
         blurred: false,
         focused: false,
+        hovered: false,
       };
     });
 
@@ -259,6 +284,26 @@ export const constellationView: ViewModule = {
       camInitY = ys[Math.floor(ys.length / 2)];
     }
     const camera = { x: camInitX, y: camInitY, zoom: savedZoom };
+
+    // —— 自适应初始缩放：让整个星盘（含最外圈）恰好入画 ——
+    // 椭圆屏幕 × 圆形星盘是固有矛盾：纵向刚好铺满时横向必然留空。
+    // 这里按「最外圈半径 + 卡片半宽/半高」反算能装进视口的 zoom，
+    // 并给 8% 呼吸余量；只在用户没有手动设过 zoom 时生效（savedZoom 优先）。
+    let autoZoom = 1;
+    if (savedZoom === 1) {
+      const vw0 = document.getElementById('canvas-stage')?.clientWidth || window.innerWidth;
+      const vh0 = document.getElementById('canvas-stage')?.clientHeight || window.innerHeight;
+      const cw0 = window.innerWidth >= 768 ? 176 : Math.min(window.innerWidth * 0.72, 200);
+      const chh0 = window.innerWidth >= 768 ? 121 : Math.round(Math.min(window.innerWidth * 0.5, 138));
+      // 星盘在相机居中后的实际占位（世界坐标极值差）
+      const xs = nodes.map((n) => n.x), ys = nodes.map((n) => n.y);
+      const spanX = Math.max(...xs) - Math.min(...xs) + cw0;
+      const spanY = Math.max(...ys) - Math.min(...ys) + chh0;
+      autoZoom = Math.min(vw0 / spanX, vh0 / spanY) * 0.97;
+      // 夹在合理区间：太小文字糊，太大失去纵深感
+      autoZoom = Math.min(1, Math.max(0.62, autoZoom));
+      camera.zoom = autoZoom;
+    }
 
     const savePinned = () => {
       const obj: Record<string, { x: number; y: number }> = {};
@@ -312,6 +357,16 @@ export const constellationView: ViewModule = {
             .join("")}</div>
         </div>`;
       n.el = el;
+      // hover 放大 + 高亮：CSS :hover 改不了 transform（被 rAF 每帧覆盖），
+      // 所以在这里用 JS 维护 hovered 标志，由渲染循环乘进 scale。
+      el.addEventListener('mouseenter', () => {
+        n.hovered = true;
+        el.classList.add('star-hover');
+      });
+      el.addEventListener('mouseleave', () => {
+        n.hovered = false;
+        el.classList.remove('star-hover');
+      });
       frag.appendChild(el);
     });
     cardsWrap.appendChild(frag);
@@ -478,13 +533,16 @@ export const constellationView: ViewModule = {
         const rotX = -(dy / R) * TILT_DEG;
         const tz = (1 - t) * Z_LIFT;
 
-        el.style.zIndex = String(100 + Math.round(tz));
+        el.style.zIndex = n.hovered ? '900' : String(100 + Math.round(tz));
         // 定位链：CSS 的 left/top:50% 把卡片左上角放到 stage 中心，
         // translate(-50%,-50%) 再把卡片中心对齐到该点。
         // 所以 translate3d 的 x/y 必须是「相对 stage 中心」的偏移量 = s.x - cx，
         // 而 s.x 本身已含 cx（toScreen 里 +cx）。若再写 s.x - cw/2，
         // 等于把绝对坐标当偏移再叠加一次，卡片会被推到屏幕外（实测偏出 751px）。
-        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cx).toFixed(1)}px,${(s.y - cy).toFixed(1)}px,${tz.toFixed(1)}px) scale(${scale.toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        // hover 放大：不能用 CSS :hover 改 transform（会被下一帧 rAF 覆盖），
+        // 所以用 JS 维护 hovered 状态、在这里乘进 scale。
+        const hs = n.hovered ? HOVER_SCALE : 1;
+        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cx).toFixed(1)}px,${(s.y - cy).toFixed(1)}px,${tz.toFixed(1)}px) scale(${(scale * hs).toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
 
         const wantBlur = t < BLUR_T;
         if (wantBlur !== n.blurred) {
@@ -776,7 +834,7 @@ export const constellationView: ViewModule = {
         // 回到「初始重心」而不是星盘几何原点——后者在黄金角螺旋下是偏的
         camera.x = camInitX;
         camera.y = camInitY;
-        zoomSpring = 1;
+        zoomSpring = autoZoom;
         gestureBusy = false;
         linksDirty = true;
       } else if (btn.dataset.act === "unpin") {
