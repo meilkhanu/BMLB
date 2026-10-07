@@ -73,29 +73,61 @@ const CATEGORY_EMOJI: Record<string, string> = {
   archive: "▣",
 };
 
-/** 六边形格心吸附（pointy-top axial 坐标），保证螺旋槽位不重叠、间距均匀 */
-function hexSnap(x: number, y: number): { x: number; y: number } {
-  const size = SPACING;
+/** 像素 → 六边形轴向坐标（pointy-top，cube round） */
+function toHex(x: number, y: number, size: number): { q: number; r: number } {
   const q = ((Math.sqrt(3) / 3) * x - (1 / 3) * y) / size;
   const r = ((2 / 3) * y) / size;
-  let rx = Math.round(q),
-    rz = Math.round(r);
-  const ry = -rx - rz;
-  const dx = Math.abs(rx - q),
-    dz = Math.abs(rz - r),
+  let rq = Math.round(q),
+    rr = Math.round(r);
+  const ry = -rq - rr;
+  const dq = Math.abs(rq - q),
+    dr = Math.abs(rr - r),
     dy = Math.abs(ry - (-q - r));
-  if (dx > dy && dx > dz) rx = -ry - rz;
-  else if (dy > dz) rz = -rx - ry;
+  if (dq > dy && dq > dr) rq = -ry - rr;
+  else if (dy > dr) rr = -rq - ry;
+  return { q: rq, r: rr };
+}
+
+function hexXY(q: number, r: number, size: number): { x: number; y: number } {
   return {
-    x: size * (Math.sqrt(3) * rx + (Math.sqrt(3) / 2) * rz),
-    y: size * ((3 / 2) * rz),
+    x: size * (Math.sqrt(3) * q + (Math.sqrt(3) / 2) * r),
+    y: size * ((3 / 2) * r),
   };
 }
 
+/**
+ * 槽位分配：阿基米德螺旋 + 黄金角逐点，再吸附到六边形格心。
+ *
+ * 关键：螺旋的前几个点（n=1,2 半径很小、黄金角模 360 后仅差几度）会落进同一个
+ * 六边形格，裸 hexSnap 会把它们叠成同一坐标（实测 20 篇时 n=1≡n=4、n=2≡n=5，
+ * 卡片完全重叠）。所以吸附后必须做「占用则外移」去重：从所在格按环向外找最近空格。
+ */
+const hexUsed = new Set<string>();
+
 function spiralSlot(n: number): { x: number; y: number } {
-  const r = SPACING * Math.sqrt(n);
+  const size = SPACING;
+  const r = size * Math.sqrt(n);
   const a = n * GOLDEN;
-  return hexSnap(r * Math.cos(a), r * Math.sin(a));
+  let { q, r: rr } = toHex(r * Math.cos(a), r * Math.sin(a), size);
+
+  // 环式外移去重
+  if (hexUsed.has(q + "," + rr)) {
+    let placed = false;
+    for (let ring = 1; ring <= 15 && !placed; ring++) {
+      for (let dq = -ring; dq <= ring && !placed; dq++) {
+        for (let dr = -ring; dr <= ring && !placed; dr++) {
+          if (Math.max(Math.abs(dq), Math.abs(dr)) !== ring) continue;
+          if (!hexUsed.has(q + dq + "," + (rr + dr))) {
+            q += dq;
+            rr += dr;
+            placed = true;
+          }
+        }
+      }
+    }
+  }
+  hexUsed.add(q + "," + rr);
+  return hexXY(q, rr, size);
 }
 
 function fmtDate(s: string): string {
@@ -197,6 +229,8 @@ export const constellationView: ViewModule = {
     const camera = { x: 0, y: 0, zoom: savedZoom };
 
     // —— 节点：螺旋入轨（index 由 SSR 按 publishedAt 倒序给出，确定性）——
+    // 清空槽位占用记录：模块级 Set 会在多次 mount 间残留，导致重挂后布局漂移
+    hexUsed.clear();
     const nodes: StarNode[] = cards.map((c) => {
       const slot = spiralSlot(c.index);
       const p = pinnedMap[c.slug];

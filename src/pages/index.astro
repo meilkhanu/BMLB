@@ -75,20 +75,37 @@ allPosts.forEach(p => {
 });
 
 // —— 星图卡片数据（按 publishedAt 倒序 = 螺旋索引，新文章自动进外层，旧文坐标不变）——
-// dev 兜底：SSR 取不到文章且 URL 带 ?demo=N 时注入合成卡片，
-// 让本地环境（如 better-sqlite3 与当前 Node ABI 不匹配）也能验收交互/渲染链路；线上有文章时永不触发。
-const starCards: Array<{ slug: string; title: string; excerpt: string; categoryId: string; categoryName: string; categoryColor: string; tags: string[]; coverImage: string; publishedAt: string; index: number }> = (() => {
-  if (allPosts.length > 0) {
-    return allPosts.map((p, i) => {
-      const cat = SITE_CONFIG.categories.find(c => c.id === (p.categoryId || 'notes')) || SITE_CONFIG.categories[0];
-      return {
-        slug: p.slug, title: p.title, excerpt: p.excerpt,
-        categoryId: p.categoryId || 'notes',
-        categoryName: cat.name, categoryColor: cat.color,
-        tags: p.tags, coverImage: p.coverImage, publishedAt: p.publishedAt, index: i,
-      };
-    });
+// 数据源优先级：SSR 文章 > ?real 直读 SQLite（本机 better-sqlite3 与 Node ABI 不匹配时的验收通道）
+//              > ?demo=N 合成数据 > 空
+const starCards: Array<{ slug: string; title: string; excerpt: string; categoryId: string; categoryName: string; categoryColor: string; tags: string[]; coverImage: string; publishedAt: string; index: number }> = await (async () => {
+  const toCard = (p: any, i: number) => {
+    const cat = SITE_CONFIG.categories.find((c) => c.id === (p.categoryId || 'notes')) || SITE_CONFIG.categories[0];
+    return {
+      slug: p.slug, title: p.title, excerpt: p.excerpt || '',
+      categoryId: p.categoryId || 'notes',
+      categoryName: cat.name, categoryColor: cat.color,
+      tags: p.tags || [], coverImage: p.coverImage || '', publishedAt: p.publishedAt || '', index: i,
+    };
+  };
+
+  if (allPosts.length > 0) return allPosts.map(toCard);
+
+  // ?real：用 Node 内置 node:sqlite 直读本地 data/app.db，绕过 better-sqlite3 的 ABI 问题。
+  // 仅用于把线上真实数据拉到本地验收；线上（ECS）本身走 allPosts 正常路径。
+  if (Astro.url.searchParams.has('real')) {
+    try {
+      const { DatabaseSync } = await import('node:sqlite');
+      const db = new DatabaseSync('data/app.db', { readOnly: true });
+      const rows = db.prepare(
+        "SELECT slug, title, excerpt, category_id AS categoryId, tags, cover_image AS coverImage, published_at AS publishedAt FROM posts WHERE status = 'published' ORDER BY published_at DESC LIMIT 50"
+      ).all() as any[];
+      db.close();
+      return rows.map((r, i) => toCard({ ...r, tags: typeof r.tags === 'string' ? JSON.parse(r.tags || '[]') : (r.tags || []) }, i));
+    } catch (e: any) {
+      console.error('[index] ?real 读取失败:', e?.message || e);
+    }
   }
+
   if (!Astro.url.searchParams.has('demo')) return [];
   const n = Math.min(60, Number(Astro.url.searchParams.get('demo')) || 14);
   return Array.from({ length: n }, (_, i) => {
@@ -102,7 +119,6 @@ const starCards: Array<{ slug: string; title: string; excerpt: string; categoryI
     };
   });
 })();
-
 // —— 工具函数 ——
 const POSTS_PER_PAGE = 6;
 
