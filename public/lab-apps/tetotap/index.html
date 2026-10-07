@@ -96,7 +96,7 @@ a:hover{animation:animover .2s linear}
   <div class="set">
     <p class="attention">点击 &amp; 拖动或者按任意键!<br>Click &amp; drag or press any key!</p>
     <p id="bt_feedback"><a href="#">反馈: 开启</a></p>
-    <p id="bt_backtrack"><a href="#">背景音乐: 关闭</a></p>
+    <p id="bt_backtrack"><a href="#">背景旋律: 开启</a></p>
   </div>
 </div>
 
@@ -106,9 +106,11 @@ a:hover{animation:animover .2s linear}
     <p class="close"><span id="bt_close">×</span></p>
     <p class="con"> 声音来源 <a href="https://kasaneteto.jp/utau/" target="_blank" rel="noopener">重音テト</a> </p>
     <p class="con"> 音源作者 <a href="https://kasaneteto.jp/" target="_blank" rel="noopener">小山乃舞世 / TWINDRILL</a> </p>
-    <p class="con"> 本站为二次创作演示，音源仅用于非商用个人作品 </p>
+    <p class="con"> 本站为二次创作演示，音频为用该音源渲染后再加工的单音节片段，
+      仅用于非商用个人作品 </p>
     <p class="link"> 灵感来源 <a href="http://patatap.com/" target="_blank" rel="noopener">Patatap</a><br>(令人赞叹的网页!)<br>
-      原版实现参考 <a href="https://github.com/AkariRin/mikutap" target="_blank" rel="noopener">mikutap</a> (MIT) </p>
+      原版实现参考 <a href="https://github.com/AkariRin/mikutap" target="_blank" rel="noopener">mikutap</a> (MIT)<br>
+      节律沿用其 280 BPM 量化网格 </p>
   </div>
 </div>
 
@@ -117,30 +119,74 @@ a:hover{animation:animover .2s linear}
 
 <script>
 /* ============================================================
-   Tetotap — 点击/触摸/按键播放 Teto 音节 + PIXI/GSAP 视觉特效
-   复刻 mikutap 机制；音频为本地用 Teto 音源渲染的成品词
+   Tetotap — 点击/触摸/按键播放 Teto 单音节 + PIXI/GSAP 视觉特效
+   复刻 mikutap 机制；音频为本地用 Teto 音源渲染后切出的单音节
+   （38 个 / 209KB，源文件与切分脚本见 scripts/render_tetotap_syllables.py）
+
+   节律设计沿用原仓库 mikutap：
+     · 280 BPM 量化网格（一拍 214.3ms），所有点击都吸附到最近的格点
+     · 同一格内重复触发的音会被前一个 stop 掉，避免叠成糊
+     · 背景自动旋律在格点上走 4 小节和声进行，用户停手 3.2s 后接管
    ============================================================ */
 (function () {
 'use strict';
 
-// ── 音频清单（本地渲染产物）──
-// 每个词有两个音高版本（主/变体），播放时随机选，避免同频嗡鸣
-const WORDS = [
-  { key: 'teto',     text: 'てと',     variant: true },
-  { key: 'tapa',     text: 'たぱ',     variant: true },
-  { key: 'kawaii',   text: 'かわいい', variant: true },
-  { key: 'haiyo',    text: 'はいよ',   variant: true },
-  { key: 'arigato',  text: 'ありがと', variant: true },
-  { key: 'ohayo',    text: 'おはよ',   variant: true },
-  { key: 'konnichi', text: 'こんにち', variant: true },
-  { key: 'pin',      text: 'ぴん',     variant: true },
-  { key: 'doki',     text: 'どき',     variant: true },
-  { key: 'miao',     text: 'みゃお',   variant: true },
-  { key: 'pyon',     text: 'ぴょん',   variant: true },
-  { key: 'niu',      text: 'にう',     variant: true },
-  { key: 'bubu',     text: 'ぶぶ',     variant: true },
-  { key: 'munya',    text: 'むにゃ',   variant: true },
-  { key: 'uso',      text: 'うそ',     variant: true },
+// ── 音节清单（本地再加工产物，由脚本实测音高写入）──
+// midi 为该音节的基频，节奏线按它挑低音走贝斯
+const SYLS = [
+  { key: 'teto_0', text: 'て', midi: 56.70 },
+  { key: 'teto_1', text: 'と', midi: 57.93 },
+  { key: 'tapa_2', text: 'た', midi: 58.67 },
+  { key: 'tapa_3', text: 'ぱ', midi: 59.85 },
+  { key: 'kawaii_4', text: 'か', midi: 61.01 },
+  { key: 'kawaii_5', text: 'わ', midi: 61.79 },
+  { key: 'kawaii_6', text: 'い', midi: 62.97 },
+  { key: 'kawaii_7', text: 'い', midi: 62.02 },
+  { key: 'haiyo_8', text: 'は', midi: 62.02 },
+  { key: 'haiyo_9', text: 'い', midi: 63.97 },
+  { key: 'haiyo_10', text: 'よ', midi: 64.10 },
+  { key: 'arigato_11', text: 'あ', midi: 64.90 },
+  { key: 'arigato_12', text: 'り', midi: 65.88 },
+  { key: 'arigato_13', text: 'が', midi: 67.08 },
+  { key: 'arigato_14', text: 'と', midi: 65.88 },
+  { key: 'ohayo_15', text: 'お', midi: 67.08 },
+  { key: 'ohayo_16', text: 'は', midi: 67.08 },
+  { key: 'ohayo_17', text: 'よ', midi: 68.03 },
+  { key: 'konnichi_18', text: 'こ', midi: 65.18 },
+  { key: 'konnichi_19', text: 'ん', midi: 66.77 },
+  { key: 'konnichi_20', text: 'に', midi: 67.87 },
+  { key: 'konnichi_21', text: 'ち', midi: 67.08 },
+  { key: 'pin_22', text: 'ぴ', midi: 63.72 },
+  { key: 'pin_23', text: 'ん', midi: 64.77 },
+  { key: 'doki_24', text: 'ど', midi: 61.79 },
+  { key: 'doki_25', text: 'き', midi: 63.09 },
+  { key: 'miao_26', text: 'みゃ', midi: 59.75 },
+  { key: 'miao_27', text: 'お', midi: 61.01 },
+  { key: 'pyon_28', text: 'ぴょ', midi: 57.66 },
+  { key: 'pyon_29', text: 'ん', midi: 58.77 },
+  { key: 'niu_30', text: 'に', midi: 56.87 },
+  { key: 'niu_31', text: 'う', midi: 58.02 },
+  { key: 'bubu_32', text: 'ぶ', midi: 58.86 },
+  { key: 'bubu_33', text: 'ぶ', midi: 59.85 },
+  { key: 'munya_34', text: 'む', midi: 61.01 },
+  { key: 'munya_35', text: 'にゃ', midi: 61.90 },
+  { key: 'uso_36', text: 'う', midi: 62.97 },
+  { key: 'uso_37', text: 'そ', midi: 63.09 },
+];
+
+// ── 节律参数（沿用原仓库 mikutap 的 280 BPM）──
+const BPM = 280;
+const STEP = 60 / BPM;              // 一个格点的秒数，约 214.3ms
+const BAR = STEP * 8;               // 8 格一小节
+// 背景自动旋律：4 小节一组，每格 0~2 个音；数字为 SYLS 下标
+// 低音走 MIDI 最低的几个音节，高音点缀，音程跨度小才不会刺耳
+const BASS = SYLS.filter(s => s.midi < 59.0).map(s => SYLS.indexOf(s));
+const LEAD = SYLS.filter(s => s.midi > 63.0).map(s => SYLS.indexOf(s));
+const MELODY = [
+  [BASS[0], -1, LEAD[0], -1, BASS[1], -1, LEAD[1], -1],
+  [BASS[2], -1, LEAD[2], -1, BASS[0], -1, LEAD[0], -1],
+  [BASS[3], -1, LEAD[3], -1, BASS[4] || BASS[1], -1, LEAD[1], -1],
+  [BASS[1], -1, LEAD[0], -1, BASS[2], -1, LEAD[2], -1],
 ];
 
 // ── 调色板（白 + 青灰系，与原版气质一致）──
@@ -155,50 +201,52 @@ let ctxAudio = null;
 let buffers = [];
 let ready = false, started = false;
 let feedback = true;      // 点击反馈（视觉）
-let backtrack = false;    // 背景自动旋律（默认关闭，避免无操作时自动出声）
-let bgTimer = 0, bgStep = 0, bgStartTime = 0;
-let lastWord = -1;          // 上一个播放的词索引（playWord 内部用）
-let lastWordIndex = -1;     // 上一个词索引（hit 用来避免连续重复）
+let backtrack = true;     // 背景自动旋律（默认开启，节律是这版的核心）
+let lastStep = -1;        // 上一个被占用的格点号
+let lastSyl = -1;         // 上一个播放的音节索引
+let bgStartStep = -15;    // 用户最后一次操作的格点号
+let audioT0 = 0;          // 格点时间轴原点（进入主场景时设）
 
 /* ============================================================
    音频
    ============================================================ */
 async function loadAudio() {
   ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-  const jobs = WORDS.map(w =>
-    fetch(`audio/${w.key}.mp3`)
+  const jobs = SYLS.map(w =>
+    fetch(`audio/syl-${w.key}.mp3`)
       .then(r => r.arrayBuffer())
       .then(buf => ctxAudio.decodeAudioData(buf))
-      .then(main => {
-        // 变体音高（+2 半音），失败不影响主版本
-        return fetch(`audio/${w.key}b.mp3`)
-          .then(r => r.arrayBuffer())
-          .then(b => ctxAudio.decodeAudioData(b))
-          .then(alt => ({ main, alt }))
-          .catch(() => ({ main, alt: null }));
-      })
-      .catch(e => { console.warn('audio fail', w.key, e); return { main: null, alt: null }; })
+      .catch(e => { console.warn('audio fail', w.key, e); return null; })
   );
   buffers = await Promise.all(jobs);
 }
 
-function playWord(i) {
-  const pack = buffers[i];
-  if (!ctxAudio || !pack || !pack.main) return;
-  // 随机选主版本或变体（不同音高），避免重叠时同频嗡鸣
-  const buf = (pack.alt && Math.random() < 0.45) ? pack.alt : pack.main;
-  // 同一音符快速重复时，先停掉上一个，避免叠加浑浊
-  if (lastWord === i && ctxAudio.__lastSrc) {
-    try { ctxAudio.__lastSrc.stop(); } catch (e) {}
-  }
+// 在格点上播放一个音节。返回 true 表示真的发声了
+function playSyl(i, delaySec) {
+  const buf = buffers[i];
+  if (!ctxAudio || !buf) return false;
   const src = ctxAudio.createBufferSource();
   src.buffer = buf;
   const gain = ctxAudio.createGain();
-  gain.gain.value = 0.85;
+  gain.gain.value = 0.9;
   src.connect(gain).connect(ctxAudio.destination);
-  src.start();
-  ctxAudio.__lastSrc = src;
-  lastWord = i;
+  src.start(ctxAudio.currentTime + (delaySec || 0));
+  // 记录实例，stopSyl 用来打断同一音节的重复触发
+  if (!ctxAudio.__live) ctxAudio.__live = [];
+  ctxAudio.__live.push({ idx: i, src });
+  src.onended = () => {
+    const k = ctxAudio.__live.findIndex(o => o.src === src);
+    if (k >= 0) ctxAudio.__live.splice(k, 1);
+  };
+  return true;
+}
+
+// 停掉某个音节正在响的所有实例（同一格重复触发时用）
+function stopSyl(i) {
+  if (!ctxAudio || !ctxAudio.__live) return;
+  ctxAudio.__live.slice().forEach(o => {
+    if (o.idx === i) { try { o.src.stop(); } catch (e) {} }
+  });
 }
 
 /* ============================================================
@@ -630,28 +678,35 @@ function floatText(txt, x, y) {
    ============================================================ */
 function hit(x, y) {
   if (!ready) return;
-  // 避免连续两次同一个词（重叠时像复读），从剩余词里随机
-  let i = Math.floor(Math.random() * WORDS.length);
-  if (WORDS.length > 1) {
+  // 取当前时间对应的格点号；同一格内只留最后一次触发
+  const step = Math.floor((ctxAudio.currentTime - audioT0) / STEP);
+  // 随机挑一个音节，避开上一个，避免连续重复像复读
+  let i = Math.floor(Math.random() * SYLS.length);
+  if (SYLS.length > 1) {
     let guard = 0;
-    while (i === lastWordIndex && guard++ < 5) {
-      i = Math.floor(Math.random() * WORDS.length);
+    while (i === lastSyl && guard++ < 5) {
+      i = Math.floor(Math.random() * SYLS.length);
     }
   }
-  lastWordIndex = i;
-  playWord(i);
+  // 同一格内已有音在响：先停掉上一个（它占着这个格点），再放新的，
+  // 否则两次点击叠在一起会糊
+  if (step === lastStep && lastSyl >= 0) stopSyl(lastSyl);
+  lastStep = step;
+  lastSyl = i;
+  playSyl(i);
   if (feedback) {
     playEffect(x, y, PALETTE[Math.floor(Math.random() * PALETTE.length)]);
-    floatText(WORDS[i].text, x, y);
+    floatText(SYLS[i].text, x, y);
   }
-  // 重置背景旋律计时，让用户主导节奏
-  bgStartTime = ctxAudio.currentTime;
+  // 把背景旋律的起点推到当前格，让用户主导节奏
+  bgStartStep = step;
 }
 
 function bindInput() {
   const view = $('#view');
   view.addEventListener('pointerdown', (e) => { hit(e.clientX, e.clientY); });
-  // 拖动时节流：最短间隔 180ms，且位移超过 40px 才触发，避免声音糊成一团
+  // 拖动时节流：最短一个格点（约 214ms），位移超过 30px 才触发，
+  // 这样滑出来的音正好落在 280 BPM 的格点上，不会糊成一团
   let lastDragTime = 0, lastDragX = null, lastDragY = null;
   view.addEventListener('pointermove', (e) => {
     if (e.buttons === 0 && e.pointerType !== 'touch') return;
@@ -662,8 +717,8 @@ function bindInput() {
       return;
     }
     const dx = e.clientX - lastDragX, dy = e.clientY - lastDragY;
-    if (now - lastDragTime < 180) return;
-    if (Math.sqrt(dx * dx + dy * dy) < 40) return;
+    if (now - lastDragTime < STEP * 1000) return;
+    if (Math.sqrt(dx * dx + dy * dy) < 30) return;
     lastDragTime = now; lastDragX = e.clientX; lastDragY = e.clientY;
     hit(e.clientX, e.clientY);
   });
@@ -679,15 +734,20 @@ function bindInput() {
 }
 
 /* ============================================================
-   背景自动旋律（轻量，偶尔触发）
+   背景自动旋律（对齐到格点，用户停手 3.2s 后接管）
    ============================================================ */
 function bgTick() {
-  if (!backtrack || !started) return;
-  const now = ctxAudio.currentTime;
-  if (now - bgStartTime > 3.2) {          // 用户 3.2s 无操作才自动播
-    bgStartTime = now;
-    const i = Math.floor(Math.random() * WORDS.length);
-    playWord(i);
+  if (!backtrack || !started || !ctxAudio) return;
+  const step = Math.floor((ctxAudio.currentTime - audioT0) / STEP);
+  if (step <= lastStep) return;              // 每格只走一次
+  // 用户还在操作：只记格子不发声
+  if (step - bgStartStep < 15) { lastStep = step; return; }
+  lastStep = step;
+  const bar = Math.floor(step / 8) % MELODY.length;
+  const slot = step % 8;
+  const i = MELODY[bar][slot];
+  if (i >= 0 && i < SYLS.length) {
+    playSyl(i);
     if (feedback) {
       playEffect(W * Math.random(), H * Math.random(), PALETTE[0]);
     }
@@ -708,7 +768,10 @@ function enterMain() {
   show('#scene_main');
   $('#bt_back').style.display = 'block';
   $('#bt_fs').style.display = 'block';
-  bgStartTime = ctxAudio.currentTime;
+  // 格点时间轴的原点，节律网格以此为 0
+  audioT0 = ctxAudio.currentTime;
+  lastStep = -1;
+  bgStartStep = -15;   // 进去就开始走背景旋律
 }
 
 async function boot() {
@@ -775,7 +838,7 @@ async function boot() {
   $('#bt_backtrack').addEventListener('click', (e) => {
     e.preventDefault();
     backtrack = !backtrack;
-    $('#bt_backtrack').querySelector('a').textContent = '背景音乐: ' + (backtrack ? '开启' : '关闭');
+    $('#bt_backtrack').querySelector('a').textContent = '背景旋律: ' + (backtrack ? '开启' : '关闭');
   });
 }
 

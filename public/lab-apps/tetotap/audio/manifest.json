@@ -1,250 +1,349 @@
 {
- "teto": {
-  "syllables": [
-   "て",
-   "と"
-  ],
-  "dur": 1.42,
-  "size": 17912,
-  "midi": 58,
-  "note": "A#3",
-  "shift": -5,
-  "variant": {
-   "note": "C4",
-   "shift": -3,
-   "size": 16031
-  }
- },
- "tapa": {
-  "syllables": [
-   "た",
-   "ぱ"
-  ],
-  "dur": 0.997,
-  "size": 12897,
-  "midi": 60,
-  "note": "C4",
-  "shift": -3,
-  "variant": {
-   "note": "D4",
-   "shift": -1,
-   "size": 11643
-  }
- },
- "kawaii": {
-  "syllables": [
-   "か",
-   "わ",
-   "い",
-   "い"
-  ],
-  "dur": 2.604,
-  "size": 32018,
-  "midi": 62,
-  "note": "D4",
-  "shift": -1,
-  "variant": {
-   "note": "E4",
-   "shift": 1,
-   "size": 28884
-  }
- },
- "haiyo": {
-  "syllables": [
-   "は",
-   "い",
-   "よ"
-  ],
-  "dur": 1.441,
-  "size": 18226,
-  "midi": 64,
-  "note": "E4",
-  "shift": 1,
-  "variant": {
-   "note": "F#4",
-   "shift": 3,
-   "size": 16345
-  }
- },
- "arigato": {
-  "syllables": [
-   "あ",
-   "り",
-   "が",
-   "と"
-  ],
-  "dur": 1.879,
-  "size": 23241,
-  "midi": 66,
-  "note": "F#4",
-  "shift": 3,
-  "variant": {
-   "note": "G#4",
-   "shift": 5,
-   "size": 21047
-  }
- },
- "ohayo": {
-  "syllables": [
-   "お",
-   "は",
-   "よ"
-  ],
-  "dur": 0.965,
-  "size": 12270,
-  "midi": 68,
-  "note": "G#4",
-  "shift": 5,
-  "variant": {
-   "note": "A#4",
-   "shift": 7,
-   "size": 11329
-  }
- },
- "konnichi": {
-  "syllables": [
-   "こ",
-   "ん",
-   "に",
-   "ち"
-  ],
-  "dur": 2.089,
-  "size": 25749,
-  "midi": 67,
-  "note": "G4",
-  "shift": 4,
-  "variant": {
-   "note": "A4",
-   "shift": 6,
-   "size": 23241
-  }
- },
- "pin": {
-  "syllables": [
-   "ぴ",
-   "ん"
-  ],
-  "dur": 0.849,
-  "size": 11016,
-  "midi": 65,
-  "note": "F4",
-  "shift": 2,
-  "variant": {
-   "note": "G4",
-   "shift": 4,
-   "size": 10076
-  }
- },
- "doki": {
-  "syllables": [
-   "ど",
-   "き"
-  ],
-  "dur": 1.096,
-  "size": 13837,
-  "midi": 63,
-  "note": "D#4",
-  "shift": 0,
-  "variant": {
-   "note": "F4",
-   "shift": 2,
-   "size": 12583
-  }
- },
- "miao": {
-  "syllables": [
-   "みゃ",
-   "お"
-  ],
-  "dur": 1.103,
-  "size": 14151,
-  "midi": 61,
-  "note": "C#4",
-  "shift": -2,
-  "variant": {
-   "note": "D#4",
-   "shift": 0,
-   "size": 12583
-  }
- },
- "pyon": {
-  "syllables": [
-   "ぴょ",
-   "ん"
-  ],
-  "dur": 1.182,
-  "size": 15091,
-  "midi": 59,
-  "note": "B3",
-  "shift": -4,
-  "variant": {
-   "note": "C#4",
-   "shift": -2,
-   "size": 13524
-  }
- },
- "niu": {
-  "syllables": [
-   "に",
-   "う"
-  ],
-  "dur": 1.714,
-  "size": 21360,
-  "midi": 58,
-  "note": "A#3",
-  "shift": -5,
-  "variant": {
-   "note": "C4",
-   "shift": -3,
-   "size": 19166
-  }
- },
- "bubu": {
-  "syllables": [
-   "ぶ",
-   "ぶ"
-  ],
-  "dur": 1.128,
-  "size": 14464,
-  "midi": 60,
-  "note": "C4",
-  "shift": -3,
-  "variant": {
-   "note": "D4",
-   "shift": -1,
-   "size": 12897
-  }
- },
- "munya": {
-  "syllables": [
-   "む",
-   "にゃ"
-  ],
-  "dur": 0.952,
-  "size": 12270,
-  "midi": 62,
-  "note": "D4",
-  "shift": -1,
-  "variant": {
-   "note": "E4",
-   "shift": 1,
-   "size": 11016
-  }
- },
- "uso": {
-  "syllables": [
-   "う",
-   "そ"
-  ],
-  "dur": 0.88,
-  "size": 11329,
-  "midi": 64,
-  "note": "E4",
-  "shift": 1,
-  "variant": {
-   "note": "F#4",
-   "shift": 3,
-   "size": 10389
+ "count": 38,
+ "by_pitch": [
+  "teto_0",
+  "niu_30",
+  "pyon_28",
+  "teto_1",
+  "niu_31",
+  "tapa_2",
+  "pyon_29",
+  "bubu_32",
+  "miao_26",
+  "tapa_3",
+  "bubu_33",
+  "kawaii_4",
+  "miao_27",
+  "munya_34",
+  "kawaii_5",
+  "doki_24",
+  "munya_35",
+  "kawaii_7",
+  "haiyo_8",
+  "kawaii_6",
+  "uso_36",
+  "doki_25",
+  "uso_37",
+  "pin_22",
+  "haiyo_9",
+  "haiyo_10",
+  "pin_23",
+  "arigato_11",
+  "konnichi_18",
+  "arigato_12",
+  "arigato_14",
+  "konnichi_19",
+  "arigato_13",
+  "ohayo_15",
+  "ohayo_16",
+  "konnichi_21",
+  "konnichi_20",
+  "ohayo_17"
+ ],
+ "syllables": {
+  "teto_0": {
+   "text": "て",
+   "word": "teto",
+   "midi": 56.7,
+   "hz": 216.2,
+   "dur": 0.509,
+   "bytes": 5792
+  },
+  "teto_1": {
+   "text": "と",
+   "word": "teto",
+   "midi": 57.93,
+   "hz": 232.1,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "tapa_2": {
+   "text": "た",
+   "word": "tapa",
+   "midi": 58.67,
+   "hz": 242.3,
+   "dur": 0.444,
+   "bytes": 5008
+  },
+  "tapa_3": {
+   "text": "ぱ",
+   "word": "tapa",
+   "midi": 59.85,
+   "hz": 259.4,
+   "dur": 0.529,
+   "bytes": 6053
+  },
+  "kawaii_4": {
+   "text": "か",
+   "word": "kawaii",
+   "midi": 61.01,
+   "hz": 277.4,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "kawaii_5": {
+   "text": "わ",
+   "word": "kawaii",
+   "midi": 61.79,
+   "hz": 290.1,
+   "dur": 0.459,
+   "bytes": 5270
+  },
+  "kawaii_6": {
+   "text": "い",
+   "word": "kawaii",
+   "midi": 62.97,
+   "hz": 310.6,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "kawaii_7": {
+   "text": "い",
+   "word": "kawaii",
+   "midi": 62.02,
+   "hz": 294.0,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "haiyo_8": {
+   "text": "は",
+   "word": "haiyo",
+   "midi": 62.02,
+   "hz": 294.0,
+   "dur": 0.389,
+   "bytes": 4486
+  },
+  "haiyo_9": {
+   "text": "い",
+   "word": "haiyo",
+   "midi": 63.97,
+   "hz": 329.1,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "haiyo_10": {
+   "text": "よ",
+   "word": "haiyo",
+   "midi": 64.1,
+   "hz": 331.6,
+   "dur": 0.349,
+   "bytes": 4225
+  },
+  "arigato_11": {
+   "text": "あ",
+   "word": "arigato",
+   "midi": 64.9,
+   "hz": 347.2,
+   "dur": 0.339,
+   "bytes": 3963
+  },
+  "arigato_12": {
+   "text": "り",
+   "word": "arigato",
+   "midi": 65.88,
+   "hz": 367.5,
+   "dur": 0.454,
+   "bytes": 5270
+  },
+  "arigato_13": {
+   "text": "が",
+   "word": "arigato",
+   "midi": 67.08,
+   "hz": 393.8,
+   "dur": 0.499,
+   "bytes": 5792
+  },
+  "arigato_14": {
+   "text": "と",
+   "word": "arigato",
+   "midi": 65.88,
+   "hz": 367.5,
+   "dur": 0.564,
+   "bytes": 6314
+  },
+  "ohayo_15": {
+   "text": "お",
+   "word": "ohayo",
+   "midi": 67.08,
+   "hz": 393.8,
+   "dur": 0.359,
+   "bytes": 4225
+  },
+  "ohayo_16": {
+   "text": "は",
+   "word": "ohayo",
+   "midi": 67.08,
+   "hz": 393.8,
+   "dur": 0.304,
+   "bytes": 3702
+  },
+  "ohayo_17": {
+   "text": "よ",
+   "word": "ohayo",
+   "midi": 68.03,
+   "hz": 416.0,
+   "dur": 0.279,
+   "bytes": 3441
+  },
+  "konnichi_18": {
+   "text": "こ",
+   "word": "konnichi",
+   "midi": 65.18,
+   "hz": 352.8,
+   "dur": 0.534,
+   "bytes": 6053
+  },
+  "konnichi_19": {
+   "text": "ん",
+   "word": "konnichi",
+   "midi": 66.77,
+   "hz": 386.8,
+   "dur": 0.394,
+   "bytes": 4747
+  },
+  "konnichi_20": {
+   "text": "に",
+   "word": "konnichi",
+   "midi": 67.87,
+   "hz": 412.1,
+   "dur": 0.569,
+   "bytes": 6314
+  },
+  "konnichi_21": {
+   "text": "ち",
+   "word": "konnichi",
+   "midi": 67.08,
+   "hz": 393.8,
+   "dur": 0.569,
+   "bytes": 6314
+  },
+  "pin_22": {
+   "text": "ぴ",
+   "word": "pin",
+   "midi": 63.72,
+   "hz": 324.3,
+   "dur": 0.389,
+   "bytes": 4486
+  },
+  "pin_23": {
+   "text": "ん",
+   "word": "pin",
+   "midi": 64.77,
+   "hz": 344.5,
+   "dur": 0.439,
+   "bytes": 5008
+  },
+  "doki_24": {
+   "text": "ど",
+   "word": "doki",
+   "midi": 61.79,
+   "hz": 290.1,
+   "dur": 0.444,
+   "bytes": 5008
+  },
+  "doki_25": {
+   "text": "き",
+   "word": "doki",
+   "midi": 63.09,
+   "hz": 312.8,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "miao_26": {
+   "text": "みゃ",
+   "word": "miao",
+   "midi": 59.75,
+   "hz": 257.9,
+   "dur": 0.574,
+   "bytes": 6314
+  },
+  "miao_27": {
+   "text": "お",
+   "word": "miao",
+   "midi": 61.01,
+   "hz": 277.4,
+   "dur": 0.509,
+   "bytes": 5792
+  },
+  "pyon_28": {
+   "text": "ぴょ",
+   "word": "pyon",
+   "midi": 57.66,
+   "hz": 228.5,
+   "dur": 0.549,
+   "bytes": 6314
+  },
+  "pyon_29": {
+   "text": "ん",
+   "word": "pyon",
+   "midi": 58.77,
+   "hz": 243.6,
+   "dur": 0.609,
+   "bytes": 6837
+  },
+  "niu_30": {
+   "text": "に",
+   "word": "niu",
+   "midi": 56.87,
+   "hz": 218.3,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "niu_31": {
+   "text": "う",
+   "word": "niu",
+   "midi": 58.02,
+   "hz": 233.3,
+   "dur": 0.62,
+   "bytes": 6837
+  },
+  "bubu_32": {
+   "text": "ぶ",
+   "word": "bubu",
+   "midi": 58.86,
+   "hz": 245.0,
+   "dur": 0.569,
+   "bytes": 6314
+  },
+  "bubu_33": {
+   "text": "ぶ",
+   "word": "bubu",
+   "midi": 59.85,
+   "hz": 259.4,
+   "dur": 0.539,
+   "bytes": 6053
+  },
+  "munya_34": {
+   "text": "む",
+   "word": "munya",
+   "midi": 61.01,
+   "hz": 277.4,
+   "dur": 0.459,
+   "bytes": 5270
+  },
+  "munya_35": {
+   "text": "にゃ",
+   "word": "munya",
+   "midi": 61.9,
+   "hz": 292.1,
+   "dur": 0.469,
+   "bytes": 5270
+  },
+  "uso_36": {
+   "text": "う",
+   "word": "uso",
+   "midi": 62.97,
+   "hz": 310.6,
+   "dur": 0.504,
+   "bytes": 5792
+  },
+  "uso_37": {
+   "text": "そ",
+   "word": "uso",
+   "midi": 63.09,
+   "hz": 312.8,
+   "dur": 0.354,
+   "bytes": 4225
   }
  }
 }
