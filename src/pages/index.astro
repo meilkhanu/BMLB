@@ -1293,31 +1293,9 @@ try {
 	})();
 </script>
 
-<!-- 星图视野：视图注册 + 持久化恢复 + astro:page-load 重挂（SPA 导航安全） -->
+<!-- 视图切换器 + 星图首屏恢复 / SPA 重挂（全部逻辑在 src/views/switcher.ts） -->
 <script>
-	import { VIEW_REGISTRY } from '../views/registry';
-
-	// 暴露给 BaseLayout 的 switchView()
-	window.__bmlbViews = VIEW_REGISTRY;
-
-	function ensureMounted() {
-		const want = document.documentElement.dataset.ui || 'classic';
-		if (want !== 'constellation') return;
-		// 只有首页存在 #canvas-stage；SPA 切到其它页面时不存在，跳过
-		const stage = document.getElementById('canvas-stage') as HTMLElement | null;
-		if (!stage) return;
-		// 防重入：以「卡片容器里是否已有卡片」为准（不能只看 stage.childElementCount，
-		// 因为 #canvas-links/#canvas-cards/#star-cards-data 三个 SSR 骨架节点始终存在）
-		const cardsWrap = document.getElementById('canvas-cards');
-		if (cardsWrap && cardsWrap.childElementCount > 0) return;
-		VIEW_REGISTRY.constellation.mount();
-		// SPA 导航后 body 可能被重置，补写滚动锁（fixed 全屏与可滚动页面不可共存）
-		document.body.style.overflow = 'hidden';
-	}
-
-	// 首屏：registry 就绪后按持久化状态恢复
-	ensureMounted();
-	document.addEventListener('astro:page-load', ensureMounted);
+	import '../views/switcher';
 </script>
 
 
