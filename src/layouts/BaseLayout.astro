@@ -43,6 +43,9 @@ try {
 			if (isDark) {
 				document.documentElement.classList.add('dark');
 			}
+			// 视图模式：classic（默认）| constellation；必须早于 CSS 生效，否则星图会闪一下经典布局
+			const ui = localStorage.getItem('bmlb-ui');
+			document.documentElement.dataset.ui = (ui === 'constellation') ? 'constellation' : 'classic';
 		})();
 	</script>
 	<ClientRouter />
@@ -73,6 +76,26 @@ try {
 					<SearchIcon />
 				</button>
 				<input type="text" id="search-input" placeholder="Search..." class="w-0 focus:w-28 md:focus:w-40 bg-transparent border-none outline-none text-sm text-[#1A1A1A] dark:text-[#EAEAEA] placeholder-[#999] transition-all duration-300 px-0 focus:px-2 focus:mr-2" /></div>
+				{/* 视图切换：仅首页提供（其他页面无星图视图，按钮出现会误导） */}
+				{Astro.url.pathname === '/' && (
+					<div class="relative flex items-center" id="view-switcher">
+						<button id="view-switch-btn" type="button" aria-haspopup="listbox" aria-expanded="false"
+							class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0" title="切换视图：经典 / 星图">
+							<svg id="view-icon-classic" class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+							<svg id="view-icon-constellation" class="w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="6" cy="7" r="1.9"/><circle cx="17" cy="5" r="1.4"/><circle cx="12" cy="13" r="2.4"/><circle cx="19" cy="16" r="1.5"/><circle cx="7" cy="18" r="1.3"/><path d="M6 7l6 6M12 13l7 3M12 13l-5 5M17 5l-5 8" stroke="currentColor" stroke-width="1.2" opacity=".75"/></svg>
+						</button>
+						{/* 下拉：已注册视图清单，未来新增 UI 只需往 registry 加条目 */}
+						<div id="view-dropdown" role="listbox"
+							class="absolute right-0 top-full mt-2 w-44 py-1.5 rounded-2xl bg-white/90 dark:bg-[#171717]/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-xl opacity-0 invisible translate-y-1 transition-all duration-200 z-50">
+							<button type="button" role="option" data-view-mode="classic" class="view-option w-full text-left px-4 py-2 text-sm text-[#1A1A1A] dark:text-[#EAEAEA] hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-between gap-2">
+								<span>经典视图</span><span class="view-check text-[#8B7CB3] opacity-0">✓</span>
+							</button>
+							<button type="button" role="option" data-view-mode="constellation" class="view-option w-full text-left px-4 py-2 text-sm text-[#1A1A1A] dark:text-[#EAEAEA] hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-between gap-2">
+								<span>星图视野</span><span class="view-check text-[#8B7CB3] opacity-0">✓</span>
+							</button>
+						</div>
+					</div>
+				)}
 				<button onclick="cycleTheme()" class="w-9 h-9 flex items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95 text-[#1A1A1A] dark:text-[#EAEAEA] cursor-pointer border-none flex-shrink-0" title="切换主题：自动 / 浅色 / 深色">
 				<span id="theme-sun" class="hidden"><SunIcon /></span>
 				<span id="theme-moon" class="hidden"><MoonIcon /></span>
@@ -617,9 +640,88 @@ try {
 		}
 	})();
 
+	// —— 视图切换：classic ⇄ constellation（注册制，入口统一走 switchView）——
+	// 任何入口（下拉菜单 / 快捷键 / 脚本触发）都必须调它，保证 unmount 与 body 滚动锁严格配对
+	window.switchView = function (next) {
+		const root = document.documentElement;
+		const prev = root.dataset.ui || 'classic';
+		if (prev === next) return;
+
+		// 1. 先彻底销毁旧视图（rAF / 监听 / 定时器 / DOM 全部清掉）
+		if (window.__bmlbViews && window.__bmlbViews[prev]) {
+			try { window.__bmlbViews[prev].unmount(); } catch (e) { console.error('[view] unmount 失败', e); }
+		}
+		// 2. 切状态
+		root.dataset.ui = next;
+		// 3. 滚动锁配对还原（constellation 是 fixed 全屏；切回必须解锁，否则页面死锁无法滚动）
+		if (next === 'constellation') {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+		// 4. 挂载新视图
+		if (window.__bmlbViews && window.__bmlbViews[next]) {
+			try { window.__bmlbViews[next].mount(); } catch (e) { console.error('[view] mount 失败', e); }
+		}
+		// 5. 持久化
+		localStorage.setItem('bmlb-ui', next);
+		// 6. 更新导航态
+		window.__bmlbSyncNav && window.__bmlbSyncNav(next);
+	};
+
+	(function initViewSwitcher() {
+		const wrap = document.getElementById('view-switcher');
+		if (!wrap) return;
+		const btn = document.getElementById('view-switch-btn');
+		const dd = document.getElementById('view-dropdown');
+
+		const syncNav = () => {
+			const cur = document.documentElement.dataset.ui || 'classic';
+			document.getElementById('view-icon-classic')?.classList.toggle('hidden', cur !== 'classic');
+			document.getElementById('view-icon-constellation')?.classList.toggle('hidden', cur !== 'constellation');
+			document.querySelectorAll('.view-option').forEach(opt => {
+				const on = opt.dataset.viewMode === cur;
+				opt.querySelector('.view-check').style.opacity = on ? '1' : '0';
+				opt.setAttribute('aria-selected', on ? 'true' : 'false');
+			});
+		};
+		window.__bmlbSyncNav = syncNav;
+
+		const open = (on) => {
+			dd.classList.toggle('opacity-0', !on);
+			dd.classList.toggle('invisible', !on);
+			dd.classList.toggle('translate-y-1', !on);
+			btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+		};
+
+		btn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			open(dd.classList.contains('invisible'));
+		});
+		dd.querySelectorAll('.view-option').forEach(opt => {
+			opt.addEventListener('click', () => {
+				open(false);
+				window.switchView(opt.dataset.viewMode);
+			});
+		});
+		// 点外部 / Esc 关闭
+		document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) open(false); });
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') open(false);
+			// 数字键快捷切换（经典=1，星图=2）
+			if (!e.ctrlKey && !e.metaKey && !e.altKey && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+				if (e.key === '1') window.switchView('classic');
+				if (e.key === '2') window.switchView('constellation');
+			}
+		});
+		// Astro SPA 导航后 DOM 被重放，按钮是新的，这里重新绑定并同步状态
+		document.addEventListener('astro:page-load', syncNav);
+		syncNav();
+	})();
+
 	updateRuntime();
 	setInterval(updateRuntime, 1000);
-	</script>
+</script>
 
 	<!-- 全局播放器脚本 -->
 	<script is:inline>

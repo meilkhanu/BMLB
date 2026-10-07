@@ -1,0 +1,298 @@
+/* ============================================================
+   星图视野（constellation）—— 与经典 UI 完全区隔的第二套设计语言
+   作用域纪律：本文件所有规则必须挂在 :root[data-ui="constellation"] 下，
+   严禁写裸 .dark / 全局选择器，避免污染经典视图与暗色偏好。
+   ============================================================ */
+
+/* —— 视图显隐（classic 与 constellation 互斥）—— */
+:root[data-ui="constellation"] #home-classic { display: none; }
+:root[data-ui="constellation"] #canvas-stage { display: block; }
+
+:root[data-ui="classic"] #canvas-stage { display: none; }
+
+/* 星图模式：页面锁滚动（JS 的 body.style.overflow 之外的双保险） */
+:root[data-ui="constellation"] body { overflow: hidden; }
+
+/* —— 画布：统一 3D 上下文 —— */
+:root[data-ui="constellation"] #canvas-stage {
+  position: fixed;
+  inset: 64px 0 0 0;             /* 让出顶部导航 */
+  z-index: 30;                   /* 低于导航 z-50、低于播放器 z-9999 */
+  perspective: 1200px;
+  perspective-origin: center center;
+  transform-style: preserve-3d;
+  touch-action: none;            /* 禁掉浏览器默认手势，全部自己接管 */
+  overscroll-behavior: none;     /* 禁 iOS 边缘侧滑返回 / 下拉橡皮筋 */
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 深空径向渐变 + 极淡点阵，固定深色（不继承 .dark / light） */
+  background:
+    radial-gradient(circle at 22% 21%, #131F33 0%, rgba(19, 31, 51, 0) 46%),
+    radial-gradient(circle at 74% 30%, rgba(34, 211, 238, 0.07) 0%, rgba(34, 211, 238, 0) 42%),
+    radial-gradient(ellipse at 50% 50%, #0D1526 0%, #060910 100%);
+  color: #EAEAEA;
+  animation: star-fade-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 点阵：脚下的空间参照 */
+:root[data-ui="constellation"] #canvas-stage::before {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes star-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* —— 卡片 —— */
+:root[data-ui="constellation"] #canvas-cards {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+:root[data-ui="constellation"] .star-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 256px;
+  height: 176px;
+  transform-origin: center center;
+  border-radius: 12px;                       /* rounded-xl */
+  border: 1px solid color-mix(in srgb, var(--cat, #22D3EE) 42%, transparent);
+  background: rgba(18, 22, 34, 0.72);
+  overflow: hidden;
+  cursor: grab;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* 默认无 blur；.star-blur 由 JS 按 t < 0.75 动态加（移动端显存控制） */
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+@media (max-width: 767px) {
+  :root[data-ui="constellation"] .star-card {
+    width: min(78vw, 240px);
+    height: min(54vw, 166px);
+  }
+}
+
+:root[data-ui="constellation"] .star-card.star-blur {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* 聚焦脉冲：贴近视口中心 → 更高描边 + 外发光（替代静态准星） */
+:root[data-ui="constellation"] .star-card.star-focus {
+  border-color: color-mix(in srgb, var(--cat, #22D3EE) 85%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cat, #22D3EE) 30%, transparent),
+    0 8px 32px -8px color-mix(in srgb, var(--cat, #22D3EE) 45%, transparent);
+}
+
+:root[data-ui="constellation"] .star-card.star-pinning {
+  cursor: grabbing;
+  box-shadow:
+    0 0 0 1px #22D3EE,
+    0 12px 40px -6px rgba(34, 211, 238, 0.55);
+}
+
+/* 拖动手柄（触屏唯一可拖入口，避免与页面滚动冲突） */
+:root[data-ui="constellation"] .star-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  color: rgba(234, 234, 234, 0.55);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.06));
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px 0 10px 0;
+  z-index: 3;
+  touch-action: none;
+  cursor: grab;
+}
+
+/* 封面 */
+:root[data-ui="constellation"] .star-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+:root[data-ui="constellation"] .star-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.42;
+  filter: saturate(0.75);
+}
+
+:root[data-ui="constellation"] .star-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  opacity: 0.5;
+}
+
+/* 分类徽章 */
+:root[data-ui="constellation"] .star-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cat, #22D3EE);
+  background: rgba(6, 9, 16, 0.6);
+  border: 1px solid color-mix(in srgb, var(--cat, #22D3EE) 35%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+/* 正文区：压在封面之上，保证可读 */
+:root[data-ui="constellation"] .star-body {
+  position: relative;
+  z-index: 2;
+  margin-top: 74px;
+  padding: 10px 14px 12px;
+  height: calc(100% - 74px);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(6, 9, 16, 0) 0%, rgba(6, 9, 16, 0.86) 34%, rgba(6, 9, 16, 0.94) 100%);
+}
+
+:root[data-ui="constellation"] .star-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #F2F5FA;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-ui="constellation"] .star-excerpt {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(203, 213, 225, 0.72);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+:root[data-ui="constellation"] .star-meta {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: rgba(148, 163, 184, 0.85);
+}
+
+:root[data-ui="constellation"] .star-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 9.5px;
+  color: color-mix(in srgb, var(--cat, #22D3EE) 72%, rgba(255, 255, 255, 0.5));
+}
+
+/* —— 连线层 —— */
+:root[data-ui="constellation"] #canvas-links {
+  z-index: 1;
+}
+
+:root[data-ui="constellation"] #canvas-links svg line {
+  stroke-linecap: round;
+}
+
+/* —— 控制条 —— */
+:root[data-ui="constellation"] .star-controls {
+  position: absolute;
+  left: 50%;
+  /* 40px：避开本地 Astro dev-toolbar（仅开发环境存在），线上无副作用 */
+  bottom: 40px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px 5px 8px;
+  border-radius: 999px;
+  background: rgba(10, 14, 23, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 28px -10px rgba(0, 0, 0, 0.7);
+}
+
+:root[data-ui="constellation"] .star-controls button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(234, 234, 234, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 160ms ease-out, color 160ms ease-out, transform 160ms ease-out;
+}
+
+:root[data-ui="constellation"] .star-controls button:hover {
+  background: rgba(34, 211, 238, 0.18);
+  color: #22D3EE;
+}
+
+:root[data-ui="constellation"] .star-controls button:active {
+  transform: scale(0.92);
+}
+
+:root[data-ui="constellation"] .star-count {
+  padding: 0 8px 0 4px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+/* —— 空态 —— */
+:root[data-ui="constellation"] .star-empty {
+  z-index: 20;
+}
+
+/* —— 降级：不支持 color-mix 的旧浏览器退化为主题青 —— */
+@supports not (color: color-mix(in srgb, red 10%, blue)) {
+  :root[data-ui="constellation"] .star-card { border-color: rgba(34, 211, 238, 0.42); }
+  :root[data-ui="constellation"] .star-card.star-focus { border-color: #22D3EE; }
+  :root[data-ui="constellation"] .star-badge { color: #22D3EE; border-color: rgba(34, 211, 238, 0.35); }
+}
