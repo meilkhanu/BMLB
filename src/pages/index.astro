@@ -589,6 +589,8 @@ try {
 
 	<!-- 模块X：星图视野（data-ui=constellation 时显示）—— 全屏纯拖动网格，见 src/views/constellation.ts -->
 	<div id="canvas-stage" class="hidden" aria-hidden="true">
+		{/* 星空背景 + 光标拖尾：纯 Canvas 绘制，pointer-events:none 不拦截卡片交互 */}
+		<canvas id="starfield-bg" class="absolute inset-0 pointer-events-none" style="z-index:0"></canvas>
 		<div id="canvas-links" class="absolute inset-0 pointer-events-none"></div>
 		<div id="canvas-cards"></div>
 		<div id="star-cards-data" class="hidden" data-cards={JSON.stringify(starCards)}></div>

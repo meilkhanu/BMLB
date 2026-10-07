@@ -19,7 +19,8 @@
  *   - 连线在拖动中暂停重算，松手补画
  */
 
-import type { ViewModule } from "./registry";
+import type { ViewModule } from './registry';
+import { mountStarfield, type StarfieldHandle } from './starfield';
 
 interface StarCardData {
   slug: string;
@@ -45,16 +46,20 @@ interface StarNode {
   blurred: boolean;
   focused: boolean;
   hovered: boolean; // 鼠标悬浮（放大 1.12×）
+  hsCur: number; // 当前 hover 缩放（弹性插值中的实时值）
+  hsVel: number; // hover 缩放速度（弹簧物理）
 }
 
 // —— 常量（方案定稿值）——
 const TILT_DEG = 13; // 最大倾斜角（22° 视觉过弯，卡片像被掰弯的纸片；13° 保留球面感又不夸张）
 const Z_LIFT = 90; // 中心最大前凸（120px 在宽屏下让近景卡片糊脸；90px 更含蓄）
-const SCALE_EDGE = 0.62; // 边缘最小缩放
+const SCALE_EDGE = 0.68; // 边缘最小缩放（0.62 时边缘卡字太小；0.68 保证可读，配合 0.35 系数收窄衰减）
 const ZOOM_MIN = 0.62; // 缩小下限。0.75 在宽屏放不下整个星盘（20 篇时横向差 600px+），
                        // 0.62 让自适应初始缩放有空间把外圈纳入视野
 const ZOOM_MAX = 1.35;
-const SPACING = 110; // 螺旋基础间距（168 配 256px 卡片太散，20 篇铺不开宽屏；110 配 176px 卡片让星团凝聚，实测屏宽约 10 列）
+const SPACING = 122; // 螺旋基础间距。六边形横向邻格 √3·s、纵向 1.5·s，
+                     // 卡片取 204×177（宽高比 1.153，正好等于六边形的 √3/1.5）才能
+                     // 既放大 70% 面积又不重叠。122 留给球面畸变收缩后的呼吸间隙。
 const SPIRAL_AR_X = 1.89; // 螺旋横向半径倍率 = 典型宽屏纵横比（1920/1016）。
                           // 星盘生成阶段就按屏幕比例椭圆化，否则宽屏左右两侧永远空
                           //（世界星盘纵横比 1.17 vs 屏幕 1.89，差 60%，实测四角覆盖 0）。
@@ -71,6 +76,7 @@ const BLUR_T = 0.32; // t < 该值才启用 backdrop-filter。0.75 在 R 放大�
                      // 收紧到 0.32 ≈ 只给聚焦区附近的卡片毛玻璃，其余用实底，视觉几乎无损。
 const FOCUS_T = 0.35; // t < 该值判定为聚焦卡
 const HOVER_SCALE = 1.12; // 鼠标悬浮时的额外放大倍率
+const HOVER_SPRING = 0.18; // hover 弹性插值系数（越大越快）；配合 overshoot 实现 Q 弹
 const LINK_T = 0.85; // 连线两端 t > 该值则淡出
 const LS_KEY = "bmlb-starmap";
 
@@ -268,6 +274,8 @@ export const constellationView: ViewModule = {
         blurred: false,
         focused: false,
         hovered: false,
+        hsCur: 1,
+        hsVel: 0,
       };
     });
 
@@ -407,11 +415,12 @@ export const constellationView: ViewModule = {
 
     // —— 几何辅助 ——
     const rect = () => stage.getBoundingClientRect();
-    // 与 CSS 的 .star-card 尺寸保持一致：PC 176×121、移动端 min(72vw,200)×min(50vw,138)
+    // 与 CSS 的 .star-card 尺寸保持一致：PC 204×177、移动端 min(76vw,240)×min(66vw,208)
+    // 204/177 = 1.153，正好等于六边形邻格距的 √3/1.5，配 SPACING=122 不重叠
     const cardW = () =>
-      window.innerWidth >= 768 ? 176 : Math.min(window.innerWidth * 0.72, 200);
+      window.innerWidth >= 768 ? 204 : Math.min(window.innerWidth * 0.76, 240);
     const cardH = () =>
-      window.innerWidth >= 768 ? 121 : Math.round(Math.min(window.innerWidth * 0.5, 138));
+      window.innerWidth >= 768 ? 177 : Math.round(Math.min(window.innerWidth * 0.66, 208));
     /** 世界坐标 → 屏幕坐标（已含相机与缩放） */
     const toScreen = (n: StarNode, cx: number, cy: number) =>
       n.pinned
@@ -471,6 +480,10 @@ export const constellationView: ViewModule = {
     let linksDirty = true; // 连线是否需要重算（相机/缩放/定星变化时置脏，静止帧零开销）
     let linksShown = true; // 连线层当前是否可见（手势中隐藏，松手恢复）
 
+    // —— 星空背景 + 光标拖尾（独立 canvas，pointer-events:none）——
+    const starfield: StarfieldHandle | null = mountStarfield(stage);
+    starfield && starfield.setNodes(nodes);
+
     const render = () => {
       rafId = requestAnimationFrame(render);
       const r = rect();
@@ -503,6 +516,9 @@ export const constellationView: ViewModule = {
         linksDirty = true;
       }
 
+      // 喂相机给星空层（视差 + 近卡连线用）
+      starfield && starfield.setCamera(camera.x, camera.y);
+
       for (const n of nodes) {
         const el = n.el;
         if (!el) continue;
@@ -528,7 +544,7 @@ export const constellationView: ViewModule = {
           el.style.pointerEvents = "";
         }
 
-        const scale = Math.max(SCALE_EDGE, 1 - t * 0.4) * z;
+        const scale = Math.max(SCALE_EDGE, 1 - t * 0.35) * z;
         const rotY = (dx / R) * TILT_DEG;
         const rotX = -(dy / R) * TILT_DEG;
         const tz = (1 - t) * Z_LIFT;
@@ -539,10 +555,21 @@ export const constellationView: ViewModule = {
         // 所以 translate3d 的 x/y 必须是「相对 stage 中心」的偏移量 = s.x - cx，
         // 而 s.x 本身已含 cx（toScreen 里 +cx）。若再写 s.x - cw/2，
         // 等于把绝对坐标当偏移再叠加一次，卡片会被推到屏幕外（实测偏出 751px）。
-        // hover 放大：不能用 CSS :hover 改 transform（会被下一帧 rAF 覆盖），
-        // 所以用 JS 维护 hovered 状态、在这里乘进 scale。
-        const hs = n.hovered ? HOVER_SCALE : 1;
-        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cx).toFixed(1)}px,${(s.y - cy).toFixed(1)}px,${tz.toFixed(1)}px) scale(${(scale * hs).toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        // hover 弹性：弹簧积分（stiffness → HOVER_SPRING，damping 0.62）。
+        // 为什么不用 CSS transition：transform 由 rAF 每帧写入，CSS 过渡会与之打架
+        //（每帧都在从旧值插值，视觉上既拖沓又抖动）。弹簧则天然带回弹 overshoot。
+        const target = n.hovered ? HOVER_SCALE : 1;
+        if (Math.abs(target - n.hsCur) > 0.0004 || Math.abs(n.hsVel) > 0.0004) {
+          n.hsVel += (target - n.hsCur) * HOVER_SPRING;
+          n.hsVel *= 0.62; // 阻尼
+          n.hsCur += n.hsVel;
+          // 收敛阈值：到位即吸附，避免无限小微振
+          if (Math.abs(target - n.hsCur) < 0.0015 && Math.abs(n.hsVel) < 0.0015) {
+            n.hsCur = target;
+            n.hsVel = 0;
+          }
+        }
+        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cx).toFixed(1)}px,${(s.y - cy).toFixed(1)}px,${tz.toFixed(1)}px) scale(${(scale * n.hsCur).toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
 
         const wantBlur = t < BLUR_T;
         if (wantBlur !== n.blurred) {
@@ -716,6 +743,8 @@ export const constellationView: ViewModule = {
         camera.y = camStartY - dy;
         linksDirty = true;
       }
+      // 光标拖尾粒子（stage 内坐标；拖动时也生成，划过夜空的感觉）
+      starfield && starfield.onPointerMove(e.clientX - rect().left, e.clientY - rect().top);
     };
 
     const onPointerUp = (e: PointerEvent) => {
@@ -880,7 +909,8 @@ export const constellationView: ViewModule = {
     cleanupFn = () => {
       cancelAnimationFrame(rafId);
       clearLongPress();
-      stage.removeEventListener("pointerdown", onPointerDown);
+      starfield && starfield.destroy(); // 星空 canvas 的 rAF / resize / 粒子必须一并清掉
+      stage.removeEventListener('pointerdown', onPointerDown);
       stage.removeEventListener("pointermove", onPointerMove);
       stage.removeEventListener("pointerup", onPointerUp);
       stage.removeEventListener("pointercancel", onPointerUp);
