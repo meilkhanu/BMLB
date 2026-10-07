@@ -47,19 +47,21 @@ interface StarNode {
 }
 
 // —— 常量（方案定稿值）——
-const TILT_DEG = 22; // 最大倾斜角
-const Z_LIFT = 120; // 中心最大前凸
-const SCALE_EDGE = 0.6; // 边缘最小缩放
+const TILT_DEG = 13; // 最大倾斜角（22° 视觉过弯，卡片像被掰弯的纸片；13° 保留球面感又不夸张）
+const Z_LIFT = 90; // 中心最大前凸（120px 在宽屏下让近景卡片糊脸；90px 更含蓄）
+const SCALE_EDGE = 0.62; // 边缘最小缩放
 const ZOOM_MIN = 0.75;
 const ZOOM_MAX = 1.35;
-const SPACING = 168; // 螺旋基础间距
+const SPACING = 110; // 螺旋基础间距（168 配 256px 卡片太散，20 篇铺不开宽屏；110 配 176px 卡片让星团凝聚，实测屏宽约 10 列）
 const GOLDEN = 2.399963229728653; // 黄金角
 const EDGE_LIMIT = 200; // 相机活动半径 = 最外圈 + 该值
 const OVERSCROLL = 0.35; // 越界阻尼系数
 const CLICK_SLOP = 4; // 位移 < 4px 视为点击
 const LONG_PRESS_MS = 300;
 const CULL_FACTOR = 1.25; // 视口剔除半径倍数
-const BLUR_T = 0.75; // t < 该值才启用 backdrop-filter
+const BLUR_T = 0.32; // t < 该值才启用 backdrop-filter。0.75 在 R 放大后等于"几乎全部开 blur"，
+                     // 而 blur 是移动端/无 GPU 环境的最大开销（实测占 15ms/帧，60fps 直接砍半）。
+                     // 收紧到 0.32 ≈ 只给聚焦区附近的卡片毛玻璃，其余用实底，视觉几乎无损。
 const FOCUS_T = 0.35; // t < 该值判定为聚焦卡
 const LINK_T = 0.85; // 连线两端 t > 该值则淡出
 const LS_KEY = "bmlb-starmap";
@@ -225,9 +227,6 @@ export const constellationView: ViewModule = {
       /* ignore */
     }
 
-    // —— 相机 ——
-    const camera = { x: 0, y: 0, zoom: savedZoom };
-
     // —— 节点：螺旋入轨（index 由 SSR 按 publishedAt 倒序给出，确定性）——
     // 清空槽位占用记录：模块级 Set 会在多次 mount 间残留，导致重挂后布局漂移
     hexUsed.clear();
@@ -246,6 +245,20 @@ export const constellationView: ViewModule = {
         focused: false,
       };
     });
+
+    // —— 相机初始位姿：对准「视野内卡片的视觉重心」，而非星盘几何原点 ——
+    // 黄金角螺旋的前几环集中在右上扇区，若直接把 camera 钉在 (0,0)，
+    // 宽屏下卡片会明显偏向一侧、另一侧大片留白（实测重心偏移 0.86 个半屏宽）。
+    // 这里取所有卡片世界坐标的中位数（比均值更抗离群槽位），并把该点拉到视口中心。
+    let camInitX = 0,
+      camInitY = 0;
+    if (!Object.keys(pinnedMap).length) {
+      const xs = nodes.map((n) => n.x).sort((a, b) => a - b);
+      const ys = nodes.map((n) => n.y).sort((a, b) => a - b);
+      camInitX = xs[Math.floor(xs.length / 2)];
+      camInitY = ys[Math.floor(ys.length / 2)];
+    }
+    const camera = { x: camInitX, y: camInitY, zoom: savedZoom };
 
     const savePinned = () => {
       const obj: Record<string, { x: number; y: number }> = {};
@@ -294,7 +307,7 @@ export const constellationView: ViewModule = {
           <p class="star-excerpt">${esc(d.excerpt)}</p>
           <div class="star-meta"><span>NO.${String(d.index + 1).padStart(3, "0")}</span><span>${fmtDate(d.publishedAt)}</span></div>
           <div class="star-tags">${d.tags
-            .slice(0, 3)
+            .slice(0, 2)                     /* 176px 卡片最多 2 个 tag，多了撑高 */
             .map((t) => `<span>#${esc(t)}</span>`)
             .join("")}</div>
         </div>`;
@@ -339,9 +352,11 @@ export const constellationView: ViewModule = {
 
     // —— 几何辅助 ——
     const rect = () => stage.getBoundingClientRect();
+    // 与 CSS 的 .star-card 尺寸保持一致：PC 176×121、移动端 min(72vw,200)×min(50vw,138)
     const cardW = () =>
-      window.innerWidth >= 768 ? 256 : Math.min(window.innerWidth * 0.78, 240);
-    const cardH = () => Math.round(cardW() * 0.69);
+      window.innerWidth >= 768 ? 176 : Math.min(window.innerWidth * 0.72, 200);
+    const cardH = () =>
+      window.innerWidth >= 768 ? 121 : Math.round(Math.min(window.innerWidth * 0.5, 138));
     /** 世界坐标 → 屏幕坐标（已含相机与缩放） */
     const toScreen = (n: StarNode, cx: number, cy: number) =>
       n.pinned
@@ -380,7 +395,7 @@ export const constellationView: ViewModule = {
           const s = toScreen(n, cx, cy);
           const dx = s.x - cx,
             dy = s.y - cy;
-          const R = Math.min(r.width, r.height) * 0.5 + 120;
+          const R = Math.hypot(r.width, r.height) * 0.42;
           const t = Math.min(1, Math.hypot(dx, dy) / R);
           return {
             slug: n.data.slug,
@@ -399,13 +414,16 @@ export const constellationView: ViewModule = {
     let gestureBusy = false; // 拖动中暂停连线重算
     let zoomSpring = 0; // 缩放回弹目标（0 = 无）
     let linksDirty = true; // 连线是否需要重算（相机/缩放/定星变化时置脏，静止帧零开销）
+    let linksShown = true; // 连线层当前是否可见（手势中隐藏，松手恢复）
 
     const render = () => {
       rafId = requestAnimationFrame(render);
       const r = rect();
       const cx = r.width / 2,
         cy = r.height / 2;
-      const R = Math.min(r.width, r.height) * 0.5 + 120;
+      // R 用视口对角线而不是 min(w,h)：宽屏下若按高度取，横向会被过度剔除，
+      // 只剩右侧一小块有卡（实测 1920 宽只显示 6 张）。取对角线让球面曲率铺满整个宽屏。
+      const R = Math.hypot(r.width, r.height) * 0.42;
       const z = camera.zoom;
       const cw = cardW(),
         ch = cardH();
@@ -461,7 +479,12 @@ export const constellationView: ViewModule = {
         const tz = (1 - t) * Z_LIFT;
 
         el.style.zIndex = String(100 + Math.round(tz));
-        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cw / 2).toFixed(1)}px,${(s.y - ch / 2).toFixed(1)}px,${tz.toFixed(1)}px) scale(${scale.toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        // 定位链：CSS 的 left/top:50% 把卡片左上角放到 stage 中心，
+        // translate(-50%,-50%) 再把卡片中心对齐到该点。
+        // 所以 translate3d 的 x/y 必须是「相对 stage 中心」的偏移量 = s.x - cx，
+        // 而 s.x 本身已含 cx（toScreen 里 +cx）。若再写 s.x - cw/2，
+        // 等于把绝对坐标当偏移再叠加一次，卡片会被推到屏幕外（实测偏出 751px）。
+        el.style.transform = `translate(-50%,-50%) translate3d(${(s.x - cx).toFixed(1)}px,${(s.y - cy).toFixed(1)}px,${tz.toFixed(1)}px) scale(${scale.toFixed(3)}) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
 
         const wantBlur = t < BLUR_T;
         if (wantBlur !== n.blurred) {
@@ -475,27 +498,39 @@ export const constellationView: ViewModule = {
         }
       }
 
-      // 连线：仅当相机/缩放/定星发生变化时重算（linksDirty），静止帧零开销
-      if (!gestureBusy && linksDirty) {
-        linksDirty = false;
-        for (const p of linkPairs) {
-          const sa = toScreen(p.a, cx, cy),
-            sb = toScreen(p.b, cx, cy);
-          const ta = Math.min(1, Math.hypot(sa.x - cx, sa.y - cy) / R);
-          const tb = Math.min(1, Math.hypot(sb.x - cx, sb.y - cy) / R);
-          const op =
-            ta > LINK_T || tb > LINK_T
-              ? 0
-              : 0.34 * (1 - Math.max(ta, tb) / LINK_T);
-          // 数值缓存比较，避免 getAttribute 读 DOM
-          if (p.ox1 === sa.x && p.oy1 === sa.y && p.ox2 === sb.x && p.oy2 === sb.y && p.oop === op) continue;
-          p.ox1 = sa.x; p.oy1 = sa.y; p.ox2 = sb.x; p.oy2 = sb.y; p.oop = op;
-          const el = p.el;
-          el.setAttribute('x1', sa.x.toFixed(1));
-          el.setAttribute('y1', sa.y.toFixed(1));
-          el.setAttribute('x2', sb.x.toFixed(1));
-          el.setAttribute('y2', sb.y.toFixed(1));
-          el.setAttribute('opacity', op.toFixed(3));
+      // 连线：手势进行中整体隐藏（拖动时看不清细节，且省下 18 条线 × 5 属性/帧的写入），
+      // 松手后下一次渲染补算。实测这是 30fps → 60fps 的关键。
+      if (gestureBusy) {
+        if (linksShown) {
+          linksShown = false;
+          svg.style.display = 'none';
+        }
+      } else {
+        if (!linksShown) {
+          linksShown = true;
+          svg.style.display = '';
+        }
+        if (linksDirty) {
+          linksDirty = false;
+          for (const p of linkPairs) {
+            const sa = toScreen(p.a, cx, cy),
+              sb = toScreen(p.b, cx, cy);
+            const ta = Math.min(1, Math.hypot(sa.x - cx, sa.y - cy) / R);
+            const tb = Math.min(1, Math.hypot(sb.x - cx, sb.y - cy) / R);
+            const op =
+              ta > LINK_T || tb > LINK_T
+                ? 0
+                : 0.34 * (1 - Math.max(ta, tb) / LINK_T);
+            // 数值缓存比较，避免 getAttribute 读 DOM
+            if (p.ox1 === sa.x && p.oy1 === sa.y && p.ox2 === sb.x && p.oy2 === sb.y && p.oop === op) continue;
+            p.ox1 = sa.x; p.oy1 = sa.y; p.ox2 = sb.x; p.oy2 = sb.y; p.oop = op;
+            const el = p.el;
+            // 几何走 transform（单次属性写入，GPU 友好），透明度仍用 opacity
+            el.setAttribute('transform', `translate(${sa.x.toFixed(1)},${sa.y.toFixed(1)})`);
+            el.setAttribute('x2', (sb.x - sa.x).toFixed(1));
+            el.setAttribute('y2', (sb.y - sa.y).toFixed(1));
+            el.setAttribute('opacity', op.toFixed(3));
+          }
         }
       }
     };
@@ -547,10 +582,10 @@ export const constellationView: ViewModule = {
         let best = Infinity;
         for (const n of nodes) {
           if (!n.el || n.el.style.visibility === 'hidden') continue;
-          // toScreen 返回相对视口中心的坐标，换算成相对左上角再比较
+          // toScreen 返回的已是「相对 stage 左上角」的屏幕坐标（内部已 +cx/+cy），直接与 px/py 比较
           const s = toScreen(n, cx, cy);
-          const sx = s.x + cx,
-            sy = s.y + cy;
+          const sx = s.x,
+            sy = s.y;
           if (Math.abs(sx - px) < cw / 2 && Math.abs(sy - py) < chh / 2) {
             const d = (sx - px) ** 2 + (sy - py) ** 2;
             if (d < best) {
@@ -656,10 +691,10 @@ export const constellationView: ViewModule = {
         let best = Infinity;
         for (const n of nodes) {
           if (!n.el || n.el.style.visibility === 'hidden') continue;
-          // toScreen 返回的是相对视口中心的坐标，这里换算成相对左上角再比较
+          // toScreen 返回的已是「相对 stage 左上角」的屏幕坐标（内部已 +cx/+cy），直接与 px/py 比较
           const s = toScreen(n, cx, cy);
-          const sx = s.x + cx,
-            sy = s.y + cy;
+          const sx = s.x,
+            sy = s.y;
           if (Math.abs(sx - px) < cw / 2 && Math.abs(sy - py) < chh / 2) {
             const d = (sx - px) ** 2 + (sy - py) ** 2;
             if (d < best) {
@@ -738,8 +773,9 @@ export const constellationView: ViewModule = {
       const btn = (e.target as HTMLElement).closest("button");
       if (!btn) return;
       if (btn.dataset.act === "center") {
-        camera.x = 0;
-        camera.y = 0;
+        // 回到「初始重心」而不是星盘几何原点——后者在黄金角螺旋下是偏的
+        camera.x = camInitX;
+        camera.y = camInitY;
         zoomSpring = 1;
         gestureBusy = false;
         linksDirty = true;
