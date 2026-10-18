@@ -149,7 +149,7 @@ try {
 <BaseLayout title="贝谟拉比">
 	<!-- 模块2：Hero区 -->
 	<section class="relative w-full h-[45vh] md:h-[60vh] min-h-[400px] overflow-hidden border-[#EAEAEA] dark:border-[#1A1A1A]">
-		<img src={indexHeroImage} alt="" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${indexHeroPosition}`} />
+		<img src={indexHeroImage} alt="" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${indexHeroPosition}`} />
 		<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
 		<!-- 梦幻星尘 Canvas：上沿覆盖 Hero，粒子从图片区就开始出现 -->
 		<canvas id="hero-dust-canvas" class="absolute bottom-0 left-0 w-full h-[180px] md:h-[260px] z-[5] pointer-events-none"></canvas>
@@ -169,6 +169,8 @@ try {
 				<img
 					src={avatarUrl}
 					alt="头像"
+					loading="eager"
+					decoding="async"
 					class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
 					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 				/>
@@ -475,7 +477,7 @@ try {
 										</div>
 										<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
 											{p.coverImage ? (
-												<img src={p.coverImage} alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+												<img src={p.coverImage} alt="" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 											) : (
 												<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
 													<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -550,7 +552,7 @@ try {
 												</div>
 												<div class="w-full md:w-[260px] shrink-0 aspect-video md:aspect-auto md:h-[180px] rounded-2xl overflow-hidden bg-[#F5F5F5] dark:bg-[#252525] relative">
 													{p.coverImage ? (
-														<img src={p.coverImage} alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+														<img src={p.coverImage} alt="" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 													) : (
 														<div class="absolute inset-0 flex items-center justify-center text-[#CCC] dark:text-[#444] transition-transform duration-700 group-hover:scale-110">
 															<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>

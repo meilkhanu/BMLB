@@ -22,7 +22,10 @@ jobs:
             git config http.version HTTP/1.1
             git reset --hard HEAD
             git clean -fd -e data
-            git fetch origin isNode
+            # --force 必须加：本地 isNode 与 origin/isNode 一旦有分歧，
+            # 不带 --force 的 fetch 会静默跳过 origin/isNode 的 ref 更新
+            #（表现为「fetch 成功但 checkout 后还是旧提交」）。
+            git fetch origin isNode --force
             git checkout -B isNode origin/isNode
 
             echo "=== 安装依赖 ==="
