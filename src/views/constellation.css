@@ -76,7 +76,10 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   /* 默认无 blur（JS 按 t < 0.32 动态加 .star-blur）；底色用高不透明度实底保证关 blur 时可读 */
-  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+  /* 宽高只在档位跃迁时变化（每帧不写），过渡一下避免突跳；transform 绝不加过渡 */
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out,
+    width 240ms cubic-bezier(0.34, 1.56, 0.64, 1), height 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-radius 240ms ease-out;
 }
 
 :root[data-ui="constellation"] .star-card:not(.star-blur) {
@@ -322,4 +325,91 @@
   :root[data-ui="constellation"] .star-card { border-color: rgba(34, 211, 238, 0.42); }
   :root[data-ui="constellation"] .star-card.star-focus { border-color: #22D3EE; }
   :root[data-ui="constellation"] .star-badge { color: #22D3EE; border-color: rgba(34, 211, 238, 0.35); }
+}
+
+
+/* ============================================================
+   三档形态（由 JS 每帧判定后写到 data-tier 上，只在变化时写一次）
+   full —— 完整卡：封面 + 标题 + 摘要 + meta
+   lite —— 缩略卡：封面 + 标题（砍掉摘要 / meta / tags）
+   dot  —— 封面小方块：无文字，悬停才浮出标题
+   ============================================================ */
+
+/* lite：封面留得多一些，标题放大到 15px / 最多 3 行 */
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-excerpt,
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-tags {
+  display: none;
+}
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-body {
+  margin-top: 96px;
+  height: calc(100% - 96px);
+}
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-title {
+  font-size: 15px;
+  -webkit-line-clamp: 3;
+}
+
+/* dot：104×104 的封面方块，分类色描边更重，形似星点 */
+:root[data-ui="constellation"] .star-card[data-tier="dot"] {
+  width: 104px;
+  height: 104px;
+  border-radius: 18px;
+  border-width: 2px;
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-badge {
+  display: none;
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-cover img {
+  opacity: 0.62;
+  filter: saturate(0.9);
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-body {
+  margin-top: 0;
+  height: 100%;
+  padding: 8px;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+  background: linear-gradient(180deg, rgba(6, 9, 16, 0) 42%, rgba(6, 9, 16, 0.92) 100%);
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"].star-hover .star-body {
+  opacity: 1;
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-title {
+  font-size: 11px;
+  -webkit-line-clamp: 2;
+}
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-excerpt,
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-meta,
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-tags {
+  display: none;
+}
+
+/* full：倾斜很小，给个几乎平的观感（倾斜量由 JS 的 tiltK 控制，这里只补阴影） */
+:root[data-ui="constellation"] .star-card[data-tier="full"] {
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.85);
+}
+
+/* 无封面的兜底卡片：分类色渐变在暗场里过亮，会抢走中心卡片的注意力。
+   dot / lite 档压暗，只在 full 档保留原色。 */
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-cover-fallback {
+  opacity: 0.32;
+  filter: saturate(0.7) brightness(0.8);
+}
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-cover-fallback {
+  opacity: 0.45;
+  filter: saturate(0.8) brightness(0.9);
+}
+/* 兜底块的底色统一压深，避免纯白/纯橙方块 */
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-cover,
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-cover {
+  background: rgba(10, 14, 22, 0.9);
+}
+
+/* 白底 / 亮底封面在暗场里会跳出来抢视线，按档位压暗 */
+:root[data-ui="constellation"] .star-card[data-tier="dot"] .star-cover img {
+  filter: saturate(0.85) brightness(0.72);
+}
+:root[data-ui="constellation"] .star-card[data-tier="lite"] .star-cover img {
+  filter: saturate(0.9) brightness(0.88);
 }

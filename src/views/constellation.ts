@@ -51,13 +51,21 @@ interface StarNode {
 }
 
 // —— 常量（方案定稿值）——
-const TILT_DEG = 13; // 最大倾斜角（22° 视觉过弯，卡片像被掰弯的纸片；13° 保留球面感又不夸张）
-const Z_LIFT = 90; // 中心最大前凸（120px 在宽屏下让近景卡片糊脸；90px 更含蓄）
-const SCALE_EDGE = 0.68; // 边缘最小缩放（0.62 时边缘卡字太小；0.68 保证可读，配合 0.35 系数收窄衰减）
-const ZOOM_MIN = 0.62; // 缩小下限。0.75 在宽屏放不下整个星盘（20 篇时横向差 600px+），
+const TILT_DEG = 10; // 最大倾斜角（22° 视觉过弯，卡片像被掰弯的纸片；13° 保留球面感又不夸张）
+const Z_LIFT = 58; // 中心最大前凸（120px 在宽屏下让近景卡片糊脸；90px 更含蓄）
+const SCALE_EDGE = 0.7; // 边缘最小缩放（0.62 时边缘卡字太小；0.68 保证可读，配合 0.35 系数收窄衰减）
+const ZOOM_MIN = 0.5; // 缩小下限。0.75 在宽屏放不下整个星盘（20 篇时横向差 600px+），
                        // 0.62 让自适应初始缩放有空间把外圈纳入视野
 const ZOOM_MAX = 1.35;
-const SPACING = 122; // 螺旋基础间距。六边形横向邻格 √3·s、纵向 1.5·s，
+const SPACING = 142;
+// —— 三档形态阈值（按未乘相机缩放的 base 判定，缩放时档位稳定）——
+// full：完整卡（封面+标题+摘要+meta），尺寸钳在 ≥0.92，倾斜只留 1/5
+// lite：缩略卡（封面+标题），砍掉摘要与 meta，倾斜 0.6
+// dot ：封面小方块，无文字，倾斜全额（纯装饰，所以敢让它歪）
+const TIER_FULL_MIN = 0.86;
+const TIER_LITE_MIN = 0.76;
+// 尺寸只按 z^0.35 部分跟随相机缩放：拉远看全局时字不会一起缩没
+const ZOOM_COUPLING = 0.35; // 螺旋基础间距。六边形横向邻格 √3·s、纵向 1.5·s，
                      // 卡片取 204×177（宽高比 1.153，正好等于六边形的 √3/1.5）才能
                      // 既放大 70% 面积又不重叠。122 留给球面畸变收缩后的呼吸间隙。
 const SPIRAL_AR_X = 1.89; // 螺旋横向半径倍率 = 典型宽屏纵横比（1920/1016）。
@@ -198,13 +206,10 @@ export const constellationView: ViewModule = {
     const cardsWrap = document.getElementById(
       "canvas-cards",
     ) as HTMLElement | null;
-    const linksLayer = document.getElementById(
-      "canvas-links",
-    ) as HTMLElement | null;
     const dataEl = document.getElementById(
       "star-cards-data",
     ) as HTMLElement | null;
-    if (!stage || !cardsWrap || !linksLayer || !dataEl) return;
+    if (!stage || !cardsWrap || !dataEl) return;
 
     let cards: StarCardData[] = [];
     try {
@@ -286,10 +291,12 @@ export const constellationView: ViewModule = {
     let camInitX = 0,
       camInitY = 0;
     if (!Object.keys(pinnedMap).length) {
-      const xs = nodes.map((n) => n.x).sort((a, b) => a - b);
-      const ys = nodes.map((n) => n.y).sort((a, b) => a - b);
-      camInitX = xs[Math.floor(xs.length / 2)];
-      camInitY = ys[Math.floor(ys.length / 2)];
+      // 用「包围盒中心」而不是中位数：自适应缩放是按 spanX/spanY 反算的，
+      // 相机却对中位数居中时，最长的那一翼会顶出视口（实测 2 张卡首屏出界）。
+      const xs = nodes.map((n) => n.x);
+      const ys = nodes.map((n) => n.y);
+      camInitX = (Math.min(...xs) + Math.max(...xs)) / 2;
+      camInitY = (Math.min(...ys) + Math.max(...ys)) / 2;
     }
     const camera = { x: camInitX, y: camInitY, zoom: savedZoom };
 
@@ -301,13 +308,19 @@ export const constellationView: ViewModule = {
     if (savedZoom === 1) {
       const vw0 = document.getElementById('canvas-stage')?.clientWidth || window.innerWidth;
       const vh0 = document.getElementById('canvas-stage')?.clientHeight || window.innerHeight;
-      const cw0 = window.innerWidth >= 768 ? 176 : Math.min(window.innerWidth * 0.72, 200);
-      const chh0 = window.innerWidth >= 768 ? 121 : Math.round(Math.min(window.innerWidth * 0.5, 138));
+      // 卡片真实尺寸是 204×177（CSS 为准），这里原来按 176×121 估，
+      // 少算 28/56px，导致最外圈两张卡的自适应缩放算不准、首屏出界。
+      const cw0 = window.innerWidth >= 768 ? 204 : Math.min(window.innerWidth * 0.76, 240);
+      const chh0 = window.innerWidth >= 768 ? 177 : Math.round(Math.min(window.innerWidth * 0.66, 208));
       // 星盘在相机居中后的实际占位（世界坐标极值差）
       const xs = nodes.map((n) => n.x), ys = nodes.map((n) => n.y);
       const spanX = Math.max(...xs) - Math.min(...xs) + cw0;
       const spanY = Math.max(...ys) - Math.min(...ys) + chh0;
-      autoZoom = Math.min(vw0 / spanX, vh0 / spanY) * 0.97;
+      // 顶部 64px 是固定导航，底部 40px 留给控制条：可用区域比视口小一圈，
+      // 否则最上/最下的卡片会被导航压住（实测首屏有 2 张卡被遮）。
+      const usableW = Math.max(320, vw0 - 72);
+      const usableH = Math.max(320, vh0 - 120);
+      autoZoom = Math.min(usableW / spanX, usableH / spanY) * 0.88;
       // 夹在合理区间：太小文字糊，太大失去纵深感
       autoZoom = Math.min(1, Math.max(0.62, autoZoom));
       camera.zoom = autoZoom;
@@ -379,31 +392,6 @@ export const constellationView: ViewModule = {
     });
     cardsWrap.appendChild(frag);
 
-    // —— 连线（仅同分类且螺旋索引相邻）——
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute(
-      "class",
-      "absolute inset-0 w-full h-full pointer-events-none",
-    );
-    linksLayer.appendChild(svg);
-    interface LinkPair {
-      a: StarNode;
-      b: StarNode;
-      el: SVGLineElement;
-      ox1?: number; oy1?: number; ox2?: number; oy2?: number; oop?: number;
-    }
-    const linkPairs: LinkPair[] = [];
-    for (let i = 1; i < nodes.length; i++) {
-      if (nodes[i - 1].data.categoryId !== nodes[i].data.categoryId) continue;
-      const ln = document.createElementNS(svgNS, "line");
-      ln.setAttribute("stroke", nodes[i].data.categoryColor);
-      ln.setAttribute("stroke-width", "1");
-      ln.setAttribute("opacity", "0");
-      svg.appendChild(ln);
-      linkPairs.push({ a: nodes[i - 1], b: nodes[i], el: ln });
-    }
-
     // —— 控制条 ——
     const controls = document.createElement("div");
     controls.className = "star-controls";
@@ -438,7 +426,6 @@ export const constellationView: ViewModule = {
         rCam,
         rMax,
         nodeCount: nodes.length,
-        linkCount: linkPairs.length,
         visible: nodes.filter((n) => n.el && n.el.style.visibility !== 'hidden').length,
         culled: nodes.filter((n) => n.el && n.el.style.visibility === 'hidden').length,
         pinned: nodes.filter((n) => n.pinned).map((n) => ({ slug: n.data.slug, px: Math.round(n.px), py: Math.round(n.py) })),
@@ -477,8 +464,6 @@ export const constellationView: ViewModule = {
     let rafId = 0;
     let gestureBusy = false; // 拖动中暂停连线重算
     let zoomSpring = 0; // 缩放回弹目标（0 = 无）
-    let linksDirty = true; // 连线是否需要重算（相机/缩放/定星变化时置脏，静止帧零开销）
-    let linksShown = true; // 连线层当前是否可见（手势中隐藏，松手恢复）
 
     // —— 星空背景 + 光标拖尾（独立 canvas，pointer-events:none）——
     const starfield: StarfieldHandle | null = mountStarfield(stage);
@@ -500,7 +485,6 @@ export const constellationView: ViewModule = {
       if (zoomSpring) {
         const target = zoomSpring;
         camera.zoom += (target - camera.zoom) * 0.16;
-        linksDirty = true;
         if (Math.abs(target - camera.zoom) < 0.002) {
           camera.zoom = target;
           zoomSpring = 0;
@@ -513,7 +497,6 @@ export const constellationView: ViewModule = {
         const k = rCam + (dCam - rCam) * OVERSCROLL;
         camera.x = (camera.x / dCam) * k;
         camera.y = (camera.y / dCam) * k;
-        linksDirty = true;
       }
 
       // 喂相机给星空层（视差 + 近卡连线用）
@@ -544,9 +527,19 @@ export const constellationView: ViewModule = {
           el.style.pointerEvents = "";
         }
 
-        const scale = Math.max(SCALE_EDGE, 1 - t * 0.35) * z;
-        const rotY = (dx / R) * TILT_DEG;
-        const rotX = -(dy / R) * TILT_DEG;
+        // 档位由 base（不含相机缩放）判定；尺寸按 z^0.35 部分跟随，
+        // 原来 SCALE_EDGE 地板是乘 z 之前应用的，相机 0.74 一乘实际掉到 0.51。
+        const base = Math.max(SCALE_EDGE, 1 - t * 0.35);
+        const tier = base >= TIER_FULL_MIN ? "full" : base >= TIER_LITE_MIN ? "lite" : "dot";
+        const raw = base * Math.pow(Math.max(z, 0.2), ZOOM_COUPLING);
+        const scale =
+          tier === "full" ? Math.min(1.0, Math.max(raw, 0.93))
+          : tier === "lite" ? Math.min(0.93, Math.max(raw, 0.84))
+          : Math.min(0.8, Math.max(raw, 0.55));
+        const tiltK = tier === "full" ? 0.2 : tier === "lite" ? 0.6 : 1;
+        if (el.dataset.tier !== tier) el.dataset.tier = tier;
+        const rotY = (dx / R) * TILT_DEG * tiltK;
+        const rotX = -(dy / R) * TILT_DEG * tiltK;
         const tz = (1 - t) * Z_LIFT;
 
         el.style.zIndex = n.hovered ? '900' : String(100 + Math.round(tz));
@@ -583,41 +576,6 @@ export const constellationView: ViewModule = {
         }
       }
 
-      // 连线：手势进行中整体隐藏（拖动时看不清细节，且省下 18 条线 × 5 属性/帧的写入），
-      // 松手后下一次渲染补算。实测这是 30fps → 60fps 的关键。
-      if (gestureBusy) {
-        if (linksShown) {
-          linksShown = false;
-          svg.style.display = 'none';
-        }
-      } else {
-        if (!linksShown) {
-          linksShown = true;
-          svg.style.display = '';
-        }
-        if (linksDirty) {
-          linksDirty = false;
-          for (const p of linkPairs) {
-            const sa = toScreen(p.a, cx, cy),
-              sb = toScreen(p.b, cx, cy);
-            const ta = Math.min(1, Math.hypot(sa.x - cx, sa.y - cy) / R);
-            const tb = Math.min(1, Math.hypot(sb.x - cx, sb.y - cy) / R);
-            const op =
-              ta > LINK_T || tb > LINK_T
-                ? 0
-                : 0.34 * (1 - Math.max(ta, tb) / LINK_T);
-            // 数值缓存比较，避免 getAttribute 读 DOM
-            if (p.ox1 === sa.x && p.oy1 === sa.y && p.ox2 === sb.x && p.oy2 === sb.y && p.oop === op) continue;
-            p.ox1 = sa.x; p.oy1 = sa.y; p.ox2 = sb.x; p.oy2 = sb.y; p.oop = op;
-            const el = p.el;
-            // 几何走 transform（单次属性写入，GPU 友好），透明度仍用 opacity
-            el.setAttribute('transform', `translate(${sa.x.toFixed(1)},${sa.y.toFixed(1)})`);
-            el.setAttribute('x2', (sb.x - sa.x).toFixed(1));
-            el.setAttribute('y2', (sb.y - sa.y).toFixed(1));
-            el.setAttribute('opacity', op.toFixed(3));
-          }
-        }
-      }
     };
     render();
 
@@ -696,7 +654,6 @@ export const constellationView: ViewModule = {
         cardNode.px = cx;
         cardNode.py = cy; // 定星卡锚在视口中心
         pinTarget = cardNode;
-        linksDirty = true;
         cardNode.el?.classList.add('star-pinning');
         savePinned();
         e.preventDefault();
@@ -715,7 +672,6 @@ export const constellationView: ViewModule = {
           n.px = cx;
           n.py = cy;
           pinTarget = n;
-          linksDirty = true;
           n.el?.classList.add('star-pinning');
           savePinned();
           if (navigator.vibrate) navigator.vibrate(15);
@@ -736,12 +692,10 @@ export const constellationView: ViewModule = {
         const r = rect();
         pinTarget.px = r.width / 2 + dx;
         pinTarget.py = r.height / 2 + dy;
-        linksDirty = true;
       } else {
         // 漫游：相机反向平移
         camera.x = camStartX - dx;
         camera.y = camStartY - dy;
-        linksDirty = true;
       }
       // 光标拖尾粒子（stage 内坐标；拖动时也生成，划过夜空的感觉）
       starfield && starfield.onPointerMove(e.clientX - rect().left, e.clientY - rect().top);
@@ -762,7 +716,6 @@ export const constellationView: ViewModule = {
         pinTarget.el?.classList.remove("star-pinning");
         savePinned();
         pinTarget = null;
-        linksDirty = true;
         return;
       }
       // 轻点（未位移）→ 跳转（同样用坐标反查，规避 3D hit-test 落到容器的问题）
@@ -812,7 +765,6 @@ export const constellationView: ViewModule = {
       const k = next / prev;
       camera.x = wx - (wx - camera.x) / k;
       camera.y = wy - (wy - camera.y) / k;
-      linksDirty = true;
     };
 
     // 双指捏合
@@ -832,7 +784,6 @@ export const constellationView: ViewModule = {
       if (pinTarget) {
         pinTarget.el?.classList.remove("star-pinning");
         pinTarget = null;
-        linksDirty = true;
       }
     };
     const onTouchMove = (e: TouchEvent) => {
@@ -846,7 +797,6 @@ export const constellationView: ViewModule = {
         ZOOM_MAX,
         Math.max(ZOOM_MIN, pinchZoomStart * (d / pinchStart)),
       );
-      linksDirty = true;
     };
     const onTouchEnd = (e: TouchEvent) => {
       if (e.touches.length < 2) {
@@ -865,14 +815,12 @@ export const constellationView: ViewModule = {
         camera.y = camInitY;
         zoomSpring = autoZoom;
         gestureBusy = false;
-        linksDirty = true;
       } else if (btn.dataset.act === "unpin") {
         const had = nodes.some((n) => n.pinned);
         nodes.forEach((n) => {
           n.pinned = false;
           n.el?.classList.remove("star-pinning");
         });
-        if (had) linksDirty = true;
         savePinned();
       }
     };
@@ -880,7 +828,6 @@ export const constellationView: ViewModule = {
 
     const onResize = () => {
       /* 卡片位置每帧读 getBoundingClientRect，自适应无需额外处理；但 R 变了阈值也变，需重算连线 */
-      linksDirty = true;
     };
     window.addEventListener("resize", onResize);
 
@@ -898,11 +845,10 @@ export const constellationView: ViewModule = {
 
     // —— 六项清理（switchView 统一调用 unmount）——
     // 纪律：只清理本模块动态创建的内容（卡片/连线/控制条/空态）。
-    // #canvas-links、#canvas-cards、#star-cards-data 是 Astro SSR 节点，必须原样保留，
+    // #canvas-cards、#star-cards-data 是 Astro SSR 节点，必须原样保留，
     // 否则 SPA 导航回首页时 SSR 数据已丢，星图永远起不来。
     const dynamicNodes: (ChildNode | null)[] = [
       ...cardsWrap.children,
-      ...linksLayer.children,
       controls,
       stage.querySelector(".star-empty"),
     ];
