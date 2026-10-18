@@ -413,9 +413,13 @@
 						var a = e.target && e.target.closest ? e.target.closest('a[href^="/blog/"]') : null;
 						if (!a) return;
 						var path = window.location.pathname.replace(/\/+$/, '') || '/';
-						var target = '';
+						var target = null;
 						if (path === '/') target = 'home';
 						else if (path === '/archive') target = 'archive';
+						// 文章内的「上一篇/下一篇」：保留最初进入时的来源，不要改成别处
+						else if (path.indexOf('/blog/') === 0) return;
+						// 从搜索 / now / lab 等其它页进入：清空，交给详情页的 referrer 兜底
+						else target = '';
 						try {
 							if (target) sessionStorage.setItem('blogBackTarget', target);
 							else sessionStorage.removeItem('blogBackTarget');

@@ -384,6 +384,15 @@ try {
     (function () {
       var target = '';
       try { target = sessionStorage.getItem('blogBackTarget') || ''; } catch (e) {}
+      // 兜底：直接打开 / 外部跳转 / 刷新时 sessionStorage 可能为空，用 referrer 判断
+      if (target !== 'home' && target !== 'archive') {
+        try {
+          var ref = document.referrer || '';
+          if (ref && ref.indexOf(location.origin) === 0) {
+            target = ref.indexOf(location.origin + '/archive') === 0 ? 'archive' : 'home';
+          }
+        } catch (e) {}
+      }
       if (target !== 'home' && target !== 'archive') return;
       var url = target === 'home' ? '/' : '/archive';
       var label = target === 'home' ? '返回首页' : '返回归档';

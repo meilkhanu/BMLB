@@ -846,7 +846,16 @@ export const constellationView: ViewModule = {
             }
           }
         }
-        if (slug) window.location.href = '/blog/' + encodeURIComponent(slug);
+        if (slug) {
+          // 星图卡片是 div 不是 <a>，点不到全局的锚点委托，这里手动记来源
+          //（星图只存在于首页，所以来源恒为 home）
+          try {
+            sessionStorage.setItem("blogBackTarget", "home");
+          } catch {
+            /* ignore */
+          }
+          window.location.href = "/blog/" + encodeURIComponent(slug);
+        }
       }
     };
 
