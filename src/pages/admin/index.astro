@@ -614,7 +614,7 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
 
             <div class="mb-4">
               <label class="block text-xs font-medium text-[#999] mb-1.5">正文（富文本）</label>
-              <div id="work-edit-tiptap-container" data-tiptap-key="work" class="rounded-xl border border-[#E0E0E0] dark:border-[#333] bg-white dark:bg-[#252525] overflow-hidden">
+              <div id="work-edit-tiptap-container" data-tiptap-key="work">
                 <div id="work-edit-tiptap">
                   <TiptapEditor client:idle placeholder="开始写作..." />
                 </div>
@@ -1952,6 +1952,10 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
       if (slug) {
         loadContentIntoEditor();
       }
+
+      // 通知编辑器切换「本地草稿」上下文（key 带文章 id，绝不串文章）
+      window.__tiptapDraftCtx = { slot: 'post', id: slug || 'new' };
+      window.dispatchEvent(new CustomEvent('bmlb:draft-context', { detail: window.__tiptapDraftCtx }));
     }
 
     function closeEditor() {
@@ -2339,6 +2343,9 @@ import TiptapEditor from '../../components/TiptapEditor.jsx';
         } else {
           setSaveStatus(status === 'published' ? '✓ 已发布' : '✓ 草稿已保存', false);
           currentSlug = result.slug || data.slug;
+
+          // 已落库 → 清掉这篇的本地草稿，避免下次打开误报「有草稿」
+          window.dispatchEvent(new Event('bmlb:draft-clear'));
 
           // 1.5 秒后返回列表
           setTimeout(() => {
