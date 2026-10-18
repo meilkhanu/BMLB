@@ -1,14 +1,62 @@
-name: Deploy to ECS
+name: Build & Deploy
 
+# 架构：GitHub Actions 负责构建，ECS 只负责「收货 + 切换 + 失败回滚」。
+# 原因：ECS 只有 2 vCPU / 1.6 GB，在上面跑 npm install + astro build 又慢又容易 OOM；
+# 构建失败还会让线上停在半成品状态。现在构建失败发生在 CI，线上完全不受影响。
 on:
   push:
     branches: [isNode]
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-22.04
     steps:
-      - name: Deploy via SSH
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci --legacy-peer-deps
+
+      - name: 构建
+        run: npm run build
+
+      - name: 打包产物（dist + 依赖清单 + pm2 配置）
+        run: |
+          mkdir -p payload && cp -r dist payload/dist
+          cp package.json package-lock.json ecosystem.config.cjs payload/
+          tar czf payload.tar.gz -C payload .
+          du -h payload.tar.gz
+          test -f payload/dist/server/entry.mjs || { echo "产物缺少 entry.mjs"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: payload
+          path: payload.tar.gz
+          retention-days: 14
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: payload
+
+      - name: 上传产物到 ECS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          password: ${{ secrets.ECS_PASSWORD }}
+          source: payload.tar.gz
+          target: /tmp/
+
+      - name: 切换并健康检查（失败自动回滚）
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.ECS_HOST }}
@@ -19,40 +67,52 @@ jobs:
             set -e
             cd /var/www/bmlb
 
-            echo "=== 下载代码 (codeload tarball) ==="
-            # 为什么不再用 git fetch：
-            # 青岛 ECS 到 github.com:443 经常整段超时（tcp 连不上，但 api / codeload 正常），
-            # git fetch 会一直卡到超时，导致整个 SSH 步骤失败、站点停在旧提交。
-            # codeload.github.com 实测 3~4 秒拉完整个仓库 tarball，所以直接下 tarball 覆盖。
-            curl -sSL -m 300 -o /tmp/bmlb.tgz \
-              https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}
-            rm -rf /tmp/bmlb-src && mkdir -p /tmp/bmlb-src
-            tar xzf /tmp/bmlb.tgz -C /tmp/bmlb-src --strip-components=1
-            echo "解出文件数: $(find /tmp/bmlb-src -type f | wc -l)"
+            echo "=== 解包并校验产物 ==="
+            rm -rf /tmp/bmlb-payload && mkdir -p /tmp/bmlb-payload
+            tar xzf /tmp/payload.tar.gz -C /tmp/bmlb-payload
+            test -f /tmp/bmlb-payload/dist/server/entry.mjs || { echo "产物缺少 entry.mjs，放弃部署"; exit 1; }
+            test -d /tmp/bmlb-payload/dist/client || { echo "产物缺少 client 目录，放弃部署"; exit 1; }
 
-            echo "=== 同步到站点目录（保留 data/ node_modules/ .git/ dist/）==="
-            rsync -a --delete \
-              --exclude 'data/' --exclude 'node_modules/' --exclude '.git/' --exclude 'dist/' \
-              /tmp/bmlb-src/ /var/www/bmlb/
+            echo "=== 依赖：仅当 package-lock 变化时才安装 ==="
+            NEW_HASH=$(sha256sum /tmp/bmlb-payload/package-lock.json | cut -d' ' -f1)
+            OLD_HASH=$(cat .lockhash 2>/dev/null || echo none)
+            # 依赖清单每次都同步（服务器上的 package-lock 会被 npm install 改写，不能拿来比对）
+            cp -f /tmp/bmlb-payload/package.json /tmp/bmlb-payload/package-lock.json /var/www/bmlb/
+            if [ "$NEW_HASH" != "$OLD_HASH" ]; then
+              echo "依赖有变化，执行 npm ci"
+              npm ci --legacy-peer-deps
+              echo "$NEW_HASH" > .lockhash
+            else
+              echo "依赖未变化，跳过安装（继续用现有 node_modules）"
+            fi
+            cp -f /tmp/bmlb-payload/ecosystem.config.cjs /var/www/bmlb/ecosystem.config.cjs
 
-            echo "=== 安装依赖 ==="
-            npm install --legacy-peer-deps
+            echo "=== 切换 dist（两次 rename，毫秒级）==="
+            rm -rf dist.new dist.bak
+            cp -a /tmp/bmlb-payload/dist dist.new
+            mv dist dist.bak
+            mv dist.new dist
 
-            echo "=== 构建 ==="
-            npm run build:ecs
-
-            echo "=== 重启服务 ==="
+            echo "=== 重启 ==="
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
 
             echo "=== 健康检查 ==="
-            sleep 3
-            code=$(curl -s -o /dev/null -w '%{http_code}' -m 15 http://127.0.0.1:4321/)
-            echo "首页状态码: $code"
-            if [ "$code" != "200" ]; then
-              echo "健康检查未通过，请查看 pm2 logs bmlb --err"
+            ok=0
+            for i in $(seq 1 8); do
+              sleep 2
+              code=$(curl -s -o /dev/null -w '%{http_code}' -m 10 http://127.0.0.1:4321/ || true)
+              echo "  第 $i 次: $code"
+              if [ "$code" = "200" ]; then ok=1; break; fi
+            done
+
+            if [ "$ok" != "1" ]; then
+              echo "!!! 健康检查失败，回滚到上一版 dist"
+              pm2 logs bmlb --err --lines 20 --nostream || true
+              rm -rf dist && mv dist.bak dist
+              pm2 startOrReload ecosystem.config.cjs --update-env
               exit 1
             fi
 
-            echo "=== 部署完成: ${{ github.sha }} ==="
+            echo "=== 部署成功: ${{ github.sha }} ==="
             pm2 list
