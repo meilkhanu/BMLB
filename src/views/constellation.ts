@@ -19,6 +19,7 @@
  *   - 连线在拖动中暂停重算，松手补画
  */
 
+import { mountTrack } from "./track";
 import type { ViewModule } from './registry';
 import { mountStarfield, type StarfieldHandle } from './starfield';
 
@@ -211,6 +212,27 @@ export const constellationView: ViewModule = {
     ) as HTMLElement | null;
     if (!stage || !cardsWrap || !dataEl) return;
 
+    // —— 移动端：星图在 390px 宽度上要塞 20 张卡，只能缩到 0.5，字全糊。
+    //    这里直接换成纵向「星轨」列表，仍复用同一个视图模式，切回来靠同一个 unmount。
+    if (window.innerWidth < 768) {
+      let mobileCards: any[] = [];
+      try {
+        mobileCards = JSON.parse(dataEl.dataset.cards || "[]");
+      } catch {
+        /* ignore */
+      }
+      stage.classList.remove("hidden");
+      stage.setAttribute("aria-hidden", "false");
+      const destroyTrack = mountTrack(stage, mobileCards);
+      cleanupFn = () => {
+        destroyTrack();
+        stage.classList.add("hidden");
+        stage.setAttribute("aria-hidden", "true");
+        cleanupFn = null;
+      };
+      return;
+    }
+
     let cards: StarCardData[] = [];
     try {
       cards = JSON.parse(dataEl.dataset.cards || "[]");
@@ -393,13 +415,93 @@ export const constellationView: ViewModule = {
     cardsWrap.appendChild(frag);
 
     // —— 控制条 ——
+    // —— 控制条：分类胶囊 + 回中心 / 解除定星 + 计数 ——
+    const cats: { id: string; name: string; color: string; n: number }[] = [];
+    for (const n of nodes) {
+      const hit = cats.find((c) => c.id === n.data.categoryId);
+      if (hit) hit.n++;
+      else
+        cats.push({
+          id: n.data.categoryId,
+          name: n.data.categoryName,
+          color: n.data.categoryColor,
+          n: 1,
+        });
+    }
+    cats.sort((a, b) => b.n - a.n);
+
     const controls = document.createElement("div");
     controls.className = "star-controls";
     controls.innerHTML = `
+      <div class="star-chips" role="group" aria-label="按分类筛选">
+        <button type="button" class="star-chip" data-cat="">全部</button>
+        ${cats
+          .map(
+            (c) =>
+              `<button type="button" class="star-chip" data-cat="${c.id}" style="--cat:${c.color}">${c.name}</button>`,
+          )
+          .join("")}
+      </div>
+      <span class="star-sep" aria-hidden="true"></span>
       <button type="button" data-act="center" title="回到中心">⌂</button>
       <button type="button" data-act="unpin" title="解除所有定星">✥</button>
       <span class="star-count">${nodes.length} 星</span>`;
     stage.appendChild(controls);
+
+    // —— 分类筛选：只做显隐，不动位置（零重排、零跳变）——
+    const FILTER_KEY = "bmlb-star-filter";
+    let activeCat = "";
+    try {
+      activeCat = localStorage.getItem(FILTER_KEY) || "";
+    } catch {
+      /* ignore */
+    }
+    const countEl = controls.querySelector(".star-count") as HTMLElement | null;
+    const applyFilter = (recenter = false) => {
+      let shown = 0;
+      for (const n of nodes) {
+        const dim = !!activeCat && n.data.categoryId !== activeCat;
+        n.el?.classList.toggle("star-dim", dim);
+        if (!dim) shown++;
+      }
+      if (countEl) {
+        countEl.textContent = activeCat
+          ? `${shown}/${nodes.length} 星`
+          : `${nodes.length} 星`;
+      }
+      controls.querySelectorAll<HTMLElement>(".star-chip").forEach((b) => {
+        b.classList.toggle("on", (b.dataset.cat || "") === activeCat);
+      });
+      try {
+        localStorage.setItem(FILTER_KEY, activeCat);
+      } catch {
+        /* ignore */
+      }
+      if (recenter) {
+        // 按「当前可见集合」重新取景：只平移 + 缩放相机，不动卡片世界坐标，
+        // 所以筛选后不会重排，但留下来的星会自动铺满视野。
+        const vis = nodes.filter((n) => !activeCat || n.data.categoryId === activeCat);
+        const src = vis.length ? vis : nodes;
+        const xs = src.map((n) => n.x);
+        const ys = src.map((n) => n.y);
+        const minX = Math.min(...xs), maxX = Math.max(...xs);
+        const minY = Math.min(...ys), maxY = Math.max(...ys);
+        camera.x = (minX + maxX) / 2;
+        camera.y = (minY + maxY) / 2;
+        const r = rect();
+        const fitW = Math.max(320, r.width - 140);
+        const fitH = Math.max(320, r.height - 180);
+        const fitZ =
+          Math.min(fitW / (maxX - minX + 204), fitH / (maxY - minY + 177)) * 0.92;
+        zoomSpring = Math.min(1.25, Math.max(ZOOM_MIN, fitZ));
+      }
+    };
+    controls.querySelectorAll<HTMLElement>(".star-chip").forEach((b) => {
+      b.addEventListener("click", () => {
+        activeCat = b.dataset.cat || "";
+        applyFilter(true);
+      });
+    });
 
     // —— 几何辅助 ——
     const rect = () => stage.getBoundingClientRect();
@@ -577,6 +679,7 @@ export const constellationView: ViewModule = {
       }
 
     };
+    applyFilter(false);
     render();
 
     // —— 手势 ——
