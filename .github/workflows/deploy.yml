@@ -14,19 +14,26 @@ jobs:
           host: ${{ secrets.ECS_HOST }}
           username: ${{ secrets.ECS_USER }}
           password: ${{ secrets.ECS_PASSWORD }}
+          command_timeout: 20m
           script: |
             set -e
             cd /var/www/bmlb
 
-            echo "=== Pull 最新代码 ==="
-            git config http.version HTTP/1.1
-            git reset --hard HEAD
-            git clean -fd -e data
-            # --force 必须加：本地 isNode 与 origin/isNode 一旦有分歧，
-            # 不带 --force 的 fetch 会静默跳过 origin/isNode 的 ref 更新
-            #（表现为「fetch 成功但 checkout 后还是旧提交」）。
-            git fetch origin isNode --force
-            git checkout -B isNode origin/isNode
+            echo "=== 下载代码 (codeload tarball) ==="
+            # 为什么不再用 git fetch：
+            # 青岛 ECS 到 github.com:443 经常整段超时（tcp 连不上，但 api / codeload 正常），
+            # git fetch 会一直卡到超时，导致整个 SSH 步骤失败、站点停在旧提交。
+            # codeload.github.com 实测 3~4 秒拉完整个仓库 tarball，所以直接下 tarball 覆盖。
+            curl -sSL -m 300 -o /tmp/bmlb.tgz \
+              https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}
+            rm -rf /tmp/bmlb-src && mkdir -p /tmp/bmlb-src
+            tar xzf /tmp/bmlb.tgz -C /tmp/bmlb-src --strip-components=1
+            echo "解出文件数: $(find /tmp/bmlb-src -type f | wc -l)"
+
+            echo "=== 同步到站点目录（保留 data/ node_modules/ .git/ dist/）==="
+            rsync -a --delete \
+              --exclude 'data/' --exclude 'node_modules/' --exclude '.git/' --exclude 'dist/' \
+              /tmp/bmlb-src/ /var/www/bmlb/
 
             echo "=== 安装依赖 ==="
             npm install --legacy-peer-deps
@@ -38,5 +45,14 @@ jobs:
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
 
-            echo "=== 部署完成 ==="
+            echo "=== 健康检查 ==="
+            sleep 3
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 15 http://127.0.0.1:4321/)
+            echo "首页状态码: $code"
+            if [ "$code" != "200" ]; then
+              echo "健康检查未通过，请查看 pm2 logs bmlb --err"
+              exit 1
+            fi
+
+            echo "=== 部署完成: ${{ github.sha }} ==="
             pm2 list
