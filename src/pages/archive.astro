@@ -139,7 +139,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 			<svg class="w-20 h-20 animate-mascot-float" viewBox="0 0 100 100">
 				<circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3,3" class="text-[#39C5BB]" fill="none" />
 				<path d="M32,45 Q40,32 48,45 T64,45" stroke="currentColor" stroke-width="2" fill="none" class="text-[#FF1A4D]" />
-				<text x="50" y="65" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold" class="fill-current text-[#999] dark:text-[#666] tracking-wider">SYS.0104</text>
+				<text x="50" y="65" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold" class="fill-current text-ink-muted dark:text-ink-2 tracking-wider">SYS.0104</text>
 			</svg>
 		</div>
 	</div>
@@ -150,8 +150,8 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 		<!-- 标题区 -->
 		<div class="mb-12" data-animate>
 			<div class="mb-16 ml-2 md:ml-0">
-				<h1 class="font-xiaolai text-4xl md:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 tracking-tight">Archive</h1>
-				<p class="text-base md:text-lg text-[#666] dark:text-[#999] tracking-wide">过往，现在，未来。因果能否超脱视界？</p>
+				<h1 class="font-xiaolai text-4xl md:text-5xl font-black text-ink dark:text-[#EAEAEA] mb-3 tracking-tight">Archive</h1>
+				<p class="text-base md:text-lg text-ink-2 dark:text-ink-muted tracking-wide">过往，现在，未来。因果能否超脱视界？</p>
 		</div>
 
 		<!-- 三栏布局 -->
@@ -160,12 +160,12 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 			<!-- 左侧：年份导航（sticky） -->
 			<aside class="hidden md:block">
 				<div class="sticky top-24">
-					<h3 class="text-xs font-medium text-[#999] uppercase tracking-wider mb-4">年份</h3>
+					<h3 class="text-xs font-medium text-ink-muted uppercase tracking-wider mb-4">年份</h3>
 					<nav class="flex flex-col gap-2">
 						{yearGroups.length > 0 ? yearGroups.map(yg => (
-							<a href={`#year-${yg.year}`} class="font-xiaolai text-sm text-[#666] dark:text-[#999] hover:text-[#8B7CB3] hover:translate-x-1 transition-all duration-300">{yg.year}</a>
+							<a href={`#year-${yg.year}`} class="font-xiaolai text-sm text-ink-2 dark:text-ink-muted hover:text-accent hover:translate-x-1 transition-all duration-300">{yg.year}</a>
 						)) : (
-							<span class="text-sm text-[#999]">暂无</span>
+							<span class="text-sm text-ink-muted">暂无</span>
 						)}
 					</nav>
 				</div>
@@ -187,7 +187,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 
 						{yg.months.map(mg => (
 							<div class="ml-8 mb-8 relative">
-								<h3 class="text-sm font-medium text-[#999] mb-4 relative">
+								<h3 class="text-sm font-medium text-ink-muted mb-4 relative">
 									<span class="absolute left-[-20px] top-[50%] w-4 h-[2px] rounded-full bg-[#E5E5E5] dark:bg-[#222]"></span>
 									{mg.label}
 								</h3>
@@ -203,9 +203,9 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 												<div class="absolute top-1/2 -translate-y-1/2 left-[-25px] w-2 h-2 rounded-full bg-[#D0C8E0] dark:bg-[#3A3550] group-hover:bg-[#FF6B9D] group-hover:scale-150 transition-all duration-300 ring-4 ring-[#FAFAFA] dark:ring-[#0F0F0F] group-hover:ring-transparent z-10"></div>
 												<div class="flex items-center gap-2 mb-2">
 													<span class="font-xiaolai px-2.5 py-0.5 rounded-full text-xs font-bold" style={`background-color:${cat.color}18;color:${cat.color}`}>{cat.name}</span>
-													<span class="text-xs text-[#999]">{mmdd}</span>
+													<span class="text-xs text-ink-muted">{mmdd}</span>
 												</div>
-												<h4 class="font-xiaolai text-base font-medium text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{p.title}</h4>
+												<h4 class="font-xiaolai text-base font-medium text-ink dark:text-[#EAEAEA] group-hover:text-accent transition-colors">{p.title}</h4>
 											</a>
 										);
 									})}
@@ -214,7 +214,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 						))}
 					</section>
 				)) : (
-					<div class="ml-8 text-sm text-[#999] py-12">暂无已发布文章</div>
+					<div class="ml-8 text-sm text-ink-muted py-12">暂无已发布文章</div>
 				)}
 			</main>
 
@@ -226,7 +226,7 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 							<!-- 角落光晕 -->
 							<div class="absolute -top-16 -right-16 w-40 h-40 bg-[#8B7CB3]/10 dark:bg-[#8B7CB3]/20 rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
 							<div class="flex items-center justify-between mb-5 relative z-10">
-								<h3 class="font-xiaolai text-xs font-bold text-[#8B7CB3] uppercase tracking-widest">
+								<h3 class="font-xiaolai text-xs font-bold text-accent uppercase tracking-widest">
 									{latestYearGroup.year} Overview
 									<span class="block h-0.5 w-8 mt-1 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#FF6B9D]"></span>
 								</h3>
@@ -238,27 +238,27 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 							<div class="grid grid-cols-2 gap-3 relative z-10">
 								<!-- 已发文章 -->
 								<div class="archive-tile" style="animation-delay:.05s">
-									<div class="archive-tile-icon bg-[#8B7CB3]/12 dark:bg-[#8B7CB3]/20 text-[#8B7CB3]">📝</div>
-									<div class="font-xiaolai text-2xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors">{latestYearGroup.total}</div>
-									<div class="text-[10px] font-medium text-[#999]">已发文章</div>
+									<div class="archive-tile-icon bg-[#8B7CB3]/12 dark:bg-[#8B7CB3]/20 text-accent">📝</div>
+									<div class="font-xiaolai text-2xl font-black text-ink dark:text-[#EAEAEA] group-hover:text-accent transition-colors">{latestYearGroup.total}</div>
+									<div class="text-[11px] font-medium text-ink-muted">已发文章</div>
 								</div>
 								<!-- 活跃月份 -->
 								<div class="archive-tile" style="animation-delay:.12s">
 									<div class="archive-tile-icon bg-[#FF6B9D]/12 dark:bg-[#FF6B9D]/20 text-[#FF6B9D]">📅</div>
-									<div class="font-xiaolai text-2xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#FF6B9D] transition-colors">{latestYearGroup.months.length}</div>
-									<div class="text-[10px] font-medium text-[#999]">活跃月份</div>
+									<div class="font-xiaolai text-2xl font-black text-ink dark:text-[#EAEAEA] group-hover:text-[#FF6B9D] transition-colors">{latestYearGroup.months.length}</div>
+									<div class="text-[11px] font-medium text-ink-muted">活跃月份</div>
 								</div>
 								<!-- 最高产月 -->
 								<div class="archive-tile" style="animation-delay:.19s">
 									<div class="archive-tile-icon bg-[#7CB38B]/12 dark:bg-[#7CB38B]/20 text-[#7CB38B]">🌙</div>
-									<div class="font-xiaolai text-2xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7CB38B] transition-colors">{busiestMonth ? `${busiestMonth.month}月` : '—'}</div>
-									<div class="text-[10px] font-medium text-[#999]">最高产月</div>
+									<div class="font-xiaolai text-2xl font-black text-ink dark:text-[#EAEAEA] group-hover:text-[#7CB38B] transition-colors">{busiestMonth ? `${busiestMonth.month}月` : '—'}</div>
+									<div class="text-[11px] font-medium text-ink-muted">最高产月</div>
 								</div>
 								<!-- 标签数 -->
 								<div class="archive-tile" style="animation-delay:.26s">
 									<div class="archive-tile-icon bg-[#7BA3D9]/12 dark:bg-[#7BA3D9]/20 text-[#7BA3D9]">🏷️</div>
-									<div class="font-xiaolai text-2xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors">{Object.keys(tagCounts).length}</div>
-									<div class="text-[10px] font-medium text-[#999]">标签数</div>
+									<div class="font-xiaolai text-2xl font-black text-ink dark:text-[#EAEAEA] group-hover:text-[#7BA3D9] transition-colors">{Object.keys(tagCounts).length}</div>
+									<div class="text-[11px] font-medium text-ink-muted">标签数</div>
 								</div>
 							</div>
 						</div>
@@ -267,14 +267,14 @@ const yearColors = ['#8B7CB3', '#E8913A', '#4A5D8A', '#7CB38B', '#B38B7C', '#8B8
 					{topTags.length > 0 && (
 						<div class="group relative overflow-hidden bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-3xl p-5 border border-white/20 dark:border-white/10 shadow-[0_2px_12px_-4px_rgba(139,124,179,.12)] hover:shadow-[0_8px_28px_-8px_rgba(139,124,179,.3)] transition-shadow duration-500">
 							<div class="absolute -bottom-16 -left-16 w-40 h-40 bg-[#FF6B9D]/8 dark:bg-[#FF6B9D]/15 rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-							<h3 class="font-xiaolai text-xs font-bold text-[#8B7CB3] uppercase tracking-widest mb-4 relative z-10">
+							<h3 class="font-xiaolai text-xs font-bold text-accent uppercase tracking-widest mb-4 relative z-10">
 								Top Tags
 								<span class="block h-0.5 w-8 mt-1 rounded-full bg-gradient-to-r from-[#FF6B9D] to-[#8B7CB3]"></span>
 							</h3>
 							<div class="flex flex-wrap gap-2.5 relative z-10">
 								{topTags.map(([tag, count], idx) => (
-									<span class="archive-tag-pop font-xiaolai px-3 py-1.5 rounded-full text-xs font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-[#8B7CB3] dark:text-[#B39DDB] border border-[#8B7CB3]/15 dark:border-[#8B7CB3]/25 hover:bg-[#8B7CB3] hover:text-white hover:scale-105 hover:shadow-[0_2px_10px_-2px_rgba(139,124,179,.5)] transition-all duration-300 cursor-default active:scale-95 shadow-sm" style={`animation-delay:${0.05 * idx}s`}>
-										{tag} <span class="text-[10px] opacity-50 ml-0.5">{count}</span>
+									<span class="archive-tag-pop font-xiaolai px-3 py-1.5 rounded-full text-xs font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-accent dark:text-[#B39DDB] border border-[#8B7CB3]/15 dark:border-[#8B7CB3]/25 hover:bg-[#8B7CB3] hover:text-white hover:scale-105 hover:shadow-[0_2px_10px_-2px_rgba(139,124,179,.5)] transition-all duration-300 cursor-default active:scale-95 shadow-sm" style={`animation-delay:${0.05 * idx}s`}>
+										{tag} <span class="text-[11px] opacity-50 ml-0.5">{count}</span>
 									</span>
 								))}
 							</div>

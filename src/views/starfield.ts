@@ -56,6 +56,11 @@ export interface StarfieldHandle {
 
 /** 挂载星空层；返回供 constellation 调用的句柄 */
 export function mountStarfield(stage: HTMLElement): StarfieldHandle | null {
+  // 尊重「减少动态效果」：整片星空背景不渲染（卡片布局仍由 constellation 负责）
+  if (typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return null;
+  }
   const canvas = document.getElementById('starfield-bg') as HTMLCanvasElement | null;
   if (!canvas) return null;
   const ctx = canvas.getContext('2d', { alpha: true });

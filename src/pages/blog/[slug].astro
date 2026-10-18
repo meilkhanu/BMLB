@@ -132,7 +132,7 @@ try {
     <a
       href={backUrl}
       data-back-link
-      class="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8B7CB3] transition-all duration-300 mb-8 group no-underline hover:-translate-x-1"
+      class="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-accent transition-all duration-300 mb-8 group no-underline hover:-translate-x-1"
     >
       <svg
         class="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -148,22 +148,22 @@ try {
       <!-- 分类徽章 + 日期 -->
       <div class="flex items-center gap-3 mb-5 flex-wrap">
         <span
-          class="font-xiaolai px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-widest shadow-sm"
+          class="font-xiaolai px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest shadow-sm"
           style={`background-color: ${catColor}18; color: ${catColor}; border: 1px solid ${catColor}30`}
         >
           {catName}
         </span>
-        <span class="text-xs font-medium text-[#999] flex items-center gap-1.5">
+        <span class="text-xs font-medium text-ink-muted flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {dateFormatted}
         </span>
-        <span class="text-xs text-[#999]">· 约 {readingTime} 分钟</span>
+        <span class="text-xs text-ink-muted">· 约 {readingTime} 分钟</span>
       </div>
 
       <!-- 标题 -->
-      <h1 class="font-xiaolai text-3xl md:text-4xl lg:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] leading-tight tracking-tight mb-6">
+      <h1 class="font-xiaolai text-3xl md:text-4xl lg:text-5xl font-black text-ink dark:text-[#EAEAEA] leading-tight tracking-tight mb-6">
         {post.title}
       </h1>
       <div class="w-16 h-1.5 rounded-full bg-gradient-to-r from-[#8B7CB3] to-[#FF6B9D] mb-8"></div>
@@ -192,31 +192,31 @@ try {
     <!-- ========== 文章正文 ========== -->
     <div
       class="prose prose-lg dark:prose-invert max-w-none
-        prose-headings:text-[#1A1A1A] dark:prose-headings:text-[#EAEAEA]
+        prose-headings:text-ink dark:prose-headings:text-[#EAEAEA]
         prose-headings:font-bold prose-headings:tracking-tight
         prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5
         prose-p:text-[#444] dark:prose-p:text-[#AAA]
         prose-p:leading-[1.85] prose-p:mb-5 prose-p:text-[16px]
-        prose-strong:text-[#1A1A1A] dark:prose-strong:text-[#EAEAEA]
-        prose-a:text-[#8B7CB3] dark:prose-a:text-[#B39DDB]
+        prose-strong:text-ink dark:prose-strong:text-[#EAEAEA]
+        prose-a:text-accent dark:prose-a:text-[#B39DDB]
         prose-a:no-underline hover:prose-a:text-[#FF6B9D] hover:prose-a:underline
         prose-li:text-[#444] dark:prose-li:text-[#AAA]
         prose-li:leading-[1.8] prose-li:mb-1
-        prose-code:text-[#8B7CB3] dark:prose-code:text-[#C9BAE5]
+        prose-code:text-accent dark:prose-code:text-[#C9BAE5]
         prose-code:bg-[#8B7CB3]/10 dark:prose-code:bg-[#8B7CB3]/15
         prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md
         prose-code:text-sm prose-code:font-medium
         prose-code:before:content-none prose-code:after:content-none
         prose-blockquote:border-l-[#8B7CB3] prose-blockquote:bg-[#8B7CB3]/5 dark:prose-blockquote:bg-[#8B7CB3]/10
         prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:pr-4
-        prose-blockquote:not-italic prose-blockquote:text-[#666] dark:prose-blockquote:text-[#999]
+        prose-blockquote:not-italic prose-blockquote:text-ink-2 dark:prose-blockquote:text-ink-muted
         prose-img:rounded-2xl prose-img:shadow-md
         prose-hr:border-[#E8E8E8] dark:prose-hr:border-[#2A2A2A]
         prose-ul:pl-0 prose-ul:list-none prose-ul:space-y-2
         prose-li:pl-6 prose-li:relative
         [&_ul>li::before]:content-['—']
         [&_ul>li::before]:absolute [&_ul>li::before]:left-0
-        [&_ul>li::before]:text-[#B39DDB] dark:[&_ul>li::before]:text-[#8B7CB3]"
+        [&_ul>li::before]:text-[#B39DDB] dark:[&_ul>li::before]:text-accent"
     >
       <Fragment set:html={post.content} />
     </div>
@@ -226,7 +226,7 @@ try {
       post.tags && post.tags.length > 0 && (
         <div class="flex flex-wrap gap-2.5 mt-12 pt-8 border-t border-[#E8E8E8] dark:border-[#2A2A2A]">
           {post.tags.map(tag => (
-            <span class="font-xiaolai px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-[#8B7CB3] dark:text-[#B39DDB] border border-[#8B7CB3]/15 dark:border-[#8B7CB3]/25 hover:bg-[#8B7CB3] hover:text-white hover:scale-105 hover:shadow-[0_3px_10px_-2px_rgba(139,124,179,.5)] transition-all duration-300 cursor-default">
+            <span class="font-xiaolai px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-accent dark:text-[#B39DDB] border border-[#8B7CB3]/15 dark:border-[#8B7CB3]/25 hover:bg-[#8B7CB3] hover:text-white hover:scale-105 hover:shadow-[0_3px_10px_-2px_rgba(139,124,179,.5)] transition-all duration-300 cursor-default">
               #{tag}
             </span>
           ))}
@@ -238,8 +238,8 @@ try {
     <section class="mt-16" id="comments-section">
       <div class="flex items-center gap-3 mb-8">
         <div class="h-px flex-1 bg-[#E8E8E8] dark:bg-[#2A2A2A]"></div>
-        <span class="text-[10px] font-bold text-[#8B7CB3] uppercase tracking-widest shrink-0">Messages</span>
-        <span class="text-[10px] font-medium text-[#999] flex items-center gap-1.5 shrink-0">
+        <span class="text-[11px] font-bold text-accent uppercase tracking-widest shrink-0">Messages</span>
+        <span class="text-[11px] font-medium text-ink-muted flex items-center gap-1.5 shrink-0">
           <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span></span>
           Open
         </span>
@@ -250,16 +250,16 @@ try {
       <div class="mb-8" id="comments-input-area">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
           <input type="text" id="cmt-author" placeholder="昵称（选填）" maxlength="20"
-            class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
+            class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-ink-2 text-ink dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
           <input type="text" id="cmt-email" placeholder="邮箱（选填，用于头像）"
-            class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-[#666] text-[#1A1A1A] dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
+            class="px-3 py-2 rounded-xl border border-[#ECECEC] dark:border-[#2B2B2B] bg-white/75 dark:bg-[#141414]/80 text-xs placeholder:text-[#B3B3B3] dark:placeholder:text-ink-2 text-ink dark:text-[#EAEAEA] outline-none focus:border-[#8B7CB3]/45 transition-all" />
         </div>
         <div class="group relative flex overflow-hidden rounded-2xl border border-[#ECECEC] bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,.04)] transition-all duration-300 dark:border-[#2B2B2B] dark:bg-[#141414]/80 focus-within:border-[#8B7CB3]/45 focus-within:shadow-[0_10px_30px_rgba(139,124,179,.10)] focus-within:ring-4 focus-within:ring-[#8B7CB3]/8">
           <textarea id="cmt-content" rows="2" maxlength="500" placeholder="写下你的想法..."
-            class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-[#1A1A1A] placeholder:text-[#B3B3B3] outline-none dark:text-[#EAEAEA] dark:placeholder:text-[#666]"></textarea>
+            class="flex-1 resize-none bg-transparent px-5 py-4 text-sm leading-6 text-ink placeholder:text-[#B3B3B3] outline-none dark:text-[#EAEAEA] dark:placeholder:text-ink-2"></textarea>
           <div class="w-px self-stretch bg-[#EFEFEF] transition-colors duration-300 dark:bg-[#2F2F2F] group-focus-within:bg-[#8B7CB3]/25"></div>
           <button type="button" id="cmt-send-btn"
-            class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-[#8B7CB3] transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98] border-none cursor-pointer">
+            class="group/btn relative flex w-[78px] shrink-0 items-center justify-center overflow-hidden bg-[#8B7CB3]/8 text-accent transition-all duration-300 hover:bg-[#8B7CB3] active:scale-[0.98] border-none cursor-pointer">
             <span class="absolute inset-0 overflow-hidden">
               <span class="animate-sweep absolute top-0 h-full w-10 -skew-x-12 bg-white/20"></span>
             </span>
@@ -272,8 +272,8 @@ try {
           </button>
         </div>
         <div class="mt-2 flex items-center justify-between px-1">
-          <span id="cmt-send-status" class="text-[11px] text-[#A0A0A0] dark:text-[#666]">友善交流，理性表达</span>
-          <span class="text-[11px] text-[#A0A0A0] dark:text-[#666]">Ctrl + Enter 发送</span>
+          <span id="cmt-send-status" class="text-xs text-[#A0A0A0] dark:text-ink-2">友善交流，理性表达</span>
+          <span class="text-xs text-[#A0A0A0] dark:text-ink-2">Ctrl + Enter 发送</span>
         </div>
       </div>
 
@@ -283,9 +283,9 @@ try {
           const name = (cmt.author || '').trim() || '访客';
           const initial = name.charAt(0).toUpperCase();
           const accentIdx = idx % 3;
-          const avatarColors = ['text-[#8B7CB3]', 'text-blue-500', 'text-emerald-500'];
+          const avatarColors = ['text-accent', 'text-blue-500', 'text-emerald-500'];
           const borders = ['group-hover:border-[#8B7CB3]/20', 'group-hover:border-blue-500/20', 'group-hover:border-emerald-500/20'];
-          const names = ['group-hover:text-[#8B7CB3]', 'group-hover:text-blue-500', 'group-hover:text-emerald-500'];
+          const names = ['group-hover:text-accent', 'group-hover:text-blue-500', 'group-hover:text-emerald-500'];
           const bgColors = ['#8B7CB3','#4A90D9','#7CB38B','#E8913A','#B26A8B','#5BC0BE'];
           let hash = 0;
           for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + hash * 31; }
@@ -301,10 +301,10 @@ try {
               </div>
               <div class="flex flex-col gap-1 w-full">
                 <div class="flex items-center justify-between pl-1">
-                  <span class={`text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ${names[accentIdx]} transition-colors duration-300`}>{name}</span>
-                  <span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{timeStr}</span>
+                  <span class={`text-xs font-bold text-ink dark:text-[#EAEAEA] ${names[accentIdx]} transition-colors duration-300`}>{name}</span>
+                  <span class="text-[11px] text-ink-muted opacity-0 group-hover:opacity-100 transition-opacity duration-300">{timeStr}</span>
                 </div>
-                <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borders[accentIdx]} transition-all duration-300`}>
+                <div class={`bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-ink-2 dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ${borders[accentIdx]} transition-all duration-300`}>
                   {cmt.content}
                 </div>
               </div>
@@ -316,7 +316,7 @@ try {
       <!-- 无留言时的空状态 -->
       {comments.length === 0 && (
         <div id="comments-empty" class="text-center py-8">
-          <p class="text-sm text-[#999]">暂无留言，来说点什么吧</p>
+          <p class="text-sm text-ink-muted">暂无留言，来说点什么吧</p>
         </div>
       )}
     </section>
@@ -328,13 +328,13 @@ try {
           href={`/blog/${prev.slug}`}
           class="group flex flex-col gap-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/25 active:scale-[0.98] transition-all duration-300 no-underline"
         >
-          <span class="font-xiaolai text-[10px] font-bold text-[#999] tracking-widest uppercase flex items-center gap-1">
+          <span class="font-xiaolai text-[11px] font-bold text-ink-muted tracking-widest uppercase flex items-center gap-1">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
             上一篇
           </span>
-          <span class="font-xiaolai text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors line-clamp-1">
+          <span class="font-xiaolai text-sm font-bold text-ink dark:text-[#EAEAEA] group-hover:text-accent transition-colors line-clamp-1">
             {prev.title}
           </span>
         </a>
@@ -347,13 +347,13 @@ try {
           href={`/blog/${next.slug}`}
           class="group flex flex-col gap-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-5 border border-white/20 dark:border-white/10 shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-[#8B7CB3]/25 active:scale-[0.98] transition-all duration-300 no-underline text-right"
         >
-          <span class="font-xiaolai text-[10px] font-bold text-[#999] tracking-widest uppercase flex items-center justify-end gap-1">
+          <span class="font-xiaolai text-[11px] font-bold text-ink-muted tracking-widest uppercase flex items-center justify-end gap-1">
             下一篇
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </span>
-          <span class="font-xiaolai text-sm font-bold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors line-clamp-1">
+          <span class="font-xiaolai text-sm font-bold text-ink dark:text-[#EAEAEA] group-hover:text-accent transition-colors line-clamp-1">
             {next.title}
           </span>
         </a>
@@ -367,7 +367,7 @@ try {
       <a
         href={backUrl}
         data-back-link
-        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 active:scale-95 border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#EAEAEA] no-underline"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-[#252525] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 active:scale-95 border border-transparent hover:border-[#8B7CB3]/20 transition-all duration-300 text-sm font-medium text-ink-2 dark:text-ink-muted hover:text-ink dark:hover:text-[#EAEAEA] no-underline"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -502,10 +502,10 @@ try {
         var name = msg.author || '访客';
         var initial = name.charAt(0).toUpperCase();
         var color = getColor(name);
-        var avatarClasses = ['text-[#8B7CB3]','text-blue-500','text-emerald-500'];
+        var avatarClasses = ['text-accent','text-blue-500','text-emerald-500'];
         var avatarClass = avatarClasses[(idx + cmtCount) % 3];
         var borderHover = ['group-hover:border-[#8B7CB3]/20','group-hover:border-blue-500/20','group-hover:border-emerald-500/20'][(idx + cmtCount) % 3];
-        var nameHover = ['group-hover:text-[#8B7CB3]','group-hover:text-blue-500','group-hover:text-emerald-500'][(idx + cmtCount) % 3];
+        var nameHover = ['group-hover:text-accent','group-hover:text-blue-500','group-hover:text-emerald-500'][(idx + cmtCount) % 3];
         var timeStr = formatTime(msg.createdAt);
 
         var avatarHtml = msg.email
@@ -518,10 +518,10 @@ try {
           '</div>' +
           '<div class="flex flex-col gap-1 w-full">' +
             '<div class="flex items-center justify-between pl-1">' +
-              '<span class="text-[11px] font-bold text-[#1A1A1A] dark:text-[#EAEAEA] ' + nameHover + ' transition-colors duration-300">' + name + '</span>' +
-              (timeStr ? '<span class="text-[10px] text-[#999] opacity-0 group-hover:opacity-100 transition-opacity duration-300">' + timeStr + '</span>' : '') +
+              '<span class="text-xs font-bold text-ink dark:text-[#EAEAEA] ' + nameHover + ' transition-colors duration-300">' + name + '</span>' +
+              (timeStr ? '<span class="text-[11px] text-ink-muted opacity-0 group-hover:opacity-100 transition-opacity duration-300">' + timeStr + '</span>' : '') +
             '</div>' +
-            '<div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-[#666] dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ' + borderHover + ' transition-all duration-300">' +
+            '<div class="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md p-3 rounded-2xl rounded-tl-none text-sm text-ink-2 dark:text-[#888] shadow-sm border border-white/20 dark:border-white/10 group-hover:-translate-y-1 group-hover:shadow-md ' + borderHover + ' transition-all duration-300">' +
               msg.content +
             '</div>' +
           '</div>' +
@@ -535,13 +535,13 @@ try {
 
         if (!content) {
           statusEl.textContent = '请输入留言内容';
-          statusEl.className = 'text-[11px] text-red-500';
+          statusEl.className = 'text-xs text-red-500';
           return;
         }
 
         sendBtn.disabled = true;
         statusEl.textContent = '发送中...';
-        statusEl.className = 'text-[11px] text-[#A0A0A0] dark:text-[#666]';
+        statusEl.className = 'text-xs text-[#A0A0A0] dark:text-ink-2';
 
         try {
           var res = await fetch('/api/comments', {
@@ -552,11 +552,11 @@ try {
           var result = await res.json();
           if (result.error) {
             statusEl.textContent = result.error;
-            statusEl.className = 'text-[11px] text-red-500';
+            statusEl.className = 'text-xs text-red-500';
           } else {
             contentEl.value = '';
             statusEl.textContent = '✓ 留言成功';
-            statusEl.className = 'text-[11px] text-[#7CB38B]';
+            statusEl.className = 'text-xs text-[#7CB38B]';
 
             // 隐藏空状态
             if (emptyEl) emptyEl.remove();
@@ -571,13 +571,13 @@ try {
             setTimeout(function () {
               if (statusEl.textContent.indexOf('✓') === 0) {
                 statusEl.textContent = '友善交流，理性表达';
-                statusEl.className = 'text-[11px] text-[#A0A0A0] dark:text-[#666]';
+                statusEl.className = 'text-xs text-[#A0A0A0] dark:text-ink-2';
               }
             }, 2000);
           }
         } catch (e) {
           statusEl.textContent = '网络错误，请重试';
-          statusEl.className = 'text-[11px] text-red-500';
+          statusEl.className = 'text-xs text-red-500';
         } finally {
           sendBtn.disabled = false;
         }

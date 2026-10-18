@@ -22,28 +22,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 			<!-- 文案区域 -->
 			<div class="relative z-10 text-center mb-10">
-				<h1 class="font-xiaolai text-3xl md:text-4xl font-bold text-[#1A1A1A] dark:text-[#EAEAEA] mb-4 tracking-tight">
+				<h1 class="font-xiaolai text-3xl md:text-4xl font-bold text-ink dark:text-[#EAEAEA] mb-4 tracking-tight">
 					页面还在施工中...
 				</h1>
 				<p class="text-lg md:text-xl text-[#FF6B9D] leading-relaxed mb-3">
 					( *^-^)ρ(^0^* )
 				</p>
-				<p class="text-base md:text-lg text-[#666] dark:text-[#999] leading-relaxed">
+				<p class="text-base md:text-lg text-ink-2 dark:text-ink-muted leading-relaxed">
 					还请客官浏览其它页面
 				</p>
 			</div>
 
 			<!-- 叠叠乐小游戏 -->
  			<div class="relative z-10 flex flex-col items-center mb-10 w-full">
- 				<p class="text-xs font-medium text-[#999] dark:text-[#666] mb-4 tracking-widest uppercase">
+ 				<p class="text-xs font-medium text-ink-muted dark:text-ink-2 mb-4 tracking-widest uppercase">
  					Wait & Play
  				</p>
  				
 				<!-- 计分板：采用柔光玻璃卡片风格 -->
 				<div class="flex justify-between w-full max-w-[360px] text-xs mb-3 px-4 py-2 bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-white/20 dark:border-white/10 shadow-sm">
- 					<span class="text-[#666] dark:text-[#999]">砖块 <span id="stack-score" class="font-mono text-[#8B7CB3] font-bold ml-1">0</span></span>
- 					<span class="text-[#666] dark:text-[#999]">最高 <span id="stack-best" class="font-mono text-[#8B7CB3] font-bold ml-1">0</span></span>
- 					<span class="text-[#666] dark:text-[#999]">层数 <span id="stack-floors" class="font-mono text-[#7CB38B] font-bold ml-1">0</span> / 10</span>
+ 					<span class="text-ink-2 dark:text-ink-muted">砖块 <span id="stack-score" class="font-mono text-accent font-bold ml-1">0</span></span>
+ 					<span class="text-ink-2 dark:text-ink-muted">最高 <span id="stack-best" class="font-mono text-accent font-bold ml-1">0</span></span>
+ 					<span class="text-ink-2 dark:text-ink-muted">层数 <span id="stack-floors" class="font-mono text-[#7CB38B] font-bold ml-1">0</span> / 10</span>
  				</div>
 				 
 				<!-- Canvas 容器：取消内联宽高，使用 CSS 控制，解决高分屏模糊 -->
@@ -54,7 +54,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 					></canvas>
 				</div>
  				
-				<p id="stack-hint" class="mt-4 text-xs text-[#999] dark:text-[#666] min-h-[18px] transition-colors duration-300">
+				<p id="stack-hint" class="mt-4 text-xs text-ink-muted dark:text-ink-2 min-h-[18px] transition-colors duration-300">
  					点击画布开始，再点击让砖块落下
  				</p>
  			</div>
@@ -69,19 +69,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 				</a>
 				<a 
 					href="/now" 
-					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-ink-2 dark:text-ink-muted hover:text-accent dark:hover:text-accent hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
 				>
 					/now
 				</a>
 				<a 
 					href="/archive" 
-					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-ink-2 dark:text-ink-muted hover:text-accent dark:hover:text-accent hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
 				>
 					/archive
 				</a>
 				<a 
 					href="/colophon" 
-					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-[#666] dark:text-[#999] hover:text-[#8B7CB3] dark:hover:text-[#8B7CB3] hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
+					class="px-5 py-2 rounded-full bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-md border border-white/40 dark:border-white/10 text-xs md:text-sm font-medium text-ink-2 dark:text-ink-muted hover:text-accent dark:hover:text-accent hover:-translate-y-0.5 hover:shadow-sm hover:border-[#8B7CB3]/30 transition-all duration-300 no-underline whitespace-nowrap"
 				>
 					/colophon
 				</a>

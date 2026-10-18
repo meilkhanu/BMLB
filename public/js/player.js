@@ -52,10 +52,10 @@
 					if (!floatPlaylistItems) return;
 					floatPlaylistItems.innerHTML = state.songs.map((s, i) =>
 						'<div class="flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ' + (i === state.currentIndex ? 'bg-[#8B7CB3]/10' : 'hover:bg-black/5 dark:hover:bg-white/5') + '" data-play-index="' + i + '">' +
-							'<div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[10px] font-bold">' + (i + 1) + '</div>' +
+							'<div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#8B7CB3] to-[#C9BAE5] dark:to-[#4A3B73] flex items-center justify-center text-white shrink-0 text-[11px] font-bold">' + (i + 1) + '</div>' +
 							'<div class="flex-1 min-w-0">' +
 								'<div class="text-xs font-bold text-[#1A1A1A] dark:text-[#EAEAEA] truncate">' + s.title + '</div>' +
-								'<div class="text-[10px] text-[#999] truncate">' + (s.artist || '') + '</div>' +
+								'<div class="text-[11px] text-[#999] truncate">' + (s.artist || '') + '</div>' +
 							'</div>' +
 							(i === state.currentIndex && state.isPlaying ? '<div class="flex items-end gap-[1px] h-3"><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[60%] animate-pulse"></div><div class="w-[2px] bg-[#8B7CB3] rounded-full h-[100%] animate-pulse" style="animation-delay:0.1s"></div></div>' : '') +
 						'</div>'
@@ -369,10 +369,16 @@
 						const observedElements = new WeakSet();
 
 						const observer = new IntersectionObserver((entries) => {
+							// 同一批进入视口的元素按顺序错开（替代只有 5 档的 delay-0..4），
+							// 卡片多的时候不会「成团一起出现」。上限 8 档，避免最后一张等太久。
+							let batchIndex = 0;
 							entries.forEach(entry => {
 								if (entry.isIntersecting) {
-									entry.target.classList.add('animate-fade-in-up');
-									observer.unobserve(entry.target); // 播一次，不再监听
+									const el = entry.target;
+									el.style.animationDelay = (Math.min(batchIndex, 8) * 60) + 'ms';
+									batchIndex++;
+									el.classList.add('animate-fade-in-up');
+									observer.unobserve(el); // 播一次，不再监听
 								}
 							});
 						}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });

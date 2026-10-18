@@ -50,7 +50,7 @@ const ExtendedTextStyle = TextStyle.extend({
 function ToolbarButton({ onClick, active, disabled, children, title }) {
   return (
     <button type="button" onMouseDown={e => { e.preventDefault(); onClick(); }} disabled={disabled} title={title}
-      className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-none ${active ? 'bg-[#8B7CB3] text-white' : 'bg-transparent text-[#666] dark:text-[#999] hover:bg-[#8B7CB3]/10 hover:text-[#8B7CB3]'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
+      className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-none ${active ? 'bg-[#8B7CB3] text-white' : 'bg-transparent text-ink-2 dark:text-ink-muted hover:bg-[#8B7CB3]/10 hover:text-accent'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
       {children}
     </button>
   );
@@ -75,14 +75,14 @@ function Dropdown({ label, value, options, onChange, className = '' }) {
   return (
     <div ref={ref} className="relative">
       <button type="button" onPointerDown={(e) => { e.stopPropagation(); setOpen(o => !o); }}
-        className={`px-2 py-1 rounded-lg text-xs bg-transparent border border-[#E0E0E0] dark:border-[#333] text-[#666] dark:text-[#999] cursor-pointer hover:bg-[#8B7CB3]/10 ${className}`}>
+        className={`px-2 py-1 rounded-lg text-xs bg-transparent border border-[#E0E0E0] dark:border-[#333] text-ink-2 dark:text-ink-muted cursor-pointer hover:bg-[#8B7CB3]/10 ${className}`}>
         {current?.label || label}
       </button>
       {open && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1A1A1A] border border-[#E0E0E0] dark:border-[#333] rounded-lg shadow-lg min-w-[120px] max-h-[240px] overflow-y-auto">
           {options.map(o => (
             <button key={o.value} type="button" onPointerDown={() => { onChange(o.value); setOpen(false); }}
-              className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-[#8B7CB3]/10 cursor-pointer border-none bg-transparent ${o.value === value ? 'text-[#8B7CB3] font-bold' : 'text-[#666] dark:text-[#999]'}`}>
+              className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-[#8B7CB3]/10 cursor-pointer border-none bg-transparent ${o.value === value ? 'text-accent font-bold' : 'text-ink-2 dark:text-ink-muted'}`}>
               {o.label}
             </button>
           ))}
@@ -127,7 +127,7 @@ const TiptapEditor = forwardRef(function TiptapEditor({ placeholder = '开始写
       Underline,
       Highlight.configure({ multicolor: true }),
       Image.configure({ inline: false, allowBase64: true }),
-      Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-[#8B7CB3] underline' } }),
+      Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-accent underline' } }),
       Placeholder.configure({ placeholder }),
       TextAlign.configure({ types: ['heading', 'paragraph'], alignments: ['left', 'center', 'right', 'justify'] }),
       ExtendedTextStyle,

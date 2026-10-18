@@ -16,8 +16,8 @@ const catMap = Object.fromEntries(
 
       <!-- 标题区 -->
       <div class="mb-10" data-animate>
-        <h1 class="font-xiaolai text-4xl md:text-5xl font-black text-[#1A1A1A] dark:text-[#EAEAEA] mb-3 tracking-tight">Search</h1>
-        <p class="text-base text-[#666] dark:text-[#999] tracking-wide">搜索文章与作品集</p>
+        <h1 class="font-xiaolai text-4xl md:text-5xl font-black text-ink dark:text-[#EAEAEA] mb-3 tracking-tight">Search</h1>
+        <p class="text-base text-ink-2 dark:text-ink-muted tracking-wide">搜索文章与作品集</p>
       </div>
 
       <!-- 搜索框 -->
@@ -32,12 +32,12 @@ const catMap = Object.fromEntries(
             placeholder="输入关键词，按 Enter 搜索…"
             value={query}
             autocomplete="off"
-            class="flex-1 px-4 py-4 text-base bg-transparent border-none outline-none text-[#1A1A1A] dark:text-[#EAEAEA] placeholder-[#999]"
+            class="flex-1 px-4 py-4 text-base bg-transparent border-none outline-none text-ink dark:text-[#EAEAEA] placeholder-[#999]"
           />
           <button
             id="search-clear-btn"
             type="button"
-            class="hidden mr-3 w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all text-[#999] cursor-pointer border-none flex-shrink-0"
+            class="hidden mr-3 w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all text-ink-muted cursor-pointer border-none flex-shrink-0"
             aria-label="清除"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@ const catMap = Object.fromEntries(
           <svg class="w-16 h-16 mx-auto mb-4 text-[#D5D5D5] dark:text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <p class="text-sm text-[#999]">输入关键词开始搜索</p>
+          <p class="text-sm text-ink-muted">输入关键词开始搜索</p>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ const catMap = Object.fromEntries(
           <svg class="w-16 h-16 mx-auto mb-4 text-[#D5D5D5] dark:text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <p class="text-sm text-[#999]">输入关键词开始搜索</p>
+          <p class="text-sm text-ink-muted">输入关键词开始搜索</p>
         </div>
       `;
     }
@@ -140,7 +140,7 @@ const catMap = Object.fromEntries(
       container.innerHTML = `
         <div class="flex items-center gap-3 py-16 justify-center">
           <div class="w-5 h-5 border-2 border-[#8B7CB3] border-t-transparent rounded-full animate-spin"></div>
-          <span class="text-sm text-[#999]">搜索 "${escapeHtml(q)}" 中…</span>
+          <span class="text-sm text-ink-muted">搜索 "${escapeHtml(q)}" 中…</span>
         </div>
       `;
     }
@@ -149,10 +149,10 @@ const catMap = Object.fromEntries(
       if (!container) return;
       container.innerHTML = `
         <div class="text-center py-20">
-          <p class="text-base text-[#666] dark:text-[#999] mb-2">
+          <p class="text-base text-ink-2 dark:text-ink-muted mb-2">
             未找到与 "${escapeHtml(q)}" 相关的内容
           </p>
-          <p class="text-xs text-[#999]">试试其他关键词？</p>
+          <p class="text-xs text-ink-muted">试试其他关键词？</p>
         </div>
       `;
     }
@@ -162,7 +162,7 @@ const catMap = Object.fromEntries(
       container.innerHTML = `
         <div class="text-center py-20">
           <p class="text-sm text-[#FF1A4D] mb-1">搜索失败</p>
-          <p class="text-xs text-[#999]">请稍后重试</p>
+          <p class="text-xs text-ink-muted">请稍后重试</p>
         </div>
       `;
     }
@@ -181,10 +181,10 @@ const catMap = Object.fromEntries(
 
       let html = `
         <div class="mb-6 flex items-center justify-between flex-wrap gap-2">
-          <p class="text-sm text-[#666] dark:text-[#999]">
-            找到 <span class="font-bold text-[#1A1A1A] dark:text-[#EAEAEA]">${total}</span> 条结果
-            ${postCount ? `<span class="ml-1 text-xs text-[#999]">· 文章 ${postCount}</span>` : ''}
-            ${workCount ? `<span class="ml-1 text-xs text-[#999]">· 作品 ${workCount}</span>` : ''}
+          <p class="text-sm text-ink-2 dark:text-ink-muted">
+            找到 <span class="font-bold text-ink dark:text-[#EAEAEA]">${total}</span> 条结果
+            ${postCount ? `<span class="ml-1 text-xs text-ink-muted">· 文章 ${postCount}</span>` : ''}
+            ${workCount ? `<span class="ml-1 text-xs text-ink-muted">· 作品 ${workCount}</span>` : ''}
           </p>
         </div>
         <div class="flex flex-col gap-3">
@@ -198,7 +198,7 @@ const catMap = Object.fromEntries(
         const typeColor = isPost ? (cat ? cat.color : '#8B7CB3') : '#E8913A';
 
         const tagsHtml = (r.tags && r.tags.length)
-          ? `<div class="flex flex-wrap gap-1.5 mt-2">${r.tags.slice(0, 5).map(t => `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-[#8B7CB3] dark:text-[#B39DDB]">${escapeHtml(t)}</span>`).join('')}</div>`
+          ? `<div class="flex flex-wrap gap-1.5 mt-2">${r.tags.slice(0, 5).map(t => `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#8B7CB3]/8 dark:bg-[#8B7CB3]/15 text-accent dark:text-[#B39DDB]">${escapeHtml(t)}</span>`).join('')}</div>`
           : '';
 
         const imgHtml = r.image
@@ -213,12 +213,12 @@ const catMap = Object.fromEntries(
             ${imgHtml}
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1.5">
-                <span class="font-xiaolai px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide" style="background-color:${typeColor}18;color:${typeColor}">${typeLabel}</span>
-                ${isPost && cat ? `<span class="text-[10px] text-[#999]">${escapeHtml(cat.name)}</span>` : ''}
-                ${dateStr ? `<span class="text-[10px] text-[#999]">· ${dateStr}</span>` : ''}
+                <span class="font-xiaolai px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide" style="background-color:${typeColor}18;color:${typeColor}">${typeLabel}</span>
+                ${isPost && cat ? `<span class="text-[11px] text-ink-muted">${escapeHtml(cat.name)}</span>` : ''}
+                ${dateStr ? `<span class="text-[11px] text-ink-muted">· ${dateStr}</span>` : ''}
               </div>
-              <h3 class="font-xiaolai text-base font-semibold text-[#1A1A1A] dark:text-[#EAEAEA] group-hover:text-[#8B7CB3] transition-colors duration-300 truncate">${escapeHtml(r.title)}</h3>
-              ${r.excerpt ? `<p class="text-sm text-[#666] dark:text-[#999] mt-1 line-clamp-2 leading-relaxed">${escapeHtml(r.excerpt)}</p>` : ''}
+              <h3 class="font-xiaolai text-base font-semibold text-ink dark:text-[#EAEAEA] group-hover:text-accent transition-colors duration-300 truncate">${escapeHtml(r.title)}</h3>
+              ${r.excerpt ? `<p class="text-sm text-ink-2 dark:text-ink-muted mt-1 line-clamp-2 leading-relaxed">${escapeHtml(r.excerpt)}</p>` : ''}
               ${tagsHtml}
             </div>
           </a>

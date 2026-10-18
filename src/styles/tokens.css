@@ -1,0 +1,75 @@
+/* ============================================================
+   src/styles/tokens.css
+   语义色 token —— 颜色的唯一真源。
+   浅/深两套值都在这里改，页面里只用 Tailwind 语义类（text-ink / text-ink-2 /
+   text-ink-muted / text-accent），不要再写死 #999 这类色值。
+
+   对比度依据（WCAG AA 正文需 4.5:1）：
+     浅色 --ink-muted  #767676 on #FAFAFA = 4.54:1  （原 #999 只有 2.73:1）
+     深色 --ink-2      #999999 on #0F0F0F = 6.73:1  （原 #666 只有 3.34:1）
+   ============================================================ */
+
+:root {
+  --ink: #1a1a1a;
+  --ink-2: #666666;
+  --ink-muted: #767676;
+  --accent: #8b7cb3;
+}
+
+.dark {
+  --ink: #eaeaea;
+  --ink-2: #999999;
+  --ink-muted: #999999;
+  --accent: #8b7cb3;
+}
+
+/* ============================================================
+   动效降级 —— 尊重系统「减少动态效果」设置（WCAG 2.3.3）。
+   CSS 侧：动画/过渡直接到终态，滚动不再平滑。
+   JS 侧：index.astro 的 hero 星尘、views/starfield.ts 的星图背景
+          在同样条件下不初始化（见各自文件里的 REDUCE_MOTION 判断）。
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* 入场元素直接呈现，避免停在 opacity:0 的中间态 */
+  .animate-fade-in-up {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   触摸热区：视觉尺寸不变，可点区域至少 44×44（WCAG 2.5.5 AAA）。
+   用法：给图标按钮加 class="tap-44"
+   ============================================================ */
+.tap-44 {
+  position: relative;
+}
+.tap-44::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 跳转到标题时留出 64px 固定导航的高度，避免标题被盖住 */
+h1,
+h2,
+h3,
+h4 {
+  scroll-margin-top: 88px;
+}
